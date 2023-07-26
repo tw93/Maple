@@ -12,7 +12,7 @@
     <a href="https://github.com/tw93/Maple/issues?q=is%3Aissue+is%3Aclosed" target="_blank">
     <img alt="GitHub closed issues" src="https://img.shields.io/github/issues-closed/tw93/Maple.svg?style=flat-square"></a>
 </div>
-<p align="center">隐藏书签栏，使用 <em>枫叶书签</em> 让你上网行云流水。</p>
+<p align="center">隐藏书签栏，使用 <em>枫叶书签</em> 让你行云流水。</p>
 </p>
 
 ## 介绍
