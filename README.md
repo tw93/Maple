@@ -17,7 +17,7 @@
 
 ## Introduction
 
-The bookmarks bar can occupy the browsing window and affect concentration, so I often hide it. However, this makes accessing bookmarks inconvenient. Therefore, I developed the `Maple Bookmarks` extension. By just using the shortcut `Command + E`, you can quickly access your bookmarks, which is practical and convenient.
+The bookmarks bar can occupy the browsing window and affect concentration, so I often hide it. However, this makes accessing bookmarks inconvenient. Therefore, I developed the Maple Bookmarks extension. By just using the shortcut `Command + E`, you can quickly access your bookmarks, which is practical and convenient.
 
 <kbd>
   <img src="./public/maple.gif" width="100%">
