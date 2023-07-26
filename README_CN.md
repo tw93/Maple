@@ -12,12 +12,12 @@
     <a href="https://github.com/tw93/Maple/issues?q=is%3Aissue+is%3Aclosed" target="_blank">
     <img alt="GitHub closed issues" src="https://img.shields.io/github/issues-closed/tw93/Maple.svg?style=flat-square"></a>
 </div>
-<p align="center">隐藏掉书签栏，使用<em>枫叶书签</em>让你上网行云流水。</p>
+<p align="center">隐藏掉书签栏，使用 <em>枫叶书签</em> 让你上网行云流水。</p>
 </p>
 
 ## 介绍
 
-书签栏会占据浏览窗口且影响专注力，我常将其隐藏。但这使得访问书签很不方便，因此我开发了`枫叶书签`扩展，只需使用快捷键 `Command + E` 就能快速访问书签，实用且方便。
+书签栏会占据浏览窗口且影响专注力，我常将其隐藏。但这使得访问书签很不方便，因此我开发了 `枫叶书签` 扩展，只需使用快捷键 `Command + E` 就能快速访问书签，实用且方便。
 
 <kbd>
   <img src="./public/maple.gif" width="100%">
