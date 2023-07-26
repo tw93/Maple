@@ -25,7 +25,7 @@
 
 ## 安装
 
-- 使用浏览器扩展商店来安装枫叶书签，假如好用很欢迎评价。
+- 「提交审核中...」 使用浏览器扩展商店来安装枫叶书签，假如好用很欢迎评价。
 - 假如你不方便访问商店，可以下载 [Archive.zip](./public/Archive.zip)，解压以后，参考 [Loading an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked) 来使用本地包。
 
 ## 实践
