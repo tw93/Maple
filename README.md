@@ -15,9 +15,19 @@
 <p align="center">Hide the bookmark bar, use <em>Maple Bookmarks</em> to surf smoothly.</p>
 </p>
 
+## Introduction
+
+The bookmarks bar can occupy the browsing window and affect concentration, so I often hide it. However, this makes accessing bookmarks inconvenient. Therefore, I developed the `Maple Bookmarks` extension. By just using the shortcut `Command + E`, you can quickly access your bookmarks, which is practical and convenient.
+
 <kbd>
   <img src="./public/maple.gif" width="100%">
 </kbd>
+
+## Installation
+
+You can install Maple Bookmarks using the browser's extension store. If you find it useful, please leave a review.
+
+If you cannot access the store, you can download [Archive.zip](./public/Archive.zip). After decompressing, follow the instructions for [Loading an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked) to use the local package.
 
 ## Support
 
