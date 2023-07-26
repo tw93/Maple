@@ -15,7 +15,7 @@
 </div>
 
 <kbd>
-  <img src=https://cdn.fliggy.com/upic/sASArY.gif width="100%">
+  <img src=https://cdn.fliggy.com/upic/NsTxUH.gif width="100%">
 </kbd>
 
 ## Support
