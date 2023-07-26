@@ -25,9 +25,16 @@ The bookmarks bar can occupy the browsing window and affect concentration, so I 
 
 ## Installation
 
-You can install Maple Bookmarks using the browser's extension store. If you find it useful, please leave a review.
+- You can install Maple Bookmarks using the browser's extension store. If you find it useful, please leave a review.
+- If you cannot access the store, you can download [Archive.zip](./public/Archive.zip). After decompressing, follow the instructions for [Loading an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked) to use the local package.
 
-If you cannot access the store, you can download [Archive.zip](./public/Archive.zip). After decompressing, follow the instructions for [Loading an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked) to use the local package.
+## Practice
+
+1. First, organize your bookmarks. You can adjust the order of frequently used ones and delete those not often used to make it tidier.
+2. Use `Command+Shift+B` or right-click on the bookmarks bar to hide it.
+3. Click on the extension icon and pin `Maple Bookmarks` to the toolbar.
+4. Try using `Command + E` to quickly access your bookmarks.
+5. The shortcuts in the document are for the Mac version. For the Windows version, please replace `Command` with `Ctrl`.
 
 ## Support
 

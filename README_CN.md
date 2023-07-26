@@ -25,9 +25,16 @@
 
 ## 安装
 
-使用浏览器扩展商店来安装枫叶书签，假如好用很欢迎评价。
+- 使用浏览器扩展商店来安装枫叶书签，假如好用很欢迎评价。
+- 假如你不方便访问商店，可以下载 [Archive.zip](./public/Archive.zip)，解压以后，参考 [Loading an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked) 来使用本地包。
 
-假如你不方便访问商店，可以下载 [Archive.zip](./public/Archive.zip)，解压以后，参考 [Loading an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked) 来使用本地包。
+## 实践
+
+1. 先整理好书签，可以调整常用顺序以及删除不常使用的，让它更整齐。
+2. 使用 `Command+Shift+B`，或者在书签栏上右键隐藏掉书签栏。
+3. 点击扩展图标，将 `Maple Bookmarks` 给固定到工具栏上。
+4. 试试使用 `Command + E` 来快速访问书签吧。
+5. 文档中的快捷键均为 Mac 版本，Windows 版本请使用 `Ctrl` 替换 `Command`。
 
 ## 支持
 
