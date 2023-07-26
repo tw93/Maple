@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Maple Bookmarks</title>
+    <style>
+      body {
+        padding: 0px 5px;
+        width: 406px;
+        box-sizing: border-box;
+      }
+      .folder {
+        width: 100%;
+      }
+
+      h2 {
+        padding-left: 2px;
+        font-size: 16px;
+        font-weight: 500;
+        color: #333;
+        line-height: 1;
+        margin-block-end: 13px;
+        margin-block-start: 10px;
+      }
+
+      p.message {
+        color: #333;
+        text-align: center;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 1.8;
+        color: #333;
+      }
+
+      .childContainer {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+      }
+
+      .childContainer .bookmark {
+        width: 124px;
+        height: 42px;
+        box-sizing: border-box;
+        border-radius: 5px;
+        background-color: #f1f1f1;
+        padding: 6px 12px;
+        margin-bottom: 12px;
+        margin-right: 12px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+      }
+
+      .childContainer .bookmark:nth-child(3n) {
+        margin-right: 0px;
+      }
+
+      .bookmark p {
+        font-size: 15px;
+        color: #333;
+        margin-left: 8px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+
+      .favicon {
+        height: 18px;
+        width: 18px;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: #333;
+          color: #f1f1f1;
+        }
+
+        h2,
+        p.message {
+          color: #f1f1f1;
+        }
+
+        .childContainer .bookmark {
+          background-color: #555;
+        }
+
+        .bookmark p {
+          color: #f1f1f1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="bookmarks"></div>
+    <script src="popup.js"></script>
+  </body>
+</html>

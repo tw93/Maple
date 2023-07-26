@@ -1,0 +1,16 @@
+{
+  "name": "maple-bookmarks",
+  "version": "1.0.0",
+  "description": "Let you navigate smoothly while hiding the bookmark bar.",
+  "main": "popup.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "bookmarks",
+    "chrome",
+    "browser-extension"
+  ],
+  "author": "Tw93",
+  "license": "MIT"
+}

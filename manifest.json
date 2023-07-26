@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "Maple Bookmarks",
+  "description": "Let you navigate smoothly while hiding the bookmark bar.",
+  "version": "1.0",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+E",
+        "mac": "Command+E"
+      }
+    }
+  },
+  "optional_host_permissions": ["*://*/*"],
+  "permissions": [
+    "storage",
+    "activeTab",
+    "bookmarks",
+    "favicon",
+    "notifications",
+    "contextMenus",
+    "declarativeContent"
+  ],
+  "icons": {
+    "16": "public/logo.png",
+    "48": "public/logo.png",
+    "128": "public/logo.png"
+  }
+}
