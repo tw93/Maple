@@ -16,7 +16,7 @@
 </p>
 
 <kbd>
-  <img src=https://gw.alipayobjects.com/zos/k/on/Maple.gif width="100%">
+  <img src="https://gw.alicdn.com/imgextra/i2/O1CN01AUfn181ewjmFjwdBr_!!6000000003936-1-tps-1218-674.gif" width="100%">
 </kbd>
 
 ## Support
