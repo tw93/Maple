@@ -1,6 +1,6 @@
 <h4 align="right"><strong>中文</strong> | <a href="https://github.com/tw93/Maple">English</a></h4>
 <p align="center">
-    <img src=https://gw.alipayobjects.com/zos/k/u0/logo_600.png width=138/>
+    <img src="./public/logo_600.png" width="138"/>
 <h1 align="center">枫叶书签</h1>
 <div align="center">
     <a href="https://twitter.com/HiTw93" target="_blank">
@@ -16,7 +16,7 @@
 </p>
 
 <kbd>
-  <img src="https://gw.alicdn.com/imgextra/i2/O1CN01AUfn181ewjmFjwdBr_!!6000000003936-1-tps-1218-674.gif" width="100%">
+  <img src="./public/maple.gif" width="100%">
 </kbd>
 
 ## 支持
