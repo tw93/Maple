@@ -16,7 +16,7 @@
 </p>
 
 <kbd>
-  <img src=https://cdn.fliggy.com/upic/YX0as0.gif width="100%">
+  <img src=https://gw.alipayobjects.com/zos/k/app/Maple.gif width="100%">
 </kbd>
 
 ## 支持
