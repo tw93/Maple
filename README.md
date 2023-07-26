@@ -15,12 +15,12 @@
 </div>
 
 <kbd>
-  <img src=https://cdn.fliggy.com/upic/NsTxUH.gif width="100%">
+  <img src=https://cdn.fliggy.com/upic/cuVJq8.gif width="100%">
 </kbd>
 
 ## Support
 
-1. I have two cats, TangYuan & Coke. If you think Pake delights your life, you can feed them <a href="https://miaoyan.app/cats.html?name=Maple" target="_blank">some canned food 🥩</a>.
-2. If you like Pake, you can star it on GitHub. Also, welcome to recommend Maple Bookmarks to your friends.
+1. I have two cats, if you think Maple delights your life, you can feed them <a href="https://miaoyan.app/cats.html?name=Maple" target="_blank">some canned food 🥩</a>.
+2. If you like Pake, you can star it on GitHub. Also, welcome to recommend Maple to your friends.
 3. You can follow my [Twitter](https://twitter.com/HiTw93) to get the latest news of Pake or join our [Telegram](https://t.me/+GclQS9ZnxyI2ODQ1) chat group.
 4. I hope that you enjoy playing with it. Let us know if you find a website that would be great for a Mac App!
