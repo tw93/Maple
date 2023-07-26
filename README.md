@@ -1,4 +1,4 @@
-<h4 align="right"><strong>English</strong> | <a href="https://github.com/tw93/Maple/blob/master/README_CN.md">中文</a></h4>
+<h4 align="right"><strong>English</strong> | <a href="https://github.com/tw93/Maple/blob/main/README_CN.md">中文</a></h4>
 <p align="center">
     <img src="./public/logo_600.png" width="138"/>
 <h1 align="center">Maple Bookmarks</h1>
