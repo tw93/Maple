@@ -1,7 +1,7 @@
-<h4 align="right"><strong>English</strong> | <a href="https://github.com/tw93/Maple/blob/master/README_CN.md">中文</a></h4>
+<h4 align="right"><strong>中文</strong> | <a href="https://github.com/tw93/Maple">English</a></h4>
 <p align="center">
     <img src=https://gw.alipayobjects.com/zos/k/u0/logo_600.png width=138/>
-<h1 align="center">Maple Bookmarks</h1>
+<h1 align="center">枫叶书签</h1>
 <div align="center">
     <a href="https://twitter.com/HiTw93" target="_blank">
     <img alt="twitter" src="https://img.shields.io/badge/follow-Tw93-red?style=flat-square&logo=Twitter"></a>
@@ -12,15 +12,15 @@
     <a href="https://github.com/tw93/Maple/issues?q=is%3Aissue+is%3Aclosed" target="_blank">
     <img alt="GitHub closed issues" src="https://img.shields.io/github/issues-closed/tw93/Maple.svg?style=flat-square"></a>
 </div>
-<p align="center">Hide the bookmark bar, use <em>Maple Bookmarks</em> to surf smoothly.</p>
+<p align="center">隐藏掉书签栏，使用<em>枫叶书签</em>让你上网行云流水。</p>
 </p>
 
 <kbd>
   <img src=https://cdn.fliggy.com/upic/YX0as0.gif width="100%">
 </kbd>
 
-## Support
+## 支持
 
-1. I have two cats, if you think Maple delights your life, you can feed them <a href="https://miaoyan.app/cats.html?name=Maple" target="_blank">some canned food 🥩</a>.
-2. If you like Maple, you can star it on GitHub. Also, welcome to recommend Maple to your friends.
-3. You can follow my [Twitter](https://twitter.com/HiTw93) to get the latest news or join our [Telegram](https://t.me/+GclQS9ZnxyI2ODQ1) chat group.
+1. 我有两只猫，假如让你生活更美好，可以给猫 <a href="https://miaoyan.app/cats.html?name=Maple" target="_blank">喂罐头 🥩</a>
+2. 如果你喜欢枫叶书签，可以在 Github Star，更欢迎推荐给你志同道合的朋友。
+3. 可以关注我的 [Twitter](https://twitter.com/HiTw93) 获取到版本更新消息，也欢迎加入 [Telegram](https://t.me/+GclQS9ZnxyI2ODQ1) 聊天群。
