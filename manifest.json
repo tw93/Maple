@@ -17,12 +17,8 @@
   "optional_host_permissions": ["*://*/*"],
   "permissions": [
     "storage",
-    "activeTab",
     "bookmarks",
-    "favicon",
-    "notifications",
-    "contextMenus",
-    "declarativeContent"
+    "favicon"
   ],
   "icons": {
     "16": "public/logo.png",
