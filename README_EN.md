@@ -22,11 +22,9 @@ The bookmarks bar can occupy the browsing window and affect concentration, so I 
 <kbd>
   <img src="./resource/maple.gif" width="100%">
 </kbd>
-
+<br/>
 <details>
-<br/>
 <summary>🏂 <strong>More effects can be expanded to view.<strong></summary>
-<br/>
 <table>
   <tr>
       <td><img src="./resource/bg1.png" width="600"/></td>

@@ -22,12 +22,9 @@
 <kbd>
   <img src="./resource/maple.gif" width="100%">
 </kbd>
-
+<br/>
 <details>
-<br/>
 <summary>🏂 <strong>更多效果可以展开查看</strong></summary>
-<br/>
-
 <table>
   <tr>
       <td><img src="./resource/bg1.png" width="600"/></td>
