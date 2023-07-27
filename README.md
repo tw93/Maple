@@ -25,7 +25,7 @@
 
 <details>
 <summary>🏂 <strong>更多效果可以展开查看</strong></summary>
-
+<br/>
 <table>
   <tr>
       <td><img src=https://gw.alipayobjects.com/zos/k/ln/bg1.png width=600/></td>
@@ -33,7 +33,7 @@
   </tr>
   <tr>
       <td><img src=https://gw.alipayobjects.com/zos/k/tp/bg3.png width=600/></td>
-      <td><img src=https://gw.alipayobjects.com/zos/k/2c/bg4.png width=600/></td>
+      <td><img src=https://gw.alipayobjects.com/zos/k/i6/sFDf3L.png width=600/></td>
   </tr>
 </table>
 
