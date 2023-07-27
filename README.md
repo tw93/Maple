@@ -24,16 +24,16 @@
 </kbd>
 
 <details>
-<summary>🏂 更多效果可以展开查看</summary>
+<summary>🏂 <strong>更多效果可以展开查看</strong></summary>
 
 <table>
   <tr>
-      <td><img src=https://gw.alipayobjects.com/zos/k/ry/bg1.png width=600/></td>
-      <td><img src=https://gw.alipayobjects.com/zos/k/wf/bg2.png width=600/></td>
+      <td><img src=https://gw.alipayobjects.com/zos/k/ln/bg1.png width=600/></td>
+      <td><img src=https://gw.alipayobjects.com/zos/k/tt/bg2.png width=600/></td>
   </tr>
   <tr>
-      <td><img src=https://gw.alipayobjects.com/zos/k/3k/bg3.png width=600/></td>
-      <td><img src=https://gw.alipayobjects.com/zos/k/ek/bg4.png width=600/></td>
+      <td><img src=https://gw.alipayobjects.com/zos/k/tp/bg3.png width=600/></td>
+      <td><img src=https://gw.alipayobjects.com/zos/k/2c/bg4.png width=600/></td>
   </tr>
 </table>
 
