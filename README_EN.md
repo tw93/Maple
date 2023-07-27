@@ -12,7 +12,7 @@
     <a href="https://github.com/tw93/Maple/issues?q=is%3Aissue+is%3Aclosed" target="_blank">
     <img alt="GitHub closed issues" src="https://img.shields.io/github/issues-closed/tw93/Maple.svg?style=flat-square"></a>
 </div>
-<p align="center">Hide the bookmark bar, use <em>Maple Bookmarks</em> to surf smoothly.</p>
+<p align="center">Hide the bookmark bar, use <code>Maple Bookmarks</code> to surf smoothly.</p>
 </p>
 
 ## Introduction
