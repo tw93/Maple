@@ -23,9 +23,25 @@ The bookmarks bar can occupy the browsing window and affect concentration, so I 
   <img src="./public/maple.gif" width="100%">
 </kbd>
 
+<details>
+<summary>🏂 More effects can be expanded to view.</summary>
+
+<table>
+  <tr>
+      <td><img src=https://gw.alipayobjects.com/zos/k/ry/bg1.png width=600/></td>
+      <td><img src=https://gw.alipayobjects.com/zos/k/wf/bg2.png width=600/></td>
+  </tr>
+  <tr>
+      <td><img src=https://gw.alipayobjects.com/zos/k/3k/bg3.png width=600/></td>
+      <td><img src=https://gw.alipayobjects.com/zos/k/ek/bg4.png width=600/></td>
+  </tr>
+</table>
+
+</details>
+
 ## Installation
 
-- 「Under review for submission...」 You can install Maple Bookmarks using the browser's extension store. If you find it useful, please leave a review.
+- 「Under review for submission...」 You can install Maple Bookmarks using Chrome Web Store. If you find it useful, please leave a review.
 - If you cannot access the store, you can download [Archive.zip](./public/Archive.zip). After decompressing, follow the instructions for [Loading an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked) to use the local package.
 
 ## Practice

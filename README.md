@@ -23,10 +23,26 @@
   <img src="./public/maple.gif" width="100%">
 </kbd>
 
+<details>
+<summary>🏂 更多效果可以展开查看</summary>
+
+<table>
+  <tr>
+      <td><img src=https://gw.alipayobjects.com/zos/k/ry/bg1.png width=600/></td>
+      <td><img src=https://gw.alipayobjects.com/zos/k/wf/bg2.png width=600/></td>
+  </tr>
+  <tr>
+      <td><img src=https://gw.alipayobjects.com/zos/k/3k/bg3.png width=600/></td>
+      <td><img src=https://gw.alipayobjects.com/zos/k/ek/bg4.png width=600/></td>
+  </tr>
+</table>
+
+</details>
+
 ## 安装
 
-- 「提交审核中...」 使用浏览器扩展商店来安装枫叶书签，假如好用很欢迎评价。
-- 假如你不方便访问商店，可以下载 [Archive.zip](./public/Archive.zip)，解压以后，参考 [Loading an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked) 来使用本地包。
+- 「提交审核中...」 使用 Chrome Web Store 来安装枫叶书签，假如好用很欢迎评价。
+- 假如你不可访问，可以下载 [Archive.zip](./public/Archive.zip)，解压以后，参考 [Loading an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked) 来使用本地包。
 
 ## 实践
 
@@ -35,6 +51,8 @@
 3. 点击扩展图标，将 `Maple Bookmarks` 给固定到工具栏上。
 4. 试试使用 `Command + E` 来快速访问书签吧。
 5. 文档中的快捷键均为 Mac 版本，Windows 版本请使用 `Ctrl` 替换 `Command`。
+
+## 效果
 
 ## 支持
 
