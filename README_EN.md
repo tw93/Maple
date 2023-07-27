@@ -1,6 +1,6 @@
 <h4 align="right"><strong>English</strong> | <a href="https://github.com/tw93/Maple">中文</a></h4>
 <p align="center">
-    <img src="./source/logo_600.png" width="138"/>
+    <img src="./resource/logo_600.png" width="138"/>
 <h1 align="center">Maple Bookmarks</h1>
 <div align="center">
     <a href="https://twitter.com/HiTw93" target="_blank">
@@ -20,7 +20,7 @@
 The bookmarks bar can occupy the browsing window and affect concentration, so I often hide it. However, this makes accessing bookmarks inconvenient. Therefore, I developed the Maple Bookmarks extension. By just using the shortcut `Command + E`, you can quickly access your bookmarks, which is practical and convenient.
 
 <kbd>
-  <img src="./source/maple.gif" width="100%">
+  <img src="./resource/maple.gif" width="100%">
 </kbd>
 
 <details>
@@ -29,12 +29,12 @@ The bookmarks bar can occupy the browsing window and affect concentration, so I 
 <br/>
 <table>
   <tr>
-      <td><img src="./source/bg1.png" width="600"/></td>
-      <td><img src="./source/bg2.png" width="600"/></td>
+      <td><img src="./resource/bg1.png" width="600"/></td>
+      <td><img src="./resource/bg2.png" width="600"/></td>
   </tr>
   <tr>
-      <td><img src="./source/bg3.png" width="600"/></td>
-      <td><img src="./source/bg4.png" width="600"/></td>
+      <td><img src="./resource/bg3.png" width="600"/></td>
+      <td><img src="./resource/bg4.png" width="600"/></td>
   </tr>
 </table>
 
@@ -43,7 +43,7 @@ The bookmarks bar can occupy the browsing window and affect concentration, so I 
 ## Installation
 
 - You can install Maple Bookmarks using Chrome Web Store. If you find it useful, please leave a review.
-- If you cannot access the store, you can download [Archive.zip](./source/Archive.zip). After decompressing, follow the instructions for [Loading an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked) to use the local package.
+- If you cannot access the store, you can download [Archive.zip](./resource/Archive.zip). After decompressing, follow the instructions for [Loading an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked) to use the local package.
 
 ## Practice
 

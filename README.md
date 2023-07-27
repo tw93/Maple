@@ -1,6 +1,6 @@
 <h4 align="right"><strong>中文</strong> | <a href="https://github.com/tw93/Maple/blob/main/README_EN.md">English</a></h4>
 <p align="center">
-    <img src="./source/logo_600.png" width="138"/>
+    <img src="./resource/logo_600.png" width="138"/>
 <h1 align="center">枫叶书签</h1>
 <div align="center">
     <a href="https://twitter.com/HiTw93" target="_blank">
@@ -20,7 +20,7 @@
 书签栏会占据浏览窗口且影响专注力，我常将其隐藏。但这使得访问书签很不方便，因此我开发了枫叶书签扩展，只需使用快捷键 `Command + E` 就能快速访问书签，实用且方便。
 
 <kbd>
-  <img src="./source/maple.gif" width="100%">
+  <img src="./resource/maple.gif" width="100%">
 </kbd>
 
 <details>
@@ -30,12 +30,12 @@
 
 <table>
   <tr>
-      <td><img src="./source/bg1.png" width="600"/></td>
-      <td><img src="./source/bg2.png" width="600"/></td>
+      <td><img src="./resource/bg1.png" width="600"/></td>
+      <td><img src="./resource/bg2.png" width="600"/></td>
   </tr>
   <tr>
-      <td><img src="./source/bg3.png" width="600"/></td>
-      <td><img src="./source/bg4.png" width="600"/></td>
+      <td><img src="./resource/bg3.png" width="600"/></td>
+      <td><img src="./resource/bg4.png" width="600"/></td>
   </tr>
 </table>
 
@@ -44,7 +44,7 @@
 ## 安装
 
 - 使用 Chrome Web Store 来安装枫叶书签，假如好用很欢迎评价。
-- 假如你不可访问，可以下载 [Archive.zip](./source/Archive.zip)，解压以后，参考 [Loading an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked) 来使用本地包。
+- 假如你不可访问，可以下载 [Archive.zip](./resource/Archive.zip)，解压以后，参考 [Loading an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked) 来使用本地包。
 
 ## 实践
 
