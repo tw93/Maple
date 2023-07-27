@@ -40,7 +40,7 @@ The bookmarks bar can occupy the browsing window and affect concentration, so I 
 
 ## Installation
 
-- You can install Maple Bookmarks using Chrome Web Store. If you find it useful, please leave a review.
+- You can install `Maple Bookmarks` using Chrome Web Store. If you find it useful, please leave a review.
 - If you cannot access the store, you can download [Archive.zip](./resource/Archive.zip). After decompressing, follow the instructions for [Loading an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked) to use the local package.
 
 ## Practice
