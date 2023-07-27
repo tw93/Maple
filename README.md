@@ -51,8 +51,6 @@
 4. 试试使用 `Command + E` 来快速访问书签吧。
 5. 文档中的快捷键均为 Mac 版本，Windows 版本请使用 `Ctrl` 替换 `Command`。
 
-## 效果
-
 ## 支持
 
 1. 我有两只猫，假如让你生活更美好，可以给猫 <a href="https://miaoyan.app/cats.html?name=Maple" target="_blank">喂罐头 🥩</a>。
