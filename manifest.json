@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Maple Bookmarks",
   "description": "Let you navigate smoothly while hiding the bookmark bar.",
-  "version": "1.0",
+  "version": "1.1",
   "action": {
     "default_popup": "popup.html"
   },
@@ -17,8 +17,8 @@
       }
     }
   },
-  "optional_host_permissions": ["*://*/*"],
-  "permissions": ["bookmarks", "favicon"],
+  "host_permissions": ["*://*/*"],
+  "permissions": ["bookmarks", "favicon", "tabs"],
   "icons": {
     "16": "public/logo.png",
     "48": "public/logo.png",

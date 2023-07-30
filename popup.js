@@ -85,11 +85,20 @@ function createBookmarkItem(bookmarkNode, parent) {
   bookItem.target = '_blank';
   bookItem.appendChild(favicon);
 
+  // Add event listener to handle chrome:// and edge:// URLs
+  bookItem.addEventListener('click', function (event) {
+    if (bookmarkNode.url.startsWith('chrome://') || bookmarkNode.url.startsWith('edge://')) {
+      event.preventDefault();
+      chrome.tabs.create({ url: bookmarkNode.url });
+    }
+  });
+
   let linkTitle = createElement('p', '', bookmarkNode.title);
   bookItem.appendChild(linkTitle);
 
   parent.appendChild(bookItem);
 }
+
 
 function createFolderForBookmarks(bookmarkNode, parent) {
   let folder = createElement('div', CLASS_NAMES.folder);
