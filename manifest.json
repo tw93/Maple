@@ -6,6 +6,9 @@
   "action": {
     "default_popup": "popup.html"
   },
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  },
   "commands": {
     "_execute_action": {
       "suggested_key": {
