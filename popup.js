@@ -99,7 +99,7 @@ function createFolderForBookmarks(bookmarkNode, parent) {
     let folderTitle = createElement('h2', '', bookmarkNode.title);
     folder.appendChild(folderTitle);
   } else {
-    folder.style.marginTop = '4px';
+    folder.style.marginTop = '5px';
   }
 
   let childContainer = createElement('div', CLASS_NAMES.childContainer);

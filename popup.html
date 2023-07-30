@@ -5,10 +5,17 @@
     <title>Maple Bookmarks</title>
     <style>
       body {
-        padding: 0px 5px;
-        width: 406px;
+        padding: 0;
+        margin: 0;
+        padding-left: 14px;
+        width: 412px;
         box-sizing: border-box;
       }
+
+      body::-webkit-scrollbar {
+        display: none;
+      }
+
       .folder {
         width: 100%;
       }
@@ -54,7 +61,7 @@
       }
 
       .childContainer > .bookmark:hover {
-        background-color: #d9d9d9;
+        background-color: #e6e6e6;
       }
 
       .bookmark p {
@@ -73,7 +80,7 @@
 
       @media (prefers-color-scheme: dark) {
         body {
-          background-color: #333;
+          background-color: #2a2a2a;
           color: #f1f1f1;
         }
 
@@ -87,7 +94,7 @@
         }
 
         .childContainer > .bookmark:hover {
-          background-color: #3d3d3d;
+          background-color: #666;
         }
 
         .bookmark p {
