@@ -18,7 +18,7 @@
     }
   },
   "optional_host_permissions": ["*://*/*"],
-  "permissions": ["bookmarks", "favicon", "tabs"],
+  "permissions": ["bookmarks", "favicon"],
   "icons": {
     "16": "public/logo.png",
     "48": "public/logo.png",
