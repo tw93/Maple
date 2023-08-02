@@ -1,7 +1,7 @@
 {
   "name": "maple-bookmarks",
   "version": "1.2.0",
-  "description": "Hide the bookmark bar, use Maple Bookmarks to surf smoothly.",
+  "description": "Let you navigate smoothly while hiding the bookmark bar.",
   "main": "src/popup.js",
   "scripts": {
     "publish": "zip -r ./resource/Maple.zip ./src ./manifest.json",

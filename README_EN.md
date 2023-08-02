@@ -17,7 +17,7 @@
 
 ## Introduction
 
-The bookmarks bar can occupy the browsing window and affect concentration, so I often hide it. However, this makes accessing bookmarks inconvenient. Therefore, I developed the Maple Bookmarks extension. By just using the shortcut `Command + E`, you can quickly access your bookmarks, which is practical and convenient.
+The bookmarks bar can occupy the browsing window and affect concentration, so I often hide it. However, this makes accessing bookmarks inconvenient. Therefore, I developed the Maple Bookmarks extension. By just using the shortcut `Command + E`(Mac)、`Ctrl+B`(Windows), you can quickly access your bookmarks, which is practical and convenient.
 
 <kbd>
   <img src="./resource/maple.gif" width="100%">
@@ -46,10 +46,9 @@ The bookmarks bar can occupy the browsing window and affect concentration, so I 
 ## Practice
 
 1. First, organize your bookmarks. You can adjust the order of frequently used ones and delete those not often used to make it tidier.
-2. Use `Command+Shift+B` or right-click on the bookmarks bar to hide it.
+2. Use `Command+Shift+B`(Mac)、`Ctrl+Shift+B`(Windows) or right-click on the bookmarks bar to hide it.
 3. Click on the extension icon and pin `Maple Bookmarks` to the toolbar.
-4. Try using `Command + E` to quickly access your bookmarks.
-5. The shortcuts in the document are for the Mac version. For the Windows version, please replace `Command` with `Ctrl`.
+4. Try using `Command + E`(Mac)、`Ctrl+B`(Windows) to quickly access your bookmarks.
 
 ## Support
 
