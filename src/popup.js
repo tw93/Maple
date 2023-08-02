@@ -112,7 +112,7 @@ function createFolderForBookmarks(bookmarkNode, parent) {
 
     folder.appendChild(folderTitle);
   } else {
-    folder.style.marginTop = '5px';
+    folder.style.marginTop = '6px';
   }
 
   let childContainer = createElement('div', CLASS_NAMES.childContainer);
