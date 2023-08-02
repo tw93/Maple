@@ -42,11 +42,7 @@ function createBookmarks(bookmarkTreeNodes) {
 function showEmptyBookmarkMessage() {
   const bookmarksContainer = document.getElementById('bookmarks');
 
-  const messageElement = createElement(
-    'p',
-    'message',
-    '🍁 No bookmarks in the current browser.',
-  );
+  const messageElement = createElement('p', 'message', '🍁 No bookmarks in the current browser.');
 
   bookmarksContainer.appendChild(messageElement);
 }
@@ -76,9 +72,7 @@ function showBookmarks(bookmarkNodes, parent) {
 
 function createBookmarkItem(bookmarkNode, parent) {
   let favicon = createElement('img', CLASS_NAMES.favicon);
-  favicon.src = `${chrome.runtime.getURL(
-    '/_favicon?',
-  )}pageUrl=${encodeURIComponent(bookmarkNode.url)}&size=32`;
+  favicon.src = `${chrome.runtime.getURL('/_favicon?')}pageUrl=${encodeURIComponent(bookmarkNode.url)}&size=32`;
 
   let bookItem = createElement('a', CLASS_NAMES.bookmark);
   bookItem.href = bookmarkNode.url;
@@ -93,12 +87,11 @@ function createBookmarkItem(bookmarkNode, parent) {
     }
   });
 
-  let linkTitle = createElement('p', '', bookmarkNode.title);
+  let linkTitle = createElement('p', '', bookmarkNode.title ? bookmarkNode.title : getTitleFromUrl(bookmarkNode.url));
   bookItem.appendChild(linkTitle);
 
   parent.appendChild(bookItem);
 }
-
 
 function createFolderForBookmarks(bookmarkNode, parent) {
   let folder = createElement('div', CLASS_NAMES.folder);
@@ -126,4 +119,17 @@ function countFolders(bookmarkNodes) {
     }
   }
   return count;
+}
+
+function getTitleFromUrl(url) {
+  // If it is a URL of type 'chrome://' or 'edge://'.
+  if (url.startsWith('chrome://') || url.startsWith('edge://')) {
+    return url.split('//')[1].split('/')[0].charAt(0).toUpperCase() + url.split('//')[1].split('/')[0].slice(1);
+  }
+
+  // For other types of URLs, such as 'https://xxx.yyy.zzz'
+  let host = new URL(url).host;
+  let parts = host.startsWith('www.') ? host.split('.')[1] : host.split('.')[0];
+
+  return parts.charAt(0).toUpperCase() + parts.slice(1);
 }
