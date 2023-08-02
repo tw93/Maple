@@ -6,6 +6,8 @@ const CLASS_NAMES = {
 };
 
 let folderCount;
+let browserLanguage = navigator.language.startsWith('zh') ? 'zh' : 'en';
+let keyHint = navigator.platform.indexOf('Mac') !== -1 ? (browserLanguage === 'zh' ? 'Command' : 'Ctrl') : (browserLanguage === 'zh' ? 'Ctrl' : 'Command');
 
 window.onload = async function () {
   setBodyHeightFromStorage();
@@ -41,7 +43,6 @@ function createBookmarks(bookmarkTreeNodes) {
 
 function showEmptyBookmarkMessage() {
   const bookmarksContainer = document.getElementById('bookmarks');
-
   const messageElement = createElement('p', 'message', '🍁 No bookmarks in the current browser.');
 
   bookmarksContainer.appendChild(messageElement);
@@ -79,7 +80,6 @@ function createBookmarkItem(bookmarkNode, parent) {
   bookItem.target = '_blank';
   bookItem.appendChild(favicon);
 
-  // Add event listener to handle chrome:// and edge:// URLs
   bookItem.addEventListener('click', function (event) {
     if (bookmarkNode.url.startsWith('chrome://') || bookmarkNode.url.startsWith('edge://')) {
       event.preventDefault();
@@ -96,9 +96,20 @@ function createBookmarkItem(bookmarkNode, parent) {
 function createFolderForBookmarks(bookmarkNode, parent) {
   let folder = createElement('div', CLASS_NAMES.folder);
 
-  // Use the pre-computed folderCount instead of calling countFolders
   if (folderCount > 1 && bookmarkNode.title) {
     let folderTitle = createElement('h2', '', bookmarkNode.title);
+    folderTitle.title = browserLanguage === 'zh' ? `按住 ${keyHint} 可批量打开` : `Hold ${keyHint} and click to open all`;
+    folderTitle.addEventListener('click', function (event) {
+      if (event.ctrlKey || event.metaKey) {
+        for (let childNode of bookmarkNode.children) {
+          if (childNode.url) {
+            chrome.tabs.create({ url: childNode.url });
+          }
+        }
+        event.preventDefault();
+      }
+    });
+
     folder.appendChild(folderTitle);
   } else {
     folder.style.marginTop = '5px';
@@ -122,12 +133,10 @@ function countFolders(bookmarkNodes) {
 }
 
 function getTitleFromUrl(url) {
-  // If it is a URL of type 'chrome://' or 'edge://'.
   if (url.startsWith('chrome://') || url.startsWith('edge://')) {
     return url.split('//')[1].split('/')[0].charAt(0).toUpperCase() + url.split('//')[1].split('/')[0].slice(1);
   }
 
-  // For other types of URLs, such as 'https://xxx.yyy.zzz'
   let host = new URL(url).host;
   let parts = host.startsWith('www.') ? host.split('.')[1] : host.split('.')[0];
 
