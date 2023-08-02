@@ -80,6 +80,21 @@
         margin-left: 2px;
       }
 
+      #searchInput {
+        position: absolute;
+        top: 10px;
+        font-size: 18px;
+        right: 16px;
+        height: 26px;
+        line-height: 26px;
+        color: #333;
+        border: none;
+        outline: none;
+        background: transparent;
+        caret-color: transparent;
+        text-align: right;
+      }
+
       @media (prefers-color-scheme: dark) {
         body {
           background-color: #2a2a2a;
@@ -99,13 +114,15 @@
           background-color: #666;
         }
 
-        .bookmark p {
+        .bookmark p,
+        #searchInput {
           color: #f1f1f1;
         }
       }
     </style>
   </head>
   <body>
+    <input id="searchInput" type="text" />
     <div id="bookmarks"></div>
     <script src="popup.js"></script>
   </body>

@@ -7,7 +7,62 @@ const CLASS_NAMES = {
 
 let folderCount;
 let browserLanguage = navigator.language.startsWith('zh') ? 'zh' : 'en';
-let keyHint = navigator.platform.indexOf('Mac') !== -1 ? (browserLanguage === 'zh' ? 'Command' : 'Ctrl') : (browserLanguage === 'zh' ? 'Ctrl' : 'Command');
+let keyHint =
+  navigator.platform.indexOf('Mac') !== -1
+    ? browserLanguage === 'zh'
+      ? 'Command'
+      : 'Ctrl'
+    : browserLanguage === 'zh'
+    ? 'Ctrl'
+    : 'Command';
+
+let searchInput = document.getElementById('searchInput');
+
+searchInput.addEventListener('input', function () {
+  let searchTerm = searchInput.value.toLowerCase();
+  let folders = document.getElementsByClassName(CLASS_NAMES.folder);
+
+  for (let folder of folders) {
+    let bookmarks = folder.getElementsByClassName(CLASS_NAMES.bookmark);
+    let hasVisibleBookmark = false;
+
+    for (let bookmark of bookmarks) {
+      let title = bookmark.textContent.toLowerCase();
+      let url = bookmark.href.toLowerCase();
+
+      if (title.includes(searchTerm) || url.includes(searchTerm)) {
+        bookmark.style.display = 'flex';
+        hasVisibleBookmark = true;
+      } else {
+        bookmark.style.display = 'none';
+      }
+    }
+
+    if (hasVisibleBookmark) {
+      folder.style.display = 'block';
+    } else {
+      folder.style.display = 'none';
+    }
+  }
+});
+
+window.addEventListener('keydown', function (event) {
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    searchInput.value = '';
+
+    let bookmarks = document.getElementsByClassName(CLASS_NAMES.bookmark);
+    let folders = document.getElementsByClassName(CLASS_NAMES.folder);
+
+    for (let bookmark of bookmarks) {
+      bookmark.style.display = 'flex';
+    }
+
+    for (let folder of folders) {
+      folder.style.display = 'block';
+    }
+  }
+});
 
 window.onload = async function () {
   setBodyHeightFromStorage();
@@ -17,12 +72,16 @@ window.onload = async function () {
 
   createBookmarks(bookmarkTreeNodes);
   setTimeout(saveCurrentHeight, 600);
+  searchInput.focus();
 };
 
 function setBodyHeightFromStorage() {
   let savedHeight = localStorage.getItem('savedHeight');
   if (savedHeight && savedHeight > 30) {
     document.body.style.height = `${savedHeight}px`;
+    if (savedHeight > 618) {
+      document.body.style.height = '618px';
+    }
   }
 }
 
