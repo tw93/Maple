@@ -6,15 +6,10 @@ const CLASS_NAMES = {
 };
 
 let folderCount;
-let browserLanguage = navigator.language.startsWith('zh') ? 'zh' : 'en';
-let keyHint =
-  navigator.platform.indexOf('Mac') !== -1
-    ? browserLanguage === 'zh'
-      ? 'Command'
-      : 'Ctrl'
-    : browserLanguage === 'zh'
-    ? 'Ctrl'
-    : 'Command';
+const browserLanguage = navigator.language.startsWith('zh') ? 'zh' : 'en';
+const isMac = navigator.platform.indexOf('Mac') !== -1;
+const keyHint = isMac ? 'Command' : 'Ctrl';
+const keyText = browserLanguage === 'zh' ? `按住 ${keyHint} 可批量打开` : `Hold ${keyHint} and click to open all`;
 
 let searchInput = document.getElementById('searchInput');
 
@@ -157,7 +152,7 @@ function createFolderForBookmarks(bookmarkNode, parent) {
 
   if (folderCount > 1 && bookmarkNode.title) {
     let folderTitle = createElement('h2', '', bookmarkNode.title);
-    folderTitle.title = browserLanguage === 'zh' ? `按住 ${keyHint} 可批量打开` : `Hold ${keyHint} and click to open all`;
+    folderTitle.title = keyText;
     folderTitle.addEventListener('click', function (event) {
       if (event.ctrlKey || event.metaKey) {
         for (let childNode of bookmarkNode.children) {
