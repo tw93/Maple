@@ -17,7 +17,7 @@
 
 ## 介绍
 
-书签栏会占据浏览窗口且影响专注力，我常将其隐藏。但这使得访问书签很不方便，因此我开发了枫叶书签扩展，只需使用快捷键 `Command + E`(Mac)、`Ctrl+B`(Windows) 就能快速访问书签，实用且方便。
+书签栏会占据浏览窗口且影响专注力，我常将其隐藏。但这使得访问书签很不方便，因此我开发了枫叶书签扩展，只需使用快捷键 `Command + E`(Mac)、`Ctrl+B`(Windows) 就能快速访问书签，甚至可以输入即搜索，实用且方便。
 
 <kbd>
   <img src="./resource/maple.gif" width="100%">
@@ -27,12 +27,12 @@
 <summary>🏂 <strong>更多效果可以展开查看</strong></summary>
 <table>
   <tr>
-      <td><img src="./resource/bg1.png" width="600"/></td>
-      <td><img src="./resource/bg2.png" width="600"/></td>
+      <td><img src="./resource/bg1.jpg" width="600"/></td>
+      <td><img src="./resource/bg2.jpg" width="600"/></td>
   </tr>
   <tr>
-      <td><img src="./resource/bg3.png" width="600"/></td>
-      <td><img src="./resource/bg4.png" width="600"/></td>
+      <td><img src="./resource/bg3.jpg" width="600"/></td>
+      <td><img src="./resource/bg4.jpg" width="600"/></td>
   </tr>
 </table>
 
@@ -49,6 +49,8 @@
 2. 使用 `Command+Shift+B`(Mac)、`Ctrl+Shift+B`(Windows)，或者在书签栏上右键隐藏掉书签栏。
 3. 点击扩展图标，将 `Maple Bookmarks` 给固定到工具栏上。
 4. 试试使用 `Command + E`(Mac)、`Ctrl+B`(Windows) 来快速访问书签吧。
+5. 假如你不喜欢封面图，可以鼠标悬停在书签上，点击右上角选择器切换到空白页。
+6. **假如你的书签很多，可以直接输入关键词来搜索，支持中文、英文、域名等**。
 
 ## 支持
 

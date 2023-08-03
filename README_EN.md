@@ -17,7 +17,7 @@
 
 ## Introduction
 
-The bookmarks bar can occupy the browsing window and affect concentration, so I often hide it. However, this makes accessing bookmarks inconvenient. Therefore, I developed the Maple Bookmarks extension. By just using the shortcut `Command + E`(Mac)、`Ctrl+B`(Windows), you can quickly access your bookmarks, which is practical and convenient.
+The bookmarks bar can occupy the browsing window and affect concentration, so I often hide it. However, this makes accessing bookmarks inconvenient. Therefore, I developed the Maple Bookmarks extension. By just using the shortcut `Command + E`(Mac)、`Ctrl+B`(Windows), you can quickly access your bookmarks, even input can be searched instantly, which is practical and convenient.
 
 <kbd>
   <img src="./resource/maple.gif" width="100%">
@@ -27,12 +27,12 @@ The bookmarks bar can occupy the browsing window and affect concentration, so I 
 <summary>🏂 <strong>More effects can be expanded to view.<strong></summary>
 <table>
   <tr>
-      <td><img src="./resource/bg1.png" width="600"/></td>
-      <td><img src="./resource/bg2.png" width="600"/></td>
+      <td><img src="./resource/bg1.jpg" width="600"/></td>
+      <td><img src="./resource/bg2.jpg" width="600"/></td>
   </tr>
   <tr>
-      <td><img src="./resource/bg3.png" width="600"/></td>
-      <td><img src="./resource/bg4.png" width="600"/></td>
+      <td><img src="./resource/bg3.jpg" width="600"/></td>
+      <td><img src="./resource/bg4.jpg" width="600"/></td>
   </tr>
 </table>
 
@@ -49,6 +49,8 @@ The bookmarks bar can occupy the browsing window and affect concentration, so I 
 2. Use `Command+Shift+B`(Mac)、`Ctrl+Shift+B`(Windows) or right-click on the bookmarks bar to hide it.
 3. Click on the extension icon and pin `Maple Bookmarks` to the toolbar.
 4. Try using `Command + E`(Mac)、`Ctrl+B`(Windows) to quickly access your bookmarks.
+5. If you don't like the cover image, you can hover your mouse over the bookmark and click on the top right corner selector to switch to a blank page.
+6. If you have many bookmarks, you can directly enter keywords to search, supporting Chinese, English, domain names, etc.
 
 ## Support
 
