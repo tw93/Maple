@@ -76,7 +76,7 @@ window.onload = function () {
    * @description 设置必应背景图片，使用了第三方 API
    */
   function setBingBackgroundImage() {
-    const apiBaseUrl = 'https://bing.biturl.top/?resolution=1920&format=json&index=0';
+    const apiBaseUrl = 'https://bing.biturl.top/?resolution=3840&format=json&index=0';
     const apiLang = lang === 'zh' ? 'zh-CN' : 'en-US';
     const apiUrl = apiBaseUrl + '&mkt=' + apiLang;
     
