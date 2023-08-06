@@ -7,15 +7,15 @@ window.onload = function () {
   const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
   let isDarkMode = darkModeMediaQuery.matches;
   const userLanguage = window.navigator.language;
-  
-  
+
+
   // 用于映射的对象
   const languageMappings = {
     'zh': {
       title: '新标签页',
       blank: '空白页',
       random: '随机图',
-      bing: '必应壁纸',
+      bing: '必应图',
     },
     'en': {
       title: 'New Tab',
@@ -24,18 +24,18 @@ window.onload = function () {
       bing: 'Bing',
     }
   };
-  
+
   // 检测用户语言并设置相应的语言映射
   const lang = userLanguage.startsWith('zh') ? 'zh' : 'en';
   const mapping = languageMappings[lang];
-  
+
   // 使用映射更新文本
   title.textContent = mapping.title;
   document.querySelector('#bg-selector option[value="blank"]').textContent = mapping.blank;
   document.querySelector('#bg-selector option[value="random"]').textContent = mapping.random;
   document.querySelector('#bg-selector option[value="bing"]').textContent = mapping.bing;
-  
-  
+
+
   // 根据浏览器类型和颜色模式设置背景色
   function setBackgroundColor() {
     if (userAgent.indexOf('Edg') > -1) {
@@ -44,7 +44,7 @@ window.onload = function () {
       body.style.backgroundColor = isDarkMode ? '#202124' : '#F1F3F4';
     }
   }
-  
+
   function convertToLinkElement(data) {
     bgDescription.textContent = `${data.title} · ${data.date}`;
     bgDescription.href = '#';
@@ -53,7 +53,7 @@ window.onload = function () {
       chrome.tabs.create({url: data.url});
     };
   }
-  
+
   // 随机设置背景图片
   function setRandomBackgroundImage() {
     fetch(chrome.runtime.getURL('/src/bg.json'))
@@ -71,7 +71,7 @@ window.onload = function () {
         console.error('Error:', error);
       });
   }
-  
+
   /**
    * @description 设置必应背景图片，使用了第三方 API
    */
@@ -79,14 +79,14 @@ window.onload = function () {
     const apiBaseUrl = 'https://bing.biturl.top/?resolution=3840&format=json&index=0';
     const apiLang = lang === 'zh' ? 'zh-CN' : 'en-US';
     const apiUrl = apiBaseUrl + '&mkt=' + apiLang;
-    
+
     fetch(apiUrl)
       .then((response) => response.json()).then((r) => {
         const title = r.copyright;
         const imageUrl = r.url;
         const today = new Date();
         const date = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate();
-        
+
         const Info = {
           "title": title,
           "url": imageUrl,
@@ -94,7 +94,7 @@ window.onload = function () {
           "pic": imageUrl
         }
         convertToLinkElement(Info);
-        
+
         body.style.backgroundImage = `url(${imageUrl})`;
         localStorage.setItem('bgBingUrl', imageUrl);
         localStorage.setItem('bgBingDate', new Date().toISOString().slice(0, 10));
@@ -104,7 +104,7 @@ window.onload = function () {
         console.error('Error:', error);
       });
   }
-  
+
   /**
    * @description 处理选择非空白背景时的逻辑
    * @param type 选择的背景类型，random 或 bing
@@ -118,7 +118,7 @@ window.onload = function () {
     const imageDate = localStorage.getItem(dateKey);
     const imageInfo = localStorage.getItem(infoKey);
     const currentDate = new Date().toISOString().slice(0, 10);
-    
+
     if (imageUrl && imageDate === currentDate) {
       body.style.backgroundImage = `url(${imageUrl})`;
       convertToLinkElement(JSON.parse(imageInfo));
@@ -130,13 +130,13 @@ window.onload = function () {
       }
     }
   }
-  
-  
+
+
   // 根据用户选择设置背景
   function setBackground() {
     const bgType = bgSelector.value;
     localStorage.setItem('bgType', bgType);
-    
+
     if (bgType === 'blank') {
       body.style.backgroundImage = '';
       body.classList.add('blank');
@@ -148,7 +148,7 @@ window.onload = function () {
       handleSetBackground(bgType, 'bgBingUrl', 'bgBingDate', 'bgBingInfo');
     }
   }
-  
+
   // 监听用户选择变化
   bgSelector.addEventListener('change', function () {
     setBackground();
@@ -156,11 +156,11 @@ window.onload = function () {
       setRandomBackgroundImage();
     }
   });
-  
+
   // 初始设置背景
   bgSelector.value = localStorage.getItem('bgType') || 'random';
   setBackground();
-  
+
   // 监听颜色方案变化
   if (darkModeMediaQuery.addEventListener) {
     darkModeMediaQuery.addEventListener('change', function (e) {
