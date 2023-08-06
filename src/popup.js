@@ -149,27 +149,46 @@ function createBookmarkItem(bookmarkNode, parent) {
 
 function createFolderForBookmarks(bookmarkNode, parent) {
   let folder = createElement('div', CLASS_NAMES.folder);
+  let childContainer = createElement('div', CLASS_NAMES.childContainer);
 
   if (folderCount > 1 && bookmarkNode.title) {
     let folderTitle = createElement('h2', '', bookmarkNode.title);
-    folderTitle.title = keyText;
-    folderTitle.addEventListener('click', function (event) {
-      if (event.ctrlKey || event.metaKey) {
-        for (let childNode of bookmarkNode.children) {
-          if (childNode.url) {
-            chrome.tabs.create({ url: childNode.url });
-          }
-        }
-        event.preventDefault();
+
+    if (bookmarkNode.title !== 'Favorites Bar' && bookmarkNode.title !== '收藏夹栏') {
+      folderTitle.title = keyText;
+
+      // 判断是否在之前被收起来了
+      if (localStorage.getItem(bookmarkNode.title) === 'collapsed') {
+        childContainer.style.display = 'none';
       }
-    });
+
+      folderTitle.addEventListener('click', function (event) {
+        // 为展开/收起添加事件
+        if (childContainer.style.display === 'none') {
+          childContainer.style.display = 'flex';
+          localStorage.setItem(bookmarkNode.title, 'expanded');
+        } else {
+          childContainer.style.display = 'none';
+          localStorage.setItem(bookmarkNode.title, 'collapsed');
+        }
+
+        // 如果按住 ctrl 或 meta 键（Mac上的command键）则批量打开书签
+        if (event.ctrlKey || event.metaKey) {
+          for (let childNode of bookmarkNode.children) {
+            if (childNode.url) {
+              chrome.tabs.create({ url: childNode.url });
+            }
+          }
+          event.preventDefault();
+        }
+      });
+    }
 
     folder.appendChild(folderTitle);
   } else {
-    folder.style.marginTop = '6px';
+    folder.style.marginTop = '8px';
   }
 
-  let childContainer = createElement('div', CLASS_NAMES.childContainer);
   showBookmarks(bookmarkNode.children, childContainer);
 
   folder.appendChild(childContainer);
