@@ -2,13 +2,15 @@
   "name": "maple-bookmarks",
   "version": "1.2.0",
   "description": "Let you navigate smoothly while hiding the bookmark bar.",
-  "main": "src/popup.js",
+  "main": "bookmark/popup.js",
   "scripts": {
-    "publish": "zip -r ./resource/Maple.zip ./src ./manifest.json",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "bookmark": "zip -r ./resource/Maple.zip ./bookmark",
+    "newtab":"zip -r ./resource/NewTab.zip ./newtab",
+    "build": "npm run bookmark && npm run newtab"
   },
   "keywords": [
     "bookmarks",
+    "bookmark",
     "chrome",
     "browser-extension"
   ],

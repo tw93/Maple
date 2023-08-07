@@ -2,12 +2,9 @@
   "manifest_version": 3,
   "name": "Maple Bookmarks",
   "description": "Let you navigate smoothly while hiding the bookmark bar.",
-  "version": "1.4",
+  "version": "1.5",
   "action": {
-    "default_popup": "src/popup.html"
-  },
-  "chrome_url_overrides": {
-    "newtab": "src/newtab.html"
+    "default_popup": "popup.html"
   },
   "commands": {
     "_execute_action": {
@@ -25,8 +22,8 @@
     "favicon"
   ],
   "icons": {
-    "16": "src/logo.png",
-    "48": "src/logo.png",
-    "128": "src/logo.png"
+    "16": "logo.png",
+    "48": "logo.png",
+    "128": "logo.png"
   }
 }

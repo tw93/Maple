@@ -8,21 +8,20 @@ window.onload = function () {
   let isDarkMode = darkModeMediaQuery.matches;
   const userLanguage = window.navigator.language;
 
-
   // 用于映射的对象
   const languageMappings = {
-    'zh': {
+    zh: {
       title: '新标签页',
       blank: '空白页',
       random: '随机图',
       bing: '必应图',
     },
-    'en': {
+    en: {
       title: 'New Tab',
       blank: 'Blank',
       random: 'Image',
       bing: 'Bing',
-    }
+    },
   };
 
   // 检测用户语言并设置相应的语言映射
@@ -34,7 +33,6 @@ window.onload = function () {
   document.querySelector('#bg-selector option[value="blank"]').textContent = mapping.blank;
   document.querySelector('#bg-selector option[value="random"]').textContent = mapping.random;
   document.querySelector('#bg-selector option[value="bing"]').textContent = mapping.bing;
-
 
   // 根据浏览器类型和颜色模式设置背景色
   function setBackgroundColor() {
@@ -50,13 +48,13 @@ window.onload = function () {
     bgDescription.href = '#';
     bgDescription.onclick = function (e) {
       e.preventDefault();
-      chrome.tabs.create({url: data.url});
+      chrome.tabs.create({ url: data.url });
     };
   }
 
   // 随机设置背景图片
   function setRandomBackgroundImage() {
-    fetch(chrome.runtime.getURL('/src/bg.json'))
+    fetch(chrome.runtime.getURL('/bg.json'))
       .then((response) => response.json())
       .then((json) => {
         const randomIndex = Math.floor(Math.random() * json.length);
@@ -81,18 +79,19 @@ window.onload = function () {
     const apiUrl = apiBaseUrl + '&mkt=' + apiLang;
 
     fetch(apiUrl)
-      .then((response) => response.json()).then((r) => {
+      .then((response) => response.json())
+      .then((r) => {
         const title = r.copyright;
         const imageUrl = r.url;
         const today = new Date();
         const date = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate();
 
         const Info = {
-          "title": title,
-          "url": imageUrl,
-          "date": date,
-          "pic": imageUrl
-        }
+          title: title,
+          url: imageUrl,
+          date: date,
+          pic: imageUrl,
+        };
         convertToLinkElement(Info);
 
         body.style.backgroundImage = `url(${imageUrl})`;
@@ -131,7 +130,6 @@ window.onload = function () {
     }
   }
 
-
   // 根据用户选择设置背景
   function setBackground() {
     const bgType = bgSelector.value;
@@ -158,7 +156,7 @@ window.onload = function () {
   });
 
   // 初始设置背景
-  bgSelector.value = localStorage.getItem('bgType') || 'random';
+  bgSelector.value = localStorage.getItem('bgType') || 'bing';
   setBackground();
 
   // 监听颜色方案变化
@@ -173,4 +171,35 @@ window.onload = function () {
       setBackgroundColor();
     });
   }
+
+  let timeout;
+
+  // 当鼠标移动时，2秒后显示元素
+  document.body.addEventListener('mousemove', function () {
+    clearTimeout(timeout);
+
+    timeout = setTimeout(function () {
+      const selectorContainer = document.querySelector('.selector-container');
+      const bgDescription = document.getElementById('bg-description');
+
+      selectorContainer.style.visibility = 'visible';
+      selectorContainer.style.opacity = '1';
+
+      bgDescription.style.visibility = 'visible';
+      bgDescription.style.opacity = '1';
+    }, 1600);
+  });
+
+  // 当鼠标离开body时立即隐藏元素
+  document.body.addEventListener('mouseleave', function () {
+    clearTimeout(timeout);
+    const selectorContainer = document.querySelector('.selector-container');
+    const bgDescription = document.getElementById('bg-description');
+
+    selectorContainer.style.visibility = 'hidden';
+    selectorContainer.style.opacity = '0';
+
+    bgDescription.style.visibility = 'hidden';
+    bgDescription.style.opacity = '0';
+  });
 };

@@ -22,22 +22,6 @@
         background-position: center;
       }
 
-      .selector-container {
-        position: fixed;
-        top: 16px;
-        right: 20px;
-        visibility: hidden;
-        opacity: 0;
-        transition: visibility 0s 0.3s, opacity 0.3s linear;
-      }
-
-      body:hover .selector-container,
-      body:hover #bg-description {
-        visibility: visible;
-        opacity: 1;
-        transition-delay: 0.5s;
-      }
-
       #bg-selector {
         outline: none;
         font-size: 14px;
@@ -60,19 +44,31 @@
         pointer-events: none;
       }
 
+      .selector-container {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+      }
+
       #bg-description {
-        display: inline-block;
-        cursor: pointer;
         position: fixed;
         bottom: 16px;
-        text-decoration: none;
         left: 26px;
+        display: inline-block;
+        cursor: pointer;
+        text-decoration: none;
         font-size: 14px;
         color: #fff;
         text-shadow: 2px 2px 4px rgba(50, 50, 100, 0.5);
+      }
+
+      .selector-container,
+      #bg-description {
+        visibility: hidden;
         opacity: 0;
         transition: opacity 0.3s linear;
       }
+
       @media (prefers-color-scheme: light) {
         body.blank #bg-description,
         body.blank #bg-selector,
@@ -88,7 +84,7 @@
       <select id="bg-selector">
         <option value="blank">空白页</option>
         <option value="random">随机图</option>
-        <option value="bing">必应壁纸</option>
+        <option value="bing">必应图</option>
       </select>
     </div>
     <a id="bg-description"></a>

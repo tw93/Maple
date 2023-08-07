@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Maple NewTab",
+  "description": "Enhance your new tab experience with a comfortable and refreshing design.",
+  "version": "1.5",
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  },
+  "optional_host_permissions": [
+    "*://*/*"
+  ],
+  "icons": {
+    "16": "logo.png",
+    "48": "logo.png",
+    "128": "logo.png"
+  }
+}
