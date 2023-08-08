@@ -17,14 +17,14 @@
 
 ## Introduction
 
-The bookmarks bar can occupy the browsing window and affect concentration, so I often hide it. However, this makes accessing bookmarks inconvenient. Therefore, I developed the Maple Bookmarks extension. By just using the shortcut `Command + E`(Mac)、`Ctrl+B`(Windows), you can quickly access your bookmarks, even input can be searched instantly, which is practical and convenient.
+The bookmarks bar can occupy the browsing window and affect concentration, so I often hide it. However, this makes accessing bookmarks inconvenient. Therefore, I developed the Maple Bookmarks extension. By just using the shortcut, you can quickly access your bookmarks, even input can be searched instantly, which is practical and convenient.
 
 <kbd>
   <img src="./resource/maple.gif" width="100%">
 </kbd>
 <br/>
 <details>
-<summary>🏂 <strong>More effects can be expanded to view.<strong/></summary>
+<summary>🏂 More effects can be expanded to view.</summary>
 <table>
   <tr>
       <td><img src="./resource/bg1.jpg" width="600"/></td>
