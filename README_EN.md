@@ -49,8 +49,7 @@ The bookmarks bar can occupy the browsing window and affect concentration, so I 
 2. Use `Command+Shift+B`(Mac)、`Ctrl+Shift+B`(Windows) or right-click on the bookmarks bar to hide it.
 3. Click on the extension icon and pin `Maple Bookmarks` to the toolbar.
 4. Try using `Command + E`(Mac)、`Ctrl+B`(Windows) to quickly access your bookmarks.
-5. If you don't like the cover image, you can hover your mouse over the bookmark and click on the top right corner selector to switch to a blank page.
-6. If you have many bookmarks, you can directly enter keywords to search, supporting Chinese, English, domain names, etc.
+5. If you have many bookmarks, you can directly enter keywords to search, supporting Chinese, English, domain names, etc.
 
 ## Support
 
