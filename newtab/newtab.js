@@ -187,7 +187,7 @@ window.onload = function () {
 
       bgDescription.style.visibility = 'visible';
       bgDescription.style.opacity = '1';
-    }, 1600);
+    }, 1200);
   });
 
   // 当鼠标离开body时立即隐藏元素
