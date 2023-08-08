@@ -1,4 +1,4 @@
-<h4 align="right"><strong>中文</strong> | <a href="https://github.com/tw93/Maple/blob/main/README_EN.md">English</a></h4>
+=<h4 align="right"><strong>中文</strong> | <a href="https://github.com/tw93/Maple/blob/main/README_EN.md">English</a></h4>
 <p align="center">
     <img src="./resource/logo_600.png" width="138"/>
 <h1 align="center">枫叶书签</h1>
@@ -49,8 +49,7 @@
 2. 使用 `Command+Shift+B`(Mac)、`Ctrl+Shift+B`(Windows)，或者在书签栏上右键隐藏掉书签栏。
 3. 点击扩展图标，将 `Maple Bookmarks` 给固定到工具栏上。
 4. 试试使用 `Command + E`(Mac)、`Ctrl+B`(Windows) 来快速访问书签吧。
-5. 假如你不喜欢封面图，可以鼠标悬停在书签上，点击右上角选择器切换到空白页。
-6. **假如你的书签很多，可以直接输入关键词来搜索，支持中文、英文、域名等**。
+5. **假如你的书签很多，可以直接输入关键词来搜索，支持中文、英文、域名等**。
 
 ## 支持
 
