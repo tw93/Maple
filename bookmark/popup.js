@@ -21,7 +21,6 @@ let searchInput = document.getElementById('searchInput');
  * @param searchTerm {string} 查询的字符串
  * @param data {string[]} 要匹配的字符串数组
  * @returns {boolean}
- * @constructor
  */
 function FuseStrMatch(searchTerm, data) {
   const options = {
