@@ -1,3 +1,6 @@
+import Fuse from './fuse.js';
+
+
 const CLASS_NAMES = {
   bookmark: 'bookmark',
   favicon: 'favicon',
@@ -13,6 +16,23 @@ const keyText = browserLanguage === 'zh' ? `按住 ${keyHint} 可批量打开` :
 
 let searchInput = document.getElementById('searchInput');
 
+/**
+ * @description 使用 Fuse 进行模糊匹配
+ * @param searchTerm {string} 查询的字符串
+ * @param data {string[]} 要匹配的字符串数组
+ * @returns {boolean}
+ * @constructor
+ */
+function FuseStrMatch(searchTerm, data) {
+  const options = {
+    includeScore: true, // 包含相似度评分
+    threshold: 0.5, // 相似度阈值
+  };
+  const fuse = new Fuse(data, options);
+  const results = fuse.search(searchTerm);
+  return results.length > 0;
+}
+
 searchInput.addEventListener('input', function () {
   let searchTerm = searchInput.value.toLowerCase();
   let folders = document.getElementsByClassName(CLASS_NAMES.folder);
@@ -25,7 +45,8 @@ searchInput.addEventListener('input', function () {
       let title = bookmark.textContent.toLowerCase();
       let url = bookmark.href.toLowerCase();
 
-      if (title.includes(searchTerm) || url.includes(searchTerm)) {
+      // 当直接匹配失败时，使用模糊匹配
+      if (title.includes(searchTerm) || url.includes(searchTerm) || FuseStrMatch(searchTerm, [title, url])) {
         bookmark.style.display = 'flex';
         hasVisibleBookmark = true;
       } else {
@@ -33,11 +54,7 @@ searchInput.addEventListener('input', function () {
       }
     }
 
-    if (hasVisibleBookmark) {
-      folder.style.display = 'block';
-    } else {
-      folder.style.display = 'none';
-    }
+    folder.style.display = hasVisibleBookmark ? 'block' : 'none';
   }
 });
 
