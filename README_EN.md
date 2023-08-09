@@ -43,6 +43,12 @@ The bookmarks bar can occupy the browsing window and affect concentration, so I 
 - You can install [**Maple Bookmarks**](https://chrome.google.com/webstore/detail/maple-bookmarks/lgncmpklmepncbjpiebhdoejhmbcnjad) using Chrome Web Store. If you find it useful, please leave a review.
 - If you cannot access the store, you can download [Maple.zip](https://github.com/tw93/Maple/raw/main/resource/Maple.zip). After decompressing, follow the instructions for [Loading an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked) to use the local package.
 
+## More
+
+1. Due to Chrome's limitations, even if the bookmarks bar is hidden, it will still appear on the default tab page. At this time, you can use [Maple NewTab](https://chrome.google.com/webstore/detail/maple-newtab/fobmbldflolfooglijmbibmnhoflbjlb/related?hl=en&authuser=0) to replace the default tab page, thus completely hiding the bookmarks bar.
+2. `Maple NewTab` currently supports three types of displays: `blank pure page`, `trendy weekly picture`, and `Bing image`. Place the cursor on the background image, wait for 2 seconds, and a switch box will appear. Click to switch.
+3. If you prefer your current tab page, you can remove the `Maple NewTab` extension. This way, you can revert to the default tab page.
+
 ## Practice
 
 1. First, organize your bookmarks. You can adjust the order of frequently used ones and delete those not often used to make it tidier.

@@ -1,4 +1,5 @@
 =<h4 align="right"><strong>中文</strong> | <a href="https://github.com/tw93/Maple/blob/main/README_EN.md">English</a></h4>
+
 <p align="center">
     <img src="./resource/logo_600.png" width="138"/>
 <h1 align="center">枫叶书签</h1>
@@ -42,6 +43,12 @@
 
 - 使用 Chrome Web Store 来安装 [**Maple Bookmarks**](https://chrome.google.com/webstore/detail/maple-bookmarks/lgncmpklmepncbjpiebhdoejhmbcnjad)，假如好用很欢迎评价。
 - 假如你不可访问，可以下载 [Maple.zip](https://github.com/tw93/Maple/raw/main/resource/Maple.zip)，解压以后，参考 [Loading an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked) 来使用本地包。
+
+## 标签页
+
+1. 由于 Chrome 的限制，即使隐藏掉书签栏，在默认标签页上还是会出现，这个时候你可以使用 [Maple NewTab](https://chrome.google.com/webstore/detail/maple-newtab/fobmbldflolfooglijmbibmnhoflbjlb/related?hl=en&authuser=0) 来替换掉默认标签页，这样就可完全隐藏掉书签栏。
+2. `Maple NewTab` 当前支持`空白纯净页`、`潮流周刊图`、`Bing 图`三种形式的效果，光标放置背景图上，等待 2s 会出现切换框，点击即可切换。
+3. 假如你更喜欢现在自己的标签页，可以在扩展中移除掉 `Maple NewTab`，这样就能恢复到默认标签页了。
 
 ## 实践
 
