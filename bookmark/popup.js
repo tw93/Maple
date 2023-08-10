@@ -16,36 +16,90 @@ const keyText = browserLanguage === 'zh' ? `按住 ${keyHint} 可批量打开` :
 
 let searchInput = document.getElementById('searchInput');
 
+
+// 顶部推荐的 header
+const headerText = document.querySelector('#header-bookmark p');
+const headerFavicon = document.querySelector('#header-bookmark img');
+// header url
+let headerUrl = "";
+// 恢复 header 元素
+updateHeader(JSON.parse(localStorage.getItem('persistedHeader')));
+// 第一次打开时，header 为空，隐藏 favicon
+if (headerText.textContent === "") {
+  headerFavicon.style.display = "none";
+}
+
+
 /**
- * @description 使用 Fuse 进行模糊匹配
+ * @description 使用 Fuse 进行模糊匹配，返回最佳匹配项或false
  * @param searchTerm {string} 查询的字符串
- * @param data {string[]} 要匹配的字符串数组
- * @returns {boolean}
+ * @param data {{ title: string, url: string, favicon: string }[]} 要匹配的对象数组，对象包含 title 和 url 属性
+ * @returns {{ title: string, url: string, favicon: string }|boolean} 返回最佳匹配项的 对象 或 false
  */
 function FuseStrMatch(searchTerm, data) {
   const options = {
+    keys: ["title", "url"],
     includeScore: true, // 包含相似度评分
     threshold: 0.5, // 相似度阈值
   };
   const fuse = new Fuse(data, options);
   const results = fuse.search(searchTerm);
-  return results.length > 0;
+  return results.length > 0 ? results[0].item : false;
 }
+
+
+/**
+ * @description 更新 header 的内容，如果匹配失败则不更新
+ * @param headerFuzeMatch {{ title: string, url: string, favicon: string }|boolean} 匹配到的对象 或 匹配失败
+ */
+function updateHeader(headerFuzeMatch) {
+  if (!headerFuzeMatch) {
+    return;
+  }
+  if (headerText.textContent === "") {
+    headerFavicon.style.display = "block"; // 显示 favicon
+  }
+  localStorage.setItem('persistedHeader', JSON.stringify(headerFuzeMatch));
+  const t = headerFuzeMatch.title;
+  const u = headerFuzeMatch.url;
+  const f = headerFuzeMatch.favicon;
+  headerText.textContent = t.length > 8 ? t.substring(0, 8) + '...' : t;
+  headerFavicon.src = f;
+  headerUrl = u;
+}
+
 
 searchInput.addEventListener('input', function () {
   let searchTerm = searchInput.value.toLowerCase();
   let folders = document.getElementsByClassName(CLASS_NAMES.folder);
+
+  const headerData = []
 
   for (let folder of folders) {
     let bookmarks = folder.getElementsByClassName(CLASS_NAMES.bookmark);
     let hasVisibleBookmark = false;
 
     for (let bookmark of bookmarks) {
+      // push 查询数据
+      headerData.push({
+        title: bookmark.textContent,
+        url: bookmark.href,
+        favicon: bookmark.querySelector('.favicon')?.src
+      });
+
       let title = bookmark.textContent.toLowerCase();
       let url = bookmark.href.toLowerCase();
 
       // 当直接匹配失败时，使用模糊匹配
-      if (title.includes(searchTerm) || url.includes(searchTerm) || FuseStrMatch(searchTerm, [title, url])) {
+      if (
+        title.includes(searchTerm) ||
+        url.includes(searchTerm) ||
+        FuseStrMatch(searchTerm, [{
+          title: title,
+          url: url,
+          favicon: ""
+        }]) !== false
+      ) {
         bookmark.style.display = 'flex';
         hasVisibleBookmark = true;
       } else {
@@ -55,6 +109,8 @@ searchInput.addEventListener('input', function () {
 
     folder.style.display = hasVisibleBookmark ? 'block' : 'none';
   }
+
+  updateHeader(FuseStrMatch(searchTerm, headerData));
 });
 
 window.addEventListener('keydown', function (event) {
@@ -71,6 +127,13 @@ window.addEventListener('keydown', function (event) {
 
     for (let folder of folders) {
       folder.style.display = 'block';
+    }
+  }
+
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    if (headerUrl !== "") {
+      window.open(headerUrl);
     }
   }
 });
@@ -153,7 +216,7 @@ function createBookmarkItem(bookmarkNode, parent) {
   bookItem.addEventListener('click', function (event) {
     if (bookmarkNode.url.startsWith('chrome://') || bookmarkNode.url.startsWith('edge://')) {
       event.preventDefault();
-      chrome.tabs.create({ url: bookmarkNode.url });
+      chrome.tabs.create({url: bookmarkNode.url});
     }
   });
 
@@ -192,7 +255,7 @@ function createFolderForBookmarks(bookmarkNode, parent) {
         if (event.ctrlKey || event.metaKey) {
           for (let childNode of bookmarkNode.children) {
             if (childNode.url) {
-              chrome.tabs.create({ url: childNode.url });
+              chrome.tabs.create({url: childNode.url});
             }
           }
           event.preventDefault();
