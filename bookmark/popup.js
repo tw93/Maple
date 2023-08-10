@@ -56,12 +56,14 @@ function updateHeader(headerFuzeMatch) {
   if (!headerFuzeMatch) {
     return;
   }
-  headerFavicon.style.display = "block"; // 显示 favicon
+  if (headerText.textContent === "") {
+    headerFavicon.style.display = "block"; // 显示 favicon
+  }
   localStorage.setItem('persistedHeader', JSON.stringify(headerFuzeMatch));
   const t = headerFuzeMatch.title;
   const u = headerFuzeMatch.url;
   const f = headerFuzeMatch.favicon;
-  headerText.textContent = t.length > 8 ? t.substring(0, 12) + '...' : t;
+  headerText.textContent = t.length > 8 ? t.substring(0, 8) + '...' : t;
   headerFavicon.src = f;
   headerUrl = u;
 }
