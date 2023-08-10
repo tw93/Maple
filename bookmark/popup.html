@@ -81,12 +81,34 @@
         margin-left: 2px;
       }
 
+      #header {
+        display: flex;
+        margin-top: 10px;
+        height: 20px;
+        align-items: center;
+        background-color: transparent;
+      }
+
+      #header-bookmark {
+        width: 50%;
+        display: flex;
+        align-items: center;
+      }
+
+      #header-bookmark img {
+        height: 18px;
+        width: 18px;
+        margin-right: 8px;
+      }
+
+      #header-bookmark p {
+        font-size: 14px;
+      }
+
       #searchInput {
-        position: absolute;
-        top: 10px;
+        width: 50%;
         font-size: 18px;
-        right: 11px;
-        height: 26px;
+        height: 20px;
         line-height: 26px;
         color: #333;
         border: none;
@@ -128,7 +150,13 @@
     </style>
   </head>
   <body>
-    <input id="searchInput" type="text" />
+    <div id="header">
+      <div id="header-bookmark">
+        <img class="favicon" src="">
+        <p class=""></p>
+      </div>
+      <input id="searchInput" type="text" placeholder="Search..." />
+    </div>
     <div id="bookmarks"></div>
     <script type="module" src="popup.js"></script>
   </body>

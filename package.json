@@ -1,11 +1,11 @@
 {
   "name": "maple-bookmarks",
-  "version": "1.5.0",
+  "version": "1.6",
   "description": "Let you navigate smoothly while hiding the bookmark bar.",
   "main": "bookmark/popup.js",
   "scripts": {
     "bookmark": "zip -r ./resource/Maple.zip ./bookmark",
-    "newtab":"zip -r ./resource/NewTab.zip ./newtab",
+    "newtab": "zip -r ./resource/NewTab.zip ./newtab",
     "build": "npm run bookmark && npm run newtab"
   },
   "keywords": [
