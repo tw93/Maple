@@ -34,7 +34,7 @@ if (headerText.textContent === "") {
  * @description 使用 Fuse 进行模糊匹配，返回最佳匹配项或false
  * @param searchTerm {string} 查询的字符串
  * @param data {{ title: string, url: string, favicon: string }[]} 要匹配的对象数组，对象包含 title 和 url 属性
- * @returns {{ title: string, url: string, favicon: string }[]|boolean} 返回最佳匹配项的对象数组或 false
+ * @returns {{ title: string, url: string, favicon: string }|boolean} 返回最佳匹配项的 对象 或 false
  */
 function FuseStrMatch(searchTerm, data) {
   const options = {
@@ -50,7 +50,7 @@ function FuseStrMatch(searchTerm, data) {
 
 /**
  * @description 更新 header 的内容，如果匹配失败则不更新
- * @param headerFuzeMatch {{ title: string, url: string, favicon: string }[]|boolean} 匹配到的对象数组或 false
+ * @param headerFuzeMatch {{ title: string, url: string, favicon: string }|boolean} 匹配到的对象 或 匹配失败
  */
 function updateHeader(headerFuzeMatch) {
   if (!headerFuzeMatch) {
