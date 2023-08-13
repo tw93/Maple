@@ -188,7 +188,7 @@ function createElement(type, className, textContent = '') {
   return element;
 }
 
-function showBookmarks(bookmarkNodes, parent) {
+function showBookmarks(bookmarkNodes, parent, parentTitle = []) {
   if (!bookmarkNodes || !bookmarkNodes.length) {
     return;
   }
@@ -199,7 +199,7 @@ function showBookmarks(bookmarkNodes, parent) {
     }
 
     if (bookmarkNode.children && bookmarkNode.children.length > 0) {
-      createFolderForBookmarks(bookmarkNode, parent);
+      createFolderForBookmarks(bookmarkNode, parent, parentTitle);
     }
   }
 }
@@ -226,12 +226,24 @@ function createBookmarkItem(bookmarkNode, parent) {
   parent.appendChild(bookItem);
 }
 
-function createFolderForBookmarks(bookmarkNode, parent) {
+function createFolderForBookmarks(bookmarkNode, parent, parentTitle = []) {
   let folder = createElement('div', CLASS_NAMES.folder);
   let childContainer = createElement('div', CLASS_NAMES.childContainer);
+  // 递归传递父级的 title
+  const title = [...parentTitle];
 
   if (folderCount > 1 && bookmarkNode.title) {
-    let folderTitle = createElement('h2', '', bookmarkNode.title);
+
+    title.push(bookmarkNode.title);
+    let foldertitle = bookmarkNode.title;
+    // 如果是多级目录，则在标题前面加上父级目录
+    if (title.length > 2) {
+      for (let i = title.length - 2; i > 0; i--) {
+        foldertitle = title[i] + ' > ' + foldertitle;
+      }
+    }
+
+    let folderTitle = createElement('h2', '', foldertitle);
 
     if (bookmarkNode.title !== 'Favorites Bar' && bookmarkNode.title !== '收藏夹栏') {
       folderTitle.title = keyText;
@@ -268,7 +280,7 @@ function createFolderForBookmarks(bookmarkNode, parent) {
     folder.style.marginTop = '8px';
   }
 
-  showBookmarks(bookmarkNode.children, childContainer);
+  showBookmarks(bookmarkNode.children, childContainer, title);
 
   folder.appendChild(childContainer);
   parent.appendChild(folder);
