@@ -192,16 +192,16 @@ function showBookmarks(bookmarkNodes, parent, parentTitle = []) {
   if (!bookmarkNodes || !bookmarkNodes.length) {
     return;
   }
+  // 优先显示书签，再显示文件夹
+  const bookmarkItems = bookmarkNodes.filter(node => node.url);
+  bookmarkItems.forEach(bookmarkNode => {
+    createBookmarkItem(bookmarkNode, parent);
+  })
 
-  for (let bookmarkNode of bookmarkNodes) {
-    if (bookmarkNode.url) {
-      createBookmarkItem(bookmarkNode, parent);
-    }
-
-    if (bookmarkNode.children && bookmarkNode.children.length > 0) {
-      createFolderForBookmarks(bookmarkNode, parent, parentTitle);
-    }
-  }
+  const bookmarkFolders = bookmarkNodes.filter(node => node.children && node.children.length > 0);
+  bookmarkFolders.forEach(bookmarkNode => {
+    createFolderForBookmarks(bookmarkNode, parent, parentTitle);
+  })
 }
 
 function createBookmarkItem(bookmarkNode, parent) {
