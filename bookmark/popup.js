@@ -231,53 +231,56 @@ function createFolderForBookmarks(bookmarkNode, parent, parentTitle = []) {
   let childContainer = createElement('div', CLASS_NAMES.childContainer);
   // 递归传递父级的 title
   const title = [...parentTitle];
+  title.push(bookmarkNode.title);
+  // 如果文件夹下有书签，则显示标题，否则如全是文件夹则不显示
+  if (bookmarkNode.children?.filter((node) => node.url).length > 0) {
+    if (folderCount > 1 && bookmarkNode.title) {
 
-  if (folderCount > 1 && bookmarkNode.title) {
-
-    title.push(bookmarkNode.title);
-    let foldertitle = bookmarkNode.title;
-    // 如果是多级目录，则在标题前面加上父级目录
-    if (title.length > 2) {
-      for (let i = title.length - 2; i > 0; i--) {
-        foldertitle = title[i] + ' > ' + foldertitle;
-      }
-    }
-
-    let folderTitle = createElement('h2', '', foldertitle);
-
-    if (bookmarkNode.title !== 'Favorites Bar' && bookmarkNode.title !== '收藏夹栏') {
-      folderTitle.title = keyText;
-
-      // 判断是否在之前被收起来了
-      if (localStorage.getItem(bookmarkNode.title) === 'collapsed') {
-        childContainer.style.display = 'none';
+      let foldertitle = bookmarkNode.title;
+      // 如果是多级目录，则在标题前面加上父级目录
+      if (title.length > 2) {
+        for (let i = title.length - 2; i > 1; i--) {
+          foldertitle = title[i] + ' > ' + foldertitle;
+        }
       }
 
-      folderTitle.addEventListener('click', function (event) {
-        // 为展开/收起添加事件
-        if (childContainer.style.display === 'none') {
-          childContainer.style.display = 'flex';
-          localStorage.setItem(bookmarkNode.title, 'expanded');
-        } else {
+
+      let folderTitle = createElement('h2', '', foldertitle);
+
+      if (bookmarkNode.title !== 'Favorites Bar' && bookmarkNode.title !== '收藏夹栏') {
+        folderTitle.title = keyText;
+
+        // 判断是否在之前被收起来了
+        if (localStorage.getItem(bookmarkNode.title) === 'collapsed') {
           childContainer.style.display = 'none';
-          localStorage.setItem(bookmarkNode.title, 'collapsed');
         }
 
-        // 如果按住 ctrl 或 meta 键（Mac上的command键）则批量打开书签
-        if (event.ctrlKey || event.metaKey) {
-          for (let childNode of bookmarkNode.children) {
-            if (childNode.url) {
-              chrome.tabs.create({url: childNode.url});
-            }
+        folderTitle.addEventListener('click', function (event) {
+          // 为展开/收起添加事件
+          if (childContainer.style.display === 'none') {
+            childContainer.style.display = 'flex';
+            localStorage.setItem(bookmarkNode.title, 'expanded');
+          } else {
+            childContainer.style.display = 'none';
+            localStorage.setItem(bookmarkNode.title, 'collapsed');
           }
-          event.preventDefault();
-        }
-      });
-    }
 
-    folder.appendChild(folderTitle);
-  } else {
-    folder.style.marginTop = '8px';
+          // 如果按住 ctrl 或 meta 键（Mac上的command键）则批量打开书签
+          if (event.ctrlKey || event.metaKey) {
+            for (let childNode of bookmarkNode.children) {
+              if (childNode.url) {
+                chrome.tabs.create({url: childNode.url});
+              }
+            }
+            event.preventDefault();
+          }
+        });
+      }
+
+      folder.appendChild(folderTitle);
+    } else {
+      folder.style.marginTop = '8px';
+    }
   }
 
   showBookmarks(bookmarkNode.children, childContainer, title);
