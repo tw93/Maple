@@ -1,5 +1,6 @@
-import Fuse from './fuse.js';
-import {debounce} from './utils.js';
+import Fuse from './lib/fuse.js'
+import {debounce} from './utils/debounce.js';
+import {keyText, BestMatchTitle, LastBestMatch, BestMatch, EmptyBookmarkMessage} from "./utils/i18n.js";
 
 
 const CLASS_NAMES = {
@@ -10,11 +11,6 @@ const CLASS_NAMES = {
 };
 
 let folderCount;
-const browserLanguage = navigator.language.startsWith('zh') ? 'zh' : 'en';
-const isMac = navigator.platform.indexOf('Mac') !== -1;
-const keyHint = isMac ? 'Command' : 'Ctrl';
-const keyText = browserLanguage === 'zh' ? `按住 ${keyHint} 可批量打开` : `Hold ${keyHint} and click to open all`;
-
 
 let searchInput = document.getElementById('searchInput');
 let activeBestMatchIndex = 0;
@@ -51,8 +47,9 @@ function FuseStrMatch(searchTerm, data) {
     }
   }, []);
 
-  return results.length > 0 ? noRepeatResult.slice(0,3).map(({item}) => item) : false;
+  return results.length > 0 ? noRepeatResult.slice(0, 3).map(({item}) => item) : false;
 }
+
 
 /**
  * @description 快速切换默认选中的最佳结果
@@ -60,9 +57,12 @@ function FuseStrMatch(searchTerm, data) {
  */
 function updateActivebestMatch(index) {
   const bestMatch = Array.from(document.querySelectorAll('#best-match .bookmark'));
-  if (bestMatch.length === 0 || index < 0 || index > bestMatch.length - 1) { return };
+  if (bestMatch.length === 0) {
+    return
+  }
   bestMatch.forEach(item => item.classList.remove('active'));
-  activeBestMatchIndex = index;
+  // 循环切换
+  activeBestMatchIndex = index % bestMatch.length < 0 ? bestMatch.length - 1 : index % bestMatch.length;
   bestMatch[activeBestMatchIndex].classList.add('active');
 }
 
@@ -70,13 +70,14 @@ function updateActivebestMatch(index) {
 /**
  * @description 更新 header 的内容，如果匹配失败则不更新
  * @param headerFuzeMatch {{ title: string, url: string, favicon: string }[]|boolean} 匹配到的对象 或 匹配失败
+ * @param init {boolean} 是否是初始化
  */
 function updateHeader(headerFuzeMatch, init = false) {
-  if (!Array.isArray(headerFuzeMatch)) {
-    headerFuzeMatch = [headerFuzeMatch];
-  }
   if (!headerFuzeMatch) {
     return;
+  }
+  if (!Array.isArray(headerFuzeMatch)) {
+    headerFuzeMatch = [...headerFuzeMatch];
   }
   const matchedBookmark = document.querySelector('#best-match .folder');
   if (matchedBookmark) {
@@ -84,8 +85,8 @@ function updateHeader(headerFuzeMatch, init = false) {
   }
   const bestMatchFolder = createElement('div', CLASS_NAMES.folder);
   const childContainer = createElement('div', CLASS_NAMES.childContainer);
-  const title = createElement('h2', '', init ? 'Last Best Match' : 'Best Match');
-  title.title = 'Press enter to open';
+  const title = createElement('h2', '', init ? LastBestMatch : BestMatch);
+  title.title = BestMatchTitle;
   headerFuzeMatch.map(matchedBookmark => {
     createBookmarkItem(matchedBookmark, childContainer);
   });
@@ -170,7 +171,7 @@ window.addEventListener('keydown', function (event) {
   if (event.key === 'Enter') {
     event.preventDefault();
     if (bestMatchUrls.length !== 0) {
-        chrome.tabs.create({url: bestMatchUrls[activeBestMatchIndex]});
+      chrome.tabs.create({url: bestMatchUrls[activeBestMatchIndex]});
     }
   }
 });
@@ -198,7 +199,7 @@ function setBodyHeightFromStorage() {
 
 function saveCurrentHeight() {
   let currentHeight = document.getElementById('bookmarks').clientHeight;
-  localStorage.setItem('savedHeight', currentHeight - 8);
+  localStorage.setItem('savedHeight', (currentHeight - 8).toString());
 }
 
 function createBookmarks(bookmarkTreeNodes) {
@@ -213,7 +214,7 @@ function createBookmarks(bookmarkTreeNodes) {
 
 function showEmptyBookmarkMessage() {
   const bookmarksContainer = document.getElementById('bookmarks');
-  const messageElement = createElement('p', 'message', '🍁 No bookmarks in the current browser.');
+  const messageElement = createElement('p', 'message', EmptyBookmarkMessage);
 
   bookmarksContainer.appendChild(messageElement);
 }
