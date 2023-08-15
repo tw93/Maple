@@ -56,6 +56,7 @@ The bookmarks bar can occupy the browsing window and affect concentration, so I 
 3. Click on the extension icon and pin `Maple Bookmarks` to the toolbar.
 4. Try using `Command + E`(Mac)、`Ctrl+B`(Windows) to quickly access your bookmarks.
 5. If you have many bookmarks, you can directly enter keywords to search, supporting Chinese, English, domain names, etc.
+6. Each search will retain the top three most relevant results at the forefront (the last search will be preserved upon reopening). By utilizing the ← and → keys on the keyboard, one can swiftly toggle between the most fitting results, and the highlighted bookmark can be swiftly accessed by pressing the Enter key.
 
 ## Support
 

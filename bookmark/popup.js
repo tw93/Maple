@@ -1,4 +1,5 @@
 import Fuse from './fuse.js';
+import {debounce} from './utils.js';
 
 
 const CLASS_NAMES = {
@@ -14,62 +15,90 @@ const isMac = navigator.platform.indexOf('Mac') !== -1;
 const keyHint = isMac ? 'Command' : 'Ctrl';
 const keyText = browserLanguage === 'zh' ? `按住 ${keyHint} 可批量打开` : `Hold ${keyHint} and click to open all`;
 
+
 let searchInput = document.getElementById('searchInput');
+let activeBestMatchIndex = 0;
 
-
-// 顶部推荐的 header
-const headerText = document.querySelector('#header-bookmark p');
-const headerFavicon = document.querySelector('#header-bookmark img');
-// header url
-let headerUrl = "";
+let bestMatchUrls = [];
 // 恢复 header 元素
-updateHeader(JSON.parse(localStorage.getItem('persistedHeader')));
-// 第一次打开时，header 为空，隐藏 favicon
-if (headerText.textContent === "") {
-  headerFavicon.style.display = "none";
-}
+updateHeader(JSON.parse(localStorage.getItem('persistedHeader')), true);
+updateActivebestMatch(activeBestMatchIndex);
 
 
 /**
  * @description 使用 Fuse 进行模糊匹配，返回最佳匹配项或false
  * @param searchTerm {string} 查询的字符串
  * @param data {{ title: string, url: string, favicon: string }[]} 要匹配的对象数组，对象包含 title 和 url 属性
- * @returns {{ title: string, url: string, favicon: string }|boolean} 返回最佳匹配项的 对象 或 false
+ * @returns {{ title: string, url: string, favicon: string }[]|boolean} 返回最佳匹配项的 对象 或 false
  */
 function FuseStrMatch(searchTerm, data) {
   const options = {
     keys: ["title", "url"],
+    ignoreLocation: false, // 全搜索
     includeScore: true, // 包含相似度评分
     threshold: 0.5, // 相似度阈值
+    shouldSort: true, // 是否排序
   };
   const fuse = new Fuse(data, options);
   const results = fuse.search(searchTerm);
-  return results.length > 0 ? results[0].item : false;
+  const cache = new Map();
+  const noRepeatResult = results.reduce((acc, bookmark) => {
+    if (cache.has(bookmark.item.url)) {
+      return acc;
+    } else {
+      cache.set(bookmark.item.url, true);
+      return [...acc, bookmark];
+    }
+  }, []);
+
+  return results.length > 0 ? noRepeatResult.slice(0,3).map(({item}) => item) : false;
+}
+
+/**
+ * @description 快速切换默认选中的最佳结果
+ * @param index {number} 要选中的索引
+ */
+function updateActivebestMatch(index) {
+  const bestMatch = Array.from(document.querySelectorAll('#best-match .bookmark'));
+  if (bestMatch.length === 0 || index < 0 || index > bestMatch.length - 1) { return };
+  bestMatch.forEach(item => item.classList.remove('active'));
+  activeBestMatchIndex = index;
+  bestMatch[activeBestMatchIndex].classList.add('active');
 }
 
 
 /**
  * @description 更新 header 的内容，如果匹配失败则不更新
- * @param headerFuzeMatch {{ title: string, url: string, favicon: string }|boolean} 匹配到的对象 或 匹配失败
+ * @param headerFuzeMatch {{ title: string, url: string, favicon: string }[]|boolean} 匹配到的对象 或 匹配失败
  */
-function updateHeader(headerFuzeMatch) {
+function updateHeader(headerFuzeMatch, init = false) {
+  if (!Array.isArray(headerFuzeMatch)) {
+    headerFuzeMatch = [headerFuzeMatch];
+  }
   if (!headerFuzeMatch) {
     return;
   }
-  if (headerText.textContent === "") {
-    headerFavicon.style.display = "block"; // 显示 favicon
+  const matchedBookmark = document.querySelector('#best-match .folder');
+  if (matchedBookmark) {
+    matchedBookmark.parentElement.removeChild(matchedBookmark);
   }
+  const bestMatchFolder = createElement('div', CLASS_NAMES.folder);
+  const childContainer = createElement('div', CLASS_NAMES.childContainer);
+  const title = createElement('h2', '', init ? 'Last Best Match' : 'Best Match');
+  title.title = 'Press enter to open';
+  headerFuzeMatch.map(matchedBookmark => {
+    createBookmarkItem(matchedBookmark, childContainer);
+  });
+  bestMatchFolder.appendChild(title);
+  bestMatchFolder.appendChild(childContainer);
+  bestMatchUrls = headerFuzeMatch.map(item => item.url);
+
   localStorage.setItem('persistedHeader', JSON.stringify(headerFuzeMatch));
-  const t = headerFuzeMatch.title;
-  const u = headerFuzeMatch.url;
-  const f = headerFuzeMatch.favicon;
-  headerText.textContent = t.length > 8 ? t.substring(0, 8) + '...' : t;
-  headerFavicon.src = f;
-  headerUrl = u;
+  document.querySelector('#best-match').appendChild(bestMatchFolder);
+  updateActivebestMatch(0);
 }
 
-
-searchInput.addEventListener('input', function () {
+searchInput.addEventListener('input', debounce(function () {
   let searchTerm = searchInput.value.toLowerCase();
   let folders = document.getElementsByClassName(CLASS_NAMES.folder);
 
@@ -111,7 +140,7 @@ searchInput.addEventListener('input', function () {
   }
 
   updateHeader(FuseStrMatch(searchTerm, headerData));
-});
+}, 30));
 
 window.addEventListener('keydown', function (event) {
   if (event.key === 'Escape') {
@@ -130,10 +159,18 @@ window.addEventListener('keydown', function (event) {
     }
   }
 
+  if (event.key === 'ArrowLeft') {
+    updateActivebestMatch(activeBestMatchIndex - 1);
+  }
+
+  if (event.key === 'ArrowRight') {
+    updateActivebestMatch(activeBestMatchIndex + 1);
+  }
+
   if (event.key === 'Enter') {
     event.preventDefault();
-    if (headerUrl !== "") {
-      window.open(headerUrl);
+    if (bestMatchUrls.length !== 0) {
+        chrome.tabs.create({url: bestMatchUrls[activeBestMatchIndex]});
     }
   }
 });
@@ -240,7 +277,7 @@ function createFolderForBookmarks(bookmarkNode, parent, parentTitle = []) {
       // 如果是多级目录，则在标题前面加上父级目录
       if (title.length > 2) {
         for (let i = title.length - 2; i > 1; i--) {
-          foldertitle = title[i] + ' > ' + foldertitle;
+          foldertitle = title[i] + ' / ' + foldertitle;
         }
       }
 

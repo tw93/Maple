@@ -5,9 +5,8 @@
     <title>Maple Bookmarks</title>
     <style>
       body {
-        padding: 0;
         margin: 0;
-        padding-left: 12px;
+        padding: 8px 0px 12px 12px; 
         width: 408px;
         box-sizing: border-box;
       }
@@ -47,6 +46,10 @@
         justify-content: flex-start;
       }
 
+      #best-match .bookmark.active {
+        background-color: bisque;
+      }
+
       .childContainer > .bookmark {
         width: 120px;
         height: 42px;
@@ -61,6 +64,7 @@
         align-items: center;
         text-decoration: none;
       }
+
 
       .childContainer > .bookmark:hover {
         background-color: #e6e6e6;
@@ -82,41 +86,32 @@
       }
 
       #header {
+        margin-bottom: 24px;
+        width: 384px;
         display: flex;
         margin-top: 10px;
         height: 20px;
         align-items: center;
+        justify-content: center;
         background-color: transparent;
       }
 
-      #header-bookmark {
-        width: 50%;
-        display: flex;
-        align-items: center;
-      }
-
-      #header-bookmark img {
-        height: 18px;
-        width: 18px;
-        margin-right: 8px;
-      }
-
-      #header-bookmark p {
-        font-size: 14px;
-      }
-
       #searchInput {
-        width: 50%;
+        width: 100%;
+        padding: 10px 12px;
+       
         font-size: 18px;
         height: 20px;
         padding-right: 12px;
         line-height: 26px;
         color: #333;
-        border: none;
         outline: none;
         caret-color: rgba(0, 0, 0, 0.2);
         background: transparent;
-        text-align: right;
+        text-align: center;
+        background: white;
+        border: none;
+        border-bottom: 2px solid #666;
       }
 
       @media (prefers-color-scheme: dark) {
@@ -152,12 +147,9 @@
   </head>
   <body>
     <div id="header">
-      <div id="header-bookmark">
-        <img class="favicon" src="">
-        <p class=""></p>
-      </div>
       <input id="searchInput" type="text" placeholder="Search..."/>
     </div>
+    <div id="best-match"></div>
     <div id="bookmarks"></div>
     <script type="module" src="popup.js"></script>
   </body>
