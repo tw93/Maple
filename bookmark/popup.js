@@ -1,12 +1,15 @@
 import Fuse from "./lib/fuse.js";
 import { debounce } from "./utils/debounce.js";
 import { keyText, BestMatchTitle, LastBestMatch, BestMatch, EmptyBookmarkMessage } from "./utils/i18n.js";
+import {Tooltip} from "./utils/tooltip.js";
+import {createElement} from './utils/element.js'
 
 const CLASS_NAMES = {
   bookmark: "bookmark",
   favicon: "favicon",
   folder: "folder",
   childContainer: "childContainer",
+  tooltip: 'tooltip',
 };
 
 let folderCount;
@@ -221,13 +224,6 @@ function showEmptyBookmarkMessage() {
   bookmarksContainer.appendChild(messageElement);
 }
 
-function createElement(type, className, textContent = "") {
-  let element = document.createElement(type);
-  element.className = className;
-  element.textContent = textContent;
-  return element;
-}
-
 function showBookmarks(bookmarkNodes, parent, parentTitle = []) {
   if (!bookmarkNodes || !bookmarkNodes.length) {
     return;
@@ -259,6 +255,15 @@ function createBookmarkItem(bookmarkNode, parent) {
       chrome.tabs.create({ url: bookmarkNode.url });
     }
   });
+
+  bookItem.addEventListener("mouseover", function () {
+    Tooltip.show(bookItem, bookmarkNode.title);
+  });
+
+  bookItem.addEventListener("mouseleave", function () {
+    Tooltip.hide(bookItem);
+  });
+
 
   let linkTitle = createElement("p", "", bookmarkNode.title ? bookmarkNode.title : getTitleFromUrl(bookmarkNode.url));
   bookItem.appendChild(linkTitle);
