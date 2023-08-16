@@ -22,8 +22,8 @@ updateActiveBestMatch(activeBestMatchIndex);
 /**
  * @description 使用 Fuse 进行模糊匹配，返回最佳匹配项或false
  * @param searchTerm {string} 查询的字符串
- * @param data {{ title: string, url: string, favicon: string }[]} 要匹配的对象数组，对象包含 title 和 url 属性
- * @returns {{ title: string, url: string, favicon: string }[]|boolean} 返回最佳匹配项的 对象 或 false
+ * @param data {{ title: string, url: string, favicon: string }[]} 要匹配的 对象数组，包含 title 和 url 属性
+ * @returns {{ title: string, url: string, favicon: string }[]|null} 返回最佳匹配项的 对象数组 或 null
  */
 function FuseStrMatch(searchTerm, data) {
   const options = {
@@ -45,7 +45,7 @@ function FuseStrMatch(searchTerm, data) {
     }
   }, []);
 
-  return results.length > 0 ? noRepeatResult.slice(0, 3).map(({ item }) => item) : false;
+  return results.length > 0 ? noRepeatResult.slice(0, 3).map(({ item }) => item) : null;
 }
 
 /**
@@ -65,15 +65,16 @@ function updateActiveBestMatch(index) {
 
 /**
  * @description 更新 header 的内容，如果匹配失败则不更新
- * @param headerFuzeMatch {{ title: string, url: string, favicon: string }[]|boolean} 匹配到的对象 或 匹配失败
+ * @param headerFuzeMatch {{ title: string, url: string, favicon: string }[]|null} 匹配到的 对象数组 或 null
  * @param init {boolean} 是否是初始化
  */
 function updateHeader(headerFuzeMatch, init = false) {
   if (!headerFuzeMatch) {
     return;
   }
+  // 兼容旧版本，上一个版本 headerFuzeMatch 为单个对象
   if (!Array.isArray(headerFuzeMatch)) {
-    headerFuzeMatch = [...headerFuzeMatch];
+    headerFuzeMatch = Array.from(headerFuzeMatch);
   }
   const matchedBookmark = document.querySelector('#best-match .folder');
   if (matchedBookmark) {
@@ -128,7 +129,7 @@ searchInput.addEventListener(
               url: url,
               favicon: '',
             },
-          ]) !== false
+          ])
         ) {
           bookmark.style.display = 'flex';
           hasVisibleBookmark = true;
