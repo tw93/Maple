@@ -1,0 +1,42 @@
+name: publish
+
+on:
+  push:
+    tags:
+    - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: build
+        run: |
+          npm install
+          npm run build
+
+      - name: Create Release and Upload Release Asset
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Auto Release
+          tag_name: ${{ github.ref }}
+          body: Auto Release
+          draft: false
+          prerelease: false
+          files: dist/*
+
+      - uses: wdzeng/chrome-extension@v1
+        with:
+          extension-id: fobmbldflolfooglijmbibmnhoflbjlb
+          zip-path: dist/Maple.zip
+          tester-only: false
+          client-id: ${{ secrets.CHROME_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}

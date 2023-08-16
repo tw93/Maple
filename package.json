@@ -4,9 +4,9 @@
   "description": "Let you navigate smoothly while hiding the bookmark bar.",
   "main": "bookmark/popup.js",
   "scripts": {
-    "bookmark": "zip -r ./resource/Maple.zip ./bookmark",
-    "newtab": "zip -r ./resource/NewTab.zip ./newtab",
-    "build": "npm run bookmark && npm run newtab",
+    "bookmark": "zip -r ./dist/Maple.zip ./bookmark",
+    "newtab": "zip -r ./dist/NewTab.zip ./newtab",
+    "build": "mkdir -p ./dist && npm run lint && npm run bookmark && npm run newtab",
     "lint": "eslint . --ext .js --fix"
   },
   "keywords": [
