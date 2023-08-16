@@ -18,7 +18,7 @@ let activeBestMatchIndex = 0;
 let bestMatchUrls = [];
 // 恢复 header 元素
 updateHeader(JSON.parse(localStorage.getItem('persistedHeader')), true);
-updateActivebestMatch(activeBestMatchIndex);
+updateActiveBestMatch(activeBestMatchIndex);
 
 
 /**
@@ -55,7 +55,7 @@ function FuseStrMatch(searchTerm, data) {
  * @description 快速切换默认选中的最佳结果
  * @param index {number} 要选中的索引
  */
-function updateActivebestMatch(index) {
+function updateActiveBestMatch(index) {
   const bestMatch = Array.from(document.querySelectorAll('#best-match .bookmark'));
   if (bestMatch.length === 0) {
     return
@@ -96,7 +96,7 @@ function updateHeader(headerFuzeMatch, init = false) {
 
   localStorage.setItem('persistedHeader', JSON.stringify(headerFuzeMatch));
   document.querySelector('#best-match').appendChild(bestMatchFolder);
-  updateActivebestMatch(0);
+  updateActiveBestMatch(0);
 }
 
 searchInput.addEventListener('input', debounce(function () {
@@ -161,11 +161,11 @@ window.addEventListener('keydown', function (event) {
   }
 
   if (event.key === 'ArrowLeft') {
-    updateActivebestMatch(activeBestMatchIndex - 1);
+    updateActiveBestMatch(activeBestMatchIndex - 1);
   }
 
   if (event.key === 'ArrowRight') {
-    updateActivebestMatch(activeBestMatchIndex + 1);
+    updateActiveBestMatch(activeBestMatchIndex + 1);
   }
 
   if (event.key === 'Enter') {
@@ -274,16 +274,16 @@ function createFolderForBookmarks(bookmarkNode, parent, parentTitle = []) {
   if (bookmarkNode.children?.filter((node) => node.url).length > 0) {
     if (folderCount > 1 && bookmarkNode.title) {
 
-      let foldertitle = bookmarkNode.title;
+      let folderName = bookmarkNode.title;
       // 如果是多级目录，则在标题前面加上父级目录
       if (title.length > 2) {
         for (let i = title.length - 2; i > 1; i--) {
-          foldertitle = title[i] + ' / ' + foldertitle;
+          folderName = title[i] + ' / ' + folderName;
         }
       }
 
 
-      let folderTitle = createElement('h2', '', foldertitle);
+      let folderTitle = createElement('h2', '', folderName);
 
       if (bookmarkNode.title !== 'Favorites Bar' && bookmarkNode.title !== '收藏夹栏') {
         folderTitle.title = keyText;

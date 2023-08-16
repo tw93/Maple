@@ -1,6 +1,6 @@
 {
   "name": "maple-bookmarks",
-  "version": "1.6",
+  "version": "1.7",
   "description": "Let you navigate smoothly while hiding the bookmark bar.",
   "main": "bookmark/popup.js",
   "scripts": {
