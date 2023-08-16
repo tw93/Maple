@@ -1,25 +1,27 @@
-import {createElement} from './element.js';
-
 export const Tooltip = {
   /**
- * 为元素添加 tooltip
- * @param {HTMLElement} el 需要展示 tooltip 的元素
- * @param {string} message tooltip message
- */
-  show(el, message) {
-    el.style.position = "relative";
-    const span = createElement("span", "tooltip", message);
-    el.appendChild(span);
+   * 展示 tooltip
+   * @param {string} message tooltip message
+   * @param {boolean} hideTime auto hide time
+   */
+  show(message, hideTime = 0) {
+    const container = document.querySelector("#tooltip-container");
+    container.style.transform = `translateX(-100%)`;
+    container.textContent = message;
+    container.style.transform = `translateX(0)`;
+    if (hideTime > 0) {
+      const timer = setTimeout(() => {
+        clearTimeout(timer);
+        this.hide();
+      }, hideTime);
+    }
   },
   /**
-   * 
-   * @param {HTMLElement} el 需要移除 
+   * 移除 tooltip
+   *
    */
-  hide(el) {
-    el.style.position = "";
-    const tooltip = el.querySelector(`.tooltip`);
-    if (tooltip) {
-      el.removeChild(tooltip);
-    }
-  }
-}
+  hide() {
+    const container = document.querySelector("#tooltip-container");
+    container.style.transform = `translateX(-100%)`;
+  },
+};

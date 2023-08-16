@@ -1,15 +1,15 @@
 import Fuse from "./lib/fuse.js";
 import { debounce } from "./utils/debounce.js";
 import { keyText, BestMatchTitle, LastBestMatch, BestMatch, EmptyBookmarkMessage } from "./utils/i18n.js";
-import {Tooltip} from "./utils/tooltip.js";
-import {createElement} from './utils/element.js'
+import { Tooltip } from "./utils/tooltip.js";
+import { createElement } from "./utils/element.js";
 
 const CLASS_NAMES = {
   bookmark: "bookmark",
   favicon: "favicon",
   folder: "folder",
   childContainer: "childContainer",
-  tooltip: 'tooltip',
+  tooltip: "tooltip",
 };
 
 let folderCount;
@@ -257,13 +257,14 @@ function createBookmarkItem(bookmarkNode, parent) {
   });
 
   bookItem.addEventListener("mouseover", function () {
-    Tooltip.show(bookItem, bookmarkNode.title);
+    if (bookmarkNode.title.length > 4) {
+      Tooltip.show(bookmarkNode.title);
+    }
   });
 
   bookItem.addEventListener("mouseleave", function () {
-    Tooltip.hide(bookItem);
+    Tooltip.hide();
   });
-
 
   let linkTitle = createElement("p", "", bookmarkNode.title ? bookmarkNode.title : getTitleFromUrl(bookmarkNode.url));
   bookItem.appendChild(linkTitle);
