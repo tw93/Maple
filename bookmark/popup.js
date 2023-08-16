@@ -1,12 +1,6 @@
 import Fuse from "./lib/fuse.js";
 import { debounce } from "./utils/debounce.js";
-import {
-  keyText,
-  BestMatchTitle,
-  LastBestMatch,
-  BestMatch,
-  EmptyBookmarkMessage,
-} from "./utils/i18n.js";
+import { keyText, BestMatchTitle, LastBestMatch, BestMatch, EmptyBookmarkMessage } from "./utils/i18n.js";
 
 const CLASS_NAMES = {
   bookmark: "bookmark",
@@ -51,9 +45,7 @@ function FuseStrMatch(searchTerm, data) {
     }
   }, []);
 
-  return results.length > 0
-    ? noRepeatResult.slice(0, 3).map(({ item }) => item)
-    : false;
+  return results.length > 0 ? noRepeatResult.slice(0, 3).map(({ item }) => item) : false;
 }
 
 /**
@@ -61,18 +53,13 @@ function FuseStrMatch(searchTerm, data) {
  * @param index {number} 要选中的索引
  */
 function updateActiveBestMatch(index) {
-  const bestMatch = Array.from(
-    document.querySelectorAll("#best-match .bookmark")
-  );
+  const bestMatch = Array.from(document.querySelectorAll("#best-match .bookmark"));
   if (bestMatch.length === 0) {
     return;
   }
   bestMatch.forEach((item) => item.classList.remove("active"));
   // 循环切换
-  activeBestMatchIndex =
-    index % bestMatch.length < 0
-      ? bestMatch.length - 1
-      : index % bestMatch.length;
+  activeBestMatchIndex = index % bestMatch.length < 0 ? bestMatch.length - 1 : index % bestMatch.length;
   bestMatch[activeBestMatchIndex].classList.add("active");
 }
 
@@ -250,9 +237,7 @@ function showBookmarks(bookmarkNodes, parent, parentTitle = []) {
     createBookmarkItem(bookmarkNode, parent);
   });
 
-  const bookmarkFolders = bookmarkNodes.filter(
-    (node) => node.children && node.children.length > 0
-  );
+  const bookmarkFolders = bookmarkNodes.filter((node) => node.children && node.children.length > 0);
   bookmarkFolders.forEach((bookmarkNode) => {
     createFolderForBookmarks(bookmarkNode, parent, parentTitle);
   });
@@ -260,9 +245,7 @@ function showBookmarks(bookmarkNodes, parent, parentTitle = []) {
 
 function createBookmarkItem(bookmarkNode, parent) {
   let favicon = createElement("img", CLASS_NAMES.favicon);
-  favicon.src = `${chrome.runtime.getURL(
-    "/_favicon?"
-  )}pageUrl=${encodeURIComponent(bookmarkNode.url)}&size=32`;
+  favicon.src = `${chrome.runtime.getURL("/_favicon?")}pageUrl=${encodeURIComponent(bookmarkNode.url)}&size=32`;
 
   let bookItem = createElement("a", CLASS_NAMES.bookmark);
   bookItem.href = bookmarkNode.url;
@@ -270,20 +253,13 @@ function createBookmarkItem(bookmarkNode, parent) {
   bookItem.appendChild(favicon);
 
   bookItem.addEventListener("click", function (event) {
-    if (
-      bookmarkNode.url.startsWith("chrome://") ||
-      bookmarkNode.url.startsWith("edge://")
-    ) {
+    if (bookmarkNode.url.startsWith("chrome://") || bookmarkNode.url.startsWith("edge://")) {
       event.preventDefault();
       chrome.tabs.create({ url: bookmarkNode.url });
     }
   });
 
-  let linkTitle = createElement(
-    "p",
-    "",
-    bookmarkNode.title ? bookmarkNode.title : getTitleFromUrl(bookmarkNode.url)
-  );
+  let linkTitle = createElement("p", "", bookmarkNode.title ? bookmarkNode.title : getTitleFromUrl(bookmarkNode.url));
   bookItem.appendChild(linkTitle);
 
   parent.appendChild(bookItem);
@@ -308,10 +284,7 @@ function createFolderForBookmarks(bookmarkNode, parent, parentTitle = []) {
 
       let folderTitle = createElement("h2", "", folderName);
 
-      if (
-        bookmarkNode.title !== "Favorites Bar" &&
-        bookmarkNode.title !== "收藏夹栏"
-      ) {
+      if (bookmarkNode.title !== "Favorites Bar" && bookmarkNode.title !== "收藏夹栏") {
         folderTitle.title = keyText;
         folderTitle.style.cursor = "pointer";
 
@@ -366,10 +339,7 @@ function countFolders(bookmarkNodes) {
 
 function getTitleFromUrl(url) {
   if (url.startsWith("chrome://") || url.startsWith("edge://")) {
-    return (
-      url.split("//")[1].split("/")[0].charAt(0).toUpperCase() +
-      url.split("//")[1].split("/")[0].slice(1)
-    );
+    return url.split("//")[1].split("/")[0].charAt(0).toUpperCase() + url.split("//")[1].split("/")[0].slice(1);
   }
 
   let host = new URL(url).host;

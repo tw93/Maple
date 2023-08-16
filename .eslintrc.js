@@ -1,6 +1,6 @@
 module.exports = {
   parserOptions: {
-    ecmaVersion: 2018, // ES9
+    ecmaVersion: 2020, // 改为ES2020
     sourceType: "module",
   },
   env: {
@@ -8,19 +8,11 @@ module.exports = {
     es6: true,
     node: true,
   },
-  extends: [
-    "eslint:recommended",
-    "plugin:prettier/recommended",
-    "plugin:import/errors",
-    "plugin:import/warnings",
-  ],
+  extends: ["eslint:recommended", "plugin:prettier/recommended", "plugin:import/errors", "plugin:import/warnings"],
   plugins: ["prettier", "import"],
   rules: {
-    "prettier/prettier": [
-      "error",
-      {
-        tabWidth: 2,
-      },
-    ],
+    "prettier/prettier": "error",
+    "no-useless-escape": "off",
+    "no-undef": "off",
   },
 };

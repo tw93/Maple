@@ -6,7 +6,8 @@
   "scripts": {
     "bookmark": "zip -r ./resource/Maple.zip ./bookmark",
     "newtab": "zip -r ./resource/NewTab.zip ./newtab",
-    "build": "npm run bookmark && npm run newtab"
+    "build": "npm run bookmark && npm run newtab",
+    "lint": "eslint . --ext .js --fix"
   },
   "keywords": [
     "bookmarks",
@@ -32,8 +33,7 @@
   },
   "lint-staged": {
     "*.js": [
-      "eslint --fix",
-      "git add"
+      "eslint --fix"
     ]
   }
 }
