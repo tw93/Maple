@@ -14,13 +14,8 @@
       }
     }
   },
-  "optional_host_permissions": [
-    "*://*/*"
-  ],
-  "permissions": [
-    "bookmarks",
-    "favicon"
-  ],
+  "optional_host_permissions": ["*://*/*"],
+  "permissions": ["bookmarks", "favicon"],
   "icons": {
     "16": "logo.png",
     "48": "logo.png",

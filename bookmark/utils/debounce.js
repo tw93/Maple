@@ -57,4 +57,4 @@ function debounce(func, wait, immediate = false) {
   return debounced;
 }
 
-export {debounce};
+export { debounce };

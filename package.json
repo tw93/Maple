@@ -6,7 +6,8 @@
   "scripts": {
     "bookmark": "zip -r ./resource/Maple.zip ./bookmark",
     "newtab": "zip -r ./resource/NewTab.zip ./newtab",
-    "build": "npm run bookmark && npm run newtab"
+    "build": "npm run bookmark && npm run newtab",
+    "lint": "eslint . --ext .js --fix"
   },
   "keywords": [
     "bookmarks",
@@ -15,5 +16,12 @@
     "browser-extension"
   ],
   "author": "Tw93",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^8.47.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.28.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "prettier": "^3.0.2"
+  }
 }

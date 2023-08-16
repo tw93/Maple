@@ -1,22 +1,22 @@
-import Fuse from './lib/fuse.js';
-import { debounce } from './utils/debounce.js';
-import { keyText, BestMatchTitle, LastBestMatch, BestMatch, EmptyBookmarkMessage } from './utils/i18n.js';
+import Fuse from "./lib/fuse.js";
+import { debounce } from "./utils/debounce.js";
+import { keyText, BestMatchTitle, LastBestMatch, BestMatch, EmptyBookmarkMessage } from "./utils/i18n.js";
 
 const CLASS_NAMES = {
-  bookmark: 'bookmark',
-  favicon: 'favicon',
-  folder: 'folder',
-  childContainer: 'childContainer',
+  bookmark: "bookmark",
+  favicon: "favicon",
+  folder: "folder",
+  childContainer: "childContainer",
 };
 
 let folderCount;
 
-let searchInput = document.getElementById('searchInput');
+let searchInput = document.getElementById("searchInput");
 let activeBestMatchIndex = 0;
 
 let bestMatchUrls = [];
 // 恢复 header 元素
-updateHeader(JSON.parse(localStorage.getItem('persistedHeader')), true);
+updateHeader(JSON.parse(localStorage.getItem("persistedHeader")), true);
 updateActiveBestMatch(activeBestMatchIndex);
 
 /**
@@ -27,7 +27,7 @@ updateActiveBestMatch(activeBestMatchIndex);
  */
 function FuseStrMatch(searchTerm, data) {
   const options = {
-    keys: ['title', 'url'],
+    keys: ["title", "url"],
     ignoreLocation: false, // 全搜索
     includeScore: true, // 包含相似度评分
     threshold: 0.5, // 相似度阈值
@@ -53,14 +53,14 @@ function FuseStrMatch(searchTerm, data) {
  * @param index {number} 要选中的索引
  */
 function updateActiveBestMatch(index) {
-  const bestMatch = Array.from(document.querySelectorAll('#best-match .bookmark'));
+  const bestMatch = Array.from(document.querySelectorAll("#best-match .bookmark"));
   if (bestMatch.length === 0) {
     return;
   }
-  bestMatch.forEach((item) => item.classList.remove('active'));
+  bestMatch.forEach((item) => item.classList.remove("active"));
   // 循环切换
   activeBestMatchIndex = index % bestMatch.length < 0 ? bestMatch.length - 1 : index % bestMatch.length;
-  bestMatch[activeBestMatchIndex].classList.add('active');
+  bestMatch[activeBestMatchIndex].classList.add("active");
 }
 
 /**
@@ -76,13 +76,13 @@ function updateHeader(headerFuzeMatch, init = false) {
   if (!Array.isArray(headerFuzeMatch)) {
     headerFuzeMatch = Array.from(headerFuzeMatch);
   }
-  const matchedBookmark = document.querySelector('#best-match .folder');
+  const matchedBookmark = document.querySelector("#best-match .folder");
   if (matchedBookmark) {
     matchedBookmark.parentElement.removeChild(matchedBookmark);
   }
-  const bestMatchFolder = createElement('div', CLASS_NAMES.folder);
-  const childContainer = createElement('div', CLASS_NAMES.childContainer);
-  const title = createElement('h2', '', init ? LastBestMatch : BestMatch);
+  const bestMatchFolder = createElement("div", CLASS_NAMES.folder);
+  const childContainer = createElement("div", CLASS_NAMES.childContainer);
+  const title = createElement("h2", "", init ? LastBestMatch : BestMatch);
   title.title = BestMatchTitle;
   headerFuzeMatch.map((matchedBookmark) => {
     createBookmarkItem(matchedBookmark, childContainer);
@@ -91,13 +91,13 @@ function updateHeader(headerFuzeMatch, init = false) {
   bestMatchFolder.appendChild(childContainer);
   bestMatchUrls = headerFuzeMatch.map((item) => item.url);
 
-  localStorage.setItem('persistedHeader', JSON.stringify(headerFuzeMatch));
-  document.querySelector('#best-match').appendChild(bestMatchFolder);
+  localStorage.setItem("persistedHeader", JSON.stringify(headerFuzeMatch));
+  document.querySelector("#best-match").appendChild(bestMatchFolder);
   updateActiveBestMatch(0);
 }
 
 searchInput.addEventListener(
-  'input',
+  "input",
   debounce(function () {
     let searchTerm = searchInput.value.toLowerCase();
     let folders = document.getElementsByClassName(CLASS_NAMES.folder);
@@ -113,7 +113,7 @@ searchInput.addEventListener(
         headerData.push({
           title: bookmark.textContent,
           url: bookmark.href,
-          favicon: bookmark.querySelector('.favicon')?.src,
+          favicon: bookmark.querySelector(".favicon")?.src,
         });
 
         let title = bookmark.textContent.toLowerCase();
@@ -127,50 +127,50 @@ searchInput.addEventListener(
             {
               title: title,
               url: url,
-              favicon: '',
+              favicon: "",
             },
           ])
         ) {
-          bookmark.style.display = 'flex';
+          bookmark.style.display = "flex";
           hasVisibleBookmark = true;
         } else {
-          bookmark.style.display = 'none';
+          bookmark.style.display = "none";
         }
       }
 
-      folder.style.display = hasVisibleBookmark ? 'block' : 'none';
+      folder.style.display = hasVisibleBookmark ? "block" : "none";
     }
 
     updateHeader(FuseStrMatch(searchTerm, headerData));
   }, 30)
 );
 
-window.addEventListener('keydown', function (event) {
-  if (event.key === 'Escape') {
+window.addEventListener("keydown", function (event) {
+  if (event.key === "Escape") {
     event.preventDefault();
-    searchInput.value = '';
+    searchInput.value = "";
 
     let bookmarks = document.getElementsByClassName(CLASS_NAMES.bookmark);
     let folders = document.getElementsByClassName(CLASS_NAMES.folder);
 
     for (let bookmark of bookmarks) {
-      bookmark.style.display = 'flex';
+      bookmark.style.display = "flex";
     }
 
     for (let folder of folders) {
-      folder.style.display = 'block';
+      folder.style.display = "block";
     }
   }
 
-  if (event.key === 'ArrowLeft') {
+  if (event.key === "ArrowLeft") {
     updateActiveBestMatch(activeBestMatchIndex - 1);
   }
 
-  if (event.key === 'ArrowRight') {
+  if (event.key === "ArrowRight") {
     updateActiveBestMatch(activeBestMatchIndex + 1);
   }
 
-  if (event.key === 'Enter') {
+  if (event.key === "Enter") {
     event.preventDefault();
     if (bestMatchUrls.length !== 0) {
       chrome.tabs.create({ url: bestMatchUrls[activeBestMatchIndex] });
@@ -190,22 +190,22 @@ window.onload = async function () {
 };
 
 function setBodyHeightFromStorage() {
-  let savedHeight = localStorage.getItem('savedHeight');
+  let savedHeight = localStorage.getItem("savedHeight");
   if (savedHeight && savedHeight > 30) {
     document.body.style.height = `${savedHeight}px`;
     if (savedHeight > 618) {
-      document.body.style.height = '618px';
+      document.body.style.height = "618px";
     }
   }
 }
 
 function saveCurrentHeight() {
-  let currentHeight = document.getElementById('bookmarks').clientHeight;
-  localStorage.setItem('savedHeight', (currentHeight - 8).toString());
+  let currentHeight = document.getElementById("bookmarks").clientHeight;
+  localStorage.setItem("savedHeight", (currentHeight - 8).toString());
 }
 
 function createBookmarks(bookmarkTreeNodes) {
-  const bookmarksContainer = document.getElementById('bookmarks');
+  const bookmarksContainer = document.getElementById("bookmarks");
 
   if (folderCount === 0) {
     showEmptyBookmarkMessage();
@@ -215,13 +215,13 @@ function createBookmarks(bookmarkTreeNodes) {
 }
 
 function showEmptyBookmarkMessage() {
-  const bookmarksContainer = document.getElementById('bookmarks');
-  const messageElement = createElement('p', 'message', EmptyBookmarkMessage);
+  const bookmarksContainer = document.getElementById("bookmarks");
+  const messageElement = createElement("p", "message", EmptyBookmarkMessage);
 
   bookmarksContainer.appendChild(messageElement);
 }
 
-function createElement(type, className, textContent = '') {
+function createElement(type, className, textContent = "") {
   let element = document.createElement(type);
   element.className = className;
   element.textContent = textContent;
@@ -245,30 +245,30 @@ function showBookmarks(bookmarkNodes, parent, parentTitle = []) {
 }
 
 function createBookmarkItem(bookmarkNode, parent) {
-  let favicon = createElement('img', CLASS_NAMES.favicon);
-  favicon.src = `${chrome.runtime.getURL('/_favicon?')}pageUrl=${encodeURIComponent(bookmarkNode.url)}&size=32`;
+  let favicon = createElement("img", CLASS_NAMES.favicon);
+  favicon.src = `${chrome.runtime.getURL("/_favicon?")}pageUrl=${encodeURIComponent(bookmarkNode.url)}&size=32`;
 
-  let bookItem = createElement('a', CLASS_NAMES.bookmark);
+  let bookItem = createElement("a", CLASS_NAMES.bookmark);
   bookItem.href = bookmarkNode.url;
-  bookItem.target = '_blank';
+  bookItem.target = "_blank";
   bookItem.appendChild(favicon);
 
-  bookItem.addEventListener('click', function (event) {
-    if (bookmarkNode.url.startsWith('chrome://') || bookmarkNode.url.startsWith('edge://')) {
+  bookItem.addEventListener("click", function (event) {
+    if (bookmarkNode.url.startsWith("chrome://") || bookmarkNode.url.startsWith("edge://")) {
       event.preventDefault();
       chrome.tabs.create({ url: bookmarkNode.url });
     }
   });
 
-  let linkTitle = createElement('p', '', bookmarkNode.title ? bookmarkNode.title : getTitleFromUrl(bookmarkNode.url));
+  let linkTitle = createElement("p", "", bookmarkNode.title ? bookmarkNode.title : getTitleFromUrl(bookmarkNode.url));
   bookItem.appendChild(linkTitle);
 
   parent.appendChild(bookItem);
 }
 
 function createFolderForBookmarks(bookmarkNode, parent, parentTitle = []) {
-  let folder = createElement('div', CLASS_NAMES.folder);
-  let childContainer = createElement('div', CLASS_NAMES.childContainer);
+  let folder = createElement("div", CLASS_NAMES.folder);
+  let childContainer = createElement("div", CLASS_NAMES.childContainer);
   // 递归传递父级的 title
   const title = [...parentTitle];
   title.push(bookmarkNode.title);
@@ -279,29 +279,29 @@ function createFolderForBookmarks(bookmarkNode, parent, parentTitle = []) {
       // 如果是多级目录，则在标题前面加上父级目录
       if (title.length > 2) {
         for (let i = title.length - 2; i > 1; i--) {
-          folderName = title[i] + ' / ' + folderName;
+          folderName = title[i] + " / " + folderName;
         }
       }
 
-      let folderTitle = createElement('h2', '', folderName);
+      let folderTitle = createElement("h2", "", folderName);
 
-      if (bookmarkNode.title !== 'Favorites Bar' && bookmarkNode.title !== '收藏夹栏') {
+      if (bookmarkNode.title !== "Favorites Bar" && bookmarkNode.title !== "收藏夹栏") {
         folderTitle.title = keyText;
-        folderTitle.style.cursor = 'pointer';
+        folderTitle.style.cursor = "pointer";
 
         // 判断是否在之前被收起来了
-        if (localStorage.getItem(bookmarkNode.title) === 'collapsed') {
-          childContainer.style.display = 'none';
+        if (localStorage.getItem(bookmarkNode.title) === "collapsed") {
+          childContainer.style.display = "none";
         }
 
-        folderTitle.addEventListener('click', function (event) {
+        folderTitle.addEventListener("click", function (event) {
           // 为展开/收起添加事件
-          if (childContainer.style.display === 'none') {
-            childContainer.style.display = 'flex';
-            localStorage.setItem(bookmarkNode.title, 'expanded');
+          if (childContainer.style.display === "none") {
+            childContainer.style.display = "flex";
+            localStorage.setItem(bookmarkNode.title, "expanded");
           } else {
-            childContainer.style.display = 'none';
-            localStorage.setItem(bookmarkNode.title, 'collapsed');
+            childContainer.style.display = "none";
+            localStorage.setItem(bookmarkNode.title, "collapsed");
           }
 
           // 如果按住 ctrl 或 meta 键（Mac上的command键）则批量打开书签
@@ -318,7 +318,7 @@ function createFolderForBookmarks(bookmarkNode, parent, parentTitle = []) {
 
       folder.appendChild(folderTitle);
     } else {
-      folder.style.marginTop = '8px';
+      folder.style.marginTop = "8px";
     }
   }
 
@@ -339,12 +339,12 @@ function countFolders(bookmarkNodes) {
 }
 
 function getTitleFromUrl(url) {
-  if (url.startsWith('chrome://') || url.startsWith('edge://')) {
-    return url.split('//')[1].split('/')[0].charAt(0).toUpperCase() + url.split('//')[1].split('/')[0].slice(1);
+  if (url.startsWith("chrome://") || url.startsWith("edge://")) {
+    return url.split("//")[1].split("/")[0].charAt(0).toUpperCase() + url.split("//")[1].split("/")[0].slice(1);
   }
 
   let host = new URL(url).host;
-  let parts = host.startsWith('www.') ? host.split('.')[1] : host.split('.')[0];
+  let parts = host.startsWith("www.") ? host.split(".")[1] : host.split(".")[0];
 
   return parts.charAt(0).toUpperCase() + parts.slice(1);
 }
