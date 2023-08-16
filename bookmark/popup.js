@@ -1,7 +1,6 @@
-import Fuse from './lib/fuse.js'
-import {debounce} from './utils/debounce.js';
-import {keyText, BestMatchTitle, LastBestMatch, BestMatch, EmptyBookmarkMessage} from "./utils/i18n.js";
-
+import Fuse from './lib/fuse.js';
+import { debounce } from './utils/debounce.js';
+import { keyText, BestMatchTitle, LastBestMatch, BestMatch, EmptyBookmarkMessage } from './utils/i18n.js';
 
 const CLASS_NAMES = {
   bookmark: 'bookmark',
@@ -20,7 +19,6 @@ let bestMatchUrls = [];
 updateHeader(JSON.parse(localStorage.getItem('persistedHeader')), true);
 updateActiveBestMatch(activeBestMatchIndex);
 
-
 /**
  * @description 使用 Fuse 进行模糊匹配，返回最佳匹配项或false
  * @param searchTerm {string} 查询的字符串
@@ -29,7 +27,7 @@ updateActiveBestMatch(activeBestMatchIndex);
  */
 function FuseStrMatch(searchTerm, data) {
   const options = {
-    keys: ["title", "url"],
+    keys: ['title', 'url'],
     ignoreLocation: false, // 全搜索
     includeScore: true, // 包含相似度评分
     threshold: 0.5, // 相似度阈值
@@ -47,9 +45,8 @@ function FuseStrMatch(searchTerm, data) {
     }
   }, []);
 
-  return results.length > 0 ? noRepeatResult.slice(0, 3).map(({item}) => item) : false;
+  return results.length > 0 ? noRepeatResult.slice(0, 3).map(({ item }) => item) : false;
 }
-
 
 /**
  * @description 快速切换默认选中的最佳结果
@@ -58,14 +55,13 @@ function FuseStrMatch(searchTerm, data) {
 function updateActiveBestMatch(index) {
   const bestMatch = Array.from(document.querySelectorAll('#best-match .bookmark'));
   if (bestMatch.length === 0) {
-    return
+    return;
   }
-  bestMatch.forEach(item => item.classList.remove('active'));
+  bestMatch.forEach((item) => item.classList.remove('active'));
   // 循环切换
   activeBestMatchIndex = index % bestMatch.length < 0 ? bestMatch.length - 1 : index % bestMatch.length;
   bestMatch[activeBestMatchIndex].classList.add('active');
 }
-
 
 /**
  * @description 更新 header 的内容，如果匹配失败则不更新
@@ -87,61 +83,66 @@ function updateHeader(headerFuzeMatch, init = false) {
   const childContainer = createElement('div', CLASS_NAMES.childContainer);
   const title = createElement('h2', '', init ? LastBestMatch : BestMatch);
   title.title = BestMatchTitle;
-  headerFuzeMatch.map(matchedBookmark => {
+  headerFuzeMatch.map((matchedBookmark) => {
     createBookmarkItem(matchedBookmark, childContainer);
   });
   bestMatchFolder.appendChild(title);
   bestMatchFolder.appendChild(childContainer);
-  bestMatchUrls = headerFuzeMatch.map(item => item.url);
+  bestMatchUrls = headerFuzeMatch.map((item) => item.url);
 
   localStorage.setItem('persistedHeader', JSON.stringify(headerFuzeMatch));
   document.querySelector('#best-match').appendChild(bestMatchFolder);
   updateActiveBestMatch(0);
 }
 
-searchInput.addEventListener('input', debounce(function () {
-  let searchTerm = searchInput.value.toLowerCase();
-  let folders = document.getElementsByClassName(CLASS_NAMES.folder);
+searchInput.addEventListener(
+  'input',
+  debounce(function () {
+    let searchTerm = searchInput.value.toLowerCase();
+    let folders = document.getElementsByClassName(CLASS_NAMES.folder);
 
-  const headerData = []
+    const headerData = [];
 
-  for (let folder of folders) {
-    let bookmarks = folder.getElementsByClassName(CLASS_NAMES.bookmark);
-    let hasVisibleBookmark = false;
+    for (let folder of folders) {
+      let bookmarks = folder.getElementsByClassName(CLASS_NAMES.bookmark);
+      let hasVisibleBookmark = false;
 
-    for (let bookmark of bookmarks) {
-      // push 查询数据
-      headerData.push({
-        title: bookmark.textContent,
-        url: bookmark.href,
-        favicon: bookmark.querySelector('.favicon')?.src
-      });
+      for (let bookmark of bookmarks) {
+        // push 查询数据
+        headerData.push({
+          title: bookmark.textContent,
+          url: bookmark.href,
+          favicon: bookmark.querySelector('.favicon')?.src,
+        });
 
-      let title = bookmark.textContent.toLowerCase();
-      let url = bookmark.href.toLowerCase();
+        let title = bookmark.textContent.toLowerCase();
+        let url = bookmark.href.toLowerCase();
 
-      // 当直接匹配失败时，使用模糊匹配
-      if (
-        title.includes(searchTerm) ||
-        url.includes(searchTerm) ||
-        FuseStrMatch(searchTerm, [{
-          title: title,
-          url: url,
-          favicon: ""
-        }]) !== false
-      ) {
-        bookmark.style.display = 'flex';
-        hasVisibleBookmark = true;
-      } else {
-        bookmark.style.display = 'none';
+        // 当直接匹配失败时，使用模糊匹配
+        if (
+          title.includes(searchTerm) ||
+          url.includes(searchTerm) ||
+          FuseStrMatch(searchTerm, [
+            {
+              title: title,
+              url: url,
+              favicon: '',
+            },
+          ]) !== false
+        ) {
+          bookmark.style.display = 'flex';
+          hasVisibleBookmark = true;
+        } else {
+          bookmark.style.display = 'none';
+        }
       }
+
+      folder.style.display = hasVisibleBookmark ? 'block' : 'none';
     }
 
-    folder.style.display = hasVisibleBookmark ? 'block' : 'none';
-  }
-
-  updateHeader(FuseStrMatch(searchTerm, headerData));
-}, 30));
+    updateHeader(FuseStrMatch(searchTerm, headerData));
+  }, 30)
+);
 
 window.addEventListener('keydown', function (event) {
   if (event.key === 'Escape') {
@@ -171,7 +172,7 @@ window.addEventListener('keydown', function (event) {
   if (event.key === 'Enter') {
     event.preventDefault();
     if (bestMatchUrls.length !== 0) {
-      chrome.tabs.create({url: bestMatchUrls[activeBestMatchIndex]});
+      chrome.tabs.create({ url: bestMatchUrls[activeBestMatchIndex] });
     }
   }
 });
@@ -231,15 +232,15 @@ function showBookmarks(bookmarkNodes, parent, parentTitle = []) {
     return;
   }
   // 优先显示书签，再显示文件夹
-  const bookmarkItems = bookmarkNodes.filter(node => node.url);
-  bookmarkItems.forEach(bookmarkNode => {
+  const bookmarkItems = bookmarkNodes.filter((node) => node.url);
+  bookmarkItems.forEach((bookmarkNode) => {
     createBookmarkItem(bookmarkNode, parent);
-  })
+  });
 
-  const bookmarkFolders = bookmarkNodes.filter(node => node.children && node.children.length > 0);
-  bookmarkFolders.forEach(bookmarkNode => {
+  const bookmarkFolders = bookmarkNodes.filter((node) => node.children && node.children.length > 0);
+  bookmarkFolders.forEach((bookmarkNode) => {
     createFolderForBookmarks(bookmarkNode, parent, parentTitle);
-  })
+  });
 }
 
 function createBookmarkItem(bookmarkNode, parent) {
@@ -254,7 +255,7 @@ function createBookmarkItem(bookmarkNode, parent) {
   bookItem.addEventListener('click', function (event) {
     if (bookmarkNode.url.startsWith('chrome://') || bookmarkNode.url.startsWith('edge://')) {
       event.preventDefault();
-      chrome.tabs.create({url: bookmarkNode.url});
+      chrome.tabs.create({ url: bookmarkNode.url });
     }
   });
 
@@ -273,7 +274,6 @@ function createFolderForBookmarks(bookmarkNode, parent, parentTitle = []) {
   // 如果文件夹下有书签，则显示标题，否则如全是文件夹则不显示
   if (bookmarkNode.children?.filter((node) => node.url).length > 0) {
     if (folderCount > 1 && bookmarkNode.title) {
-
       let folderName = bookmarkNode.title;
       // 如果是多级目录，则在标题前面加上父级目录
       if (title.length > 2) {
@@ -282,11 +282,11 @@ function createFolderForBookmarks(bookmarkNode, parent, parentTitle = []) {
         }
       }
 
-
       let folderTitle = createElement('h2', '', folderName);
 
       if (bookmarkNode.title !== 'Favorites Bar' && bookmarkNode.title !== '收藏夹栏') {
         folderTitle.title = keyText;
+        folderTitle.style.cursor = 'pointer';
 
         // 判断是否在之前被收起来了
         if (localStorage.getItem(bookmarkNode.title) === 'collapsed') {
@@ -307,7 +307,7 @@ function createFolderForBookmarks(bookmarkNode, parent, parentTitle = []) {
           if (event.ctrlKey || event.metaKey) {
             for (let childNode of bookmarkNode.children) {
               if (childNode.url) {
-                chrome.tabs.create({url: childNode.url});
+                chrome.tabs.create({ url: childNode.url });
               }
             }
             event.preventDefault();
