@@ -6,9 +6,7 @@
   "chrome_url_overrides": {
     "newtab": "newtab.html"
   },
-  "optional_host_permissions": [
-    "*://*/*"
-  ],
+  "optional_host_permissions": ["*://*/*"],
   "icons": {
     "16": "logo.png",
     "48": "logo.png",
