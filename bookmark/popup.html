@@ -11,6 +11,24 @@
         box-sizing: border-box;
       }
 
+      #notification-container {
+        padding: 10px 12px;
+        position: fixed;
+        left: 0;
+        top: 40px;
+        z-index: 99;
+        max-width: 80%;
+        background-color: rgba(0,0,0,0.8);
+        font-size: 15px;
+        font-weight: 600;
+        font-family: Arial, Helvetica, sans-serif;
+        color: #fff;
+        transform: translatex(-100%);
+        transition: transform .3s ease;
+        border-radius: 0 5px 5px 0;
+        word-break: break-all;
+      }
+
       body::-webkit-scrollbar {
         display: none;
       }
@@ -114,6 +132,11 @@
           color: #f1f1f1;
         }
 
+        #notification-container {
+          background-color: #f1f1f1;
+          color: #2a2a2a;
+        }
+
         h2,
         p.message,
         h2 .expandIcon {
@@ -145,6 +168,7 @@
     </style>
   </head>
   <body>
+    <div id="notification-container"></div>
     <div id="header">
       <input id="searchInput" type="text" placeholder="Search..." />
     </div>
