@@ -1,7 +1,7 @@
 import Fuse from "./lib/fuse.js";
 import { debounce } from "./utils/debounce.js";
 import { keyText, BestMatchTitle, LastBestMatch, BestMatch, EmptyBookmarkMessage } from "./utils/i18n.js";
-import { Tooltip } from "./utils/tooltip.js";
+import { Notification } from "./utils/notification.js";
 import { createElement } from "./utils/element.js";
 
 const CLASS_NAMES = {
@@ -9,7 +9,7 @@ const CLASS_NAMES = {
   favicon: "favicon",
   folder: "folder",
   childContainer: "childContainer",
-  tooltip: "tooltip",
+  Notification: "Notification",
 };
 
 let folderCount;
@@ -17,7 +17,7 @@ let folderCount;
 let searchInput = document.getElementById("searchInput");
 let activeBestMatchIndex = 0;
 
-let bestMatchUrls = [];
+let bestMatches = [];
 // 恢复 header 元素
 updateHeader(JSON.parse(localStorage.getItem("persistedHeader")), true);
 updateActiveBestMatch(activeBestMatchIndex);
@@ -92,7 +92,7 @@ function updateHeader(headerFuzeMatch, init = false) {
   });
   bestMatchFolder.appendChild(title);
   bestMatchFolder.appendChild(childContainer);
-  bestMatchUrls = headerFuzeMatch.map((item) => item.url);
+  bestMatches = headerFuzeMatch;
 
   localStorage.setItem("persistedHeader", JSON.stringify(headerFuzeMatch));
   document.querySelector("#best-match").appendChild(bestMatchFolder);
@@ -167,16 +167,18 @@ window.addEventListener("keydown", function (event) {
 
   if (event.key === "ArrowLeft") {
     updateActiveBestMatch(activeBestMatchIndex - 1);
+    Notification.show(bestMatches[activeBestMatchIndex].title, 1500);
   }
 
   if (event.key === "ArrowRight") {
     updateActiveBestMatch(activeBestMatchIndex + 1);
+    Notification.show(bestMatches[activeBestMatchIndex].title, 1500);
   }
 
   if (event.key === "Enter") {
     event.preventDefault();
-    if (bestMatchUrls.length !== 0) {
-      chrome.tabs.create({ url: bestMatchUrls[activeBestMatchIndex] });
+    if (bestMatches.length !== 0) {
+      chrome.tabs.create({ url: bestMatches[activeBestMatchIndex].url });
     }
   }
 });
@@ -258,12 +260,12 @@ function createBookmarkItem(bookmarkNode, parent) {
 
   bookItem.addEventListener("mouseover", function () {
     if (bookmarkNode.title.length > 4) {
-      Tooltip.show(bookmarkNode.title);
+      Notification.show(bookmarkNode.title);
     }
   });
 
   bookItem.addEventListener("mouseleave", function () {
-    Tooltip.hide();
+    Notification.hide();
   });
 
   let linkTitle = createElement("p", "", bookmarkNode.title ? bookmarkNode.title : getTitleFromUrl(bookmarkNode.url));
