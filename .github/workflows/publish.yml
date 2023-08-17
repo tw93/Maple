@@ -3,7 +3,7 @@ name: publish
 on:
   push:
     tags:
-    - 'v*'
+    - '*'
 
 jobs:
   publish:
@@ -17,10 +17,15 @@ jobs:
         with:
           node-version: 20
 
-      - name: build
-        run: |
-          npm install
-          npm run build
+      - name: Run install
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: install # will run `yarn install` command
+
+      - name: Build
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: build
 
       - name: Create Release and Upload Release Asset
         uses: softprops/action-gh-release@v1

@@ -6,7 +6,7 @@
   "scripts": {
     "bookmark": "zip -r ./dist/Maple.zip ./bookmark",
     "newtab": "zip -r ./dist/NewTab.zip ./newtab",
-    "build": "mkdir -p ./dist && npm run lint && npm run bookmark && npm run newtab",
+    "build": "mkdir -p ./dist && yarn lint && yarn bookmark && yarn newtab",
     "lint": "eslint . --ext .js --fix"
   },
   "keywords": [
