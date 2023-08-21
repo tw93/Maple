@@ -288,15 +288,15 @@ window.onload = async function () {
   if (searchIsHide) {
     const searchBarContainerHeight = container.clientHeight;
     bookmarksContainer.style.transform = `translateY(-${searchBarContainerHeight}px)`;
-    container.style.transition = "all .3s ease";
-    bookmarksContainer.style.transition = "all .3s ease";
   } else {
     container.classList.add("show");
     bookmarksContainer.style.transform = `translateY(0)`;
     searchInput.focus();
-    bookmarksContainer.style.transition = "all .3s ease";
-    container.style.transition = "all .3s ease";
   }
+  setTimeout(() => {
+    container.style.transition = "all .3s ease";
+    bookmarksContainer.style.transition = "all .3s ease";
+  }, 0);
 };
 
 function setBodyHeightFromStorage() {
