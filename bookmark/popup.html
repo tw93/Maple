@@ -62,6 +62,43 @@
         justify-content: flex-start;
       }
 
+      #search-wrapper {
+        margin-bottom: 18px;
+        position: relative;
+        transform: translateY(-105%);
+      }
+
+      #search-wrapper.show {
+        transform: translateY(0);
+        height: auto;
+      }
+
+      #search-wrapper.show .arrow {
+        transform: rotate(-135deg);
+      }
+
+      .search-action {
+        width: 384px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 105%;
+        height: 20px;
+        cursor: pointer;
+      }
+
+      #search-wrapper .arrow {
+        content: '';
+        border: solid black;
+        border-width: 0 2px 2px 0;
+        display: inline-block;
+        padding: 4px;
+        transform: rotate(45deg);
+        transition: transform 0.3s ease;
+        cursor: pointer;
+      }
+
       #best-match .bookmark.active {
         background-color: #eeebe7;
       }
@@ -104,8 +141,6 @@
         margin-bottom: 24px;
         width: 384px;
         display: flex;
-        margin-top: 10px;
-        height: 20px;
         align-items: center;
         justify-content: center;
         background-color: transparent;
@@ -135,6 +170,10 @@
         #notification-container {
           background-color: #f1f1f1;
           color: #2a2a2a;
+        }
+
+        #search-wrapper .arrow {
+          border-color: #f1f1f1;
         }
 
         h2,
@@ -169,10 +208,15 @@
   </head>
   <body>
     <div id="notification-container"></div>
-    <div id="header">
-      <input id="searchInput" type="text" placeholder="Search..." />
+    <div id="search-wrapper">
+      <div id="header">
+        <input id="searchInput" type="text" placeholder="Search..." />
+      </div>
+      <div id="best-match"></div>
+      <div class="search-action">
+        <i class="arrow"></i>
+      </div>
     </div>
-    <div id="best-match"></div>
     <div id="bookmarks"></div>
     <script type="module" src="popup.js"></script>
   </body>

@@ -1,6 +1,14 @@
 import Fuse from "./lib/fuse.js";
 import { debounce } from "./utils/debounce.js";
-import { keyText, BestMatchTitle, LastBestMatch, BestMatch, EmptyBookmarkMessage } from "./utils/i18n.js";
+import {
+  keyText,
+  BestMatchTitle,
+  LastBestMatch,
+  BestMatch,
+  EmptyBookmarkMessage,
+  ShowSearchWrapper,
+  HideSearchWrapper,
+} from "./utils/i18n.js";
 import { Notification } from "./utils/notification.js";
 import { createElement } from "./utils/element.js";
 
@@ -15,7 +23,10 @@ const CLASS_NAMES = {
 let folderCount;
 
 let searchInput = document.getElementById("searchInput");
+let hideArrow = document.querySelector(".search-action");
+
 let activeBestMatchIndex = 0;
+let searchIsHide = !(localStorage.getItem("SHOW_SEARCH_BAR") === "true");
 
 let bestMatches = [];
 // 恢复 header 元素
@@ -49,6 +60,29 @@ function FuseStrMatch(searchTerm, data) {
   }, []);
 
   return results.length > 0 ? noRepeatResult.slice(0, 3).map(({ item }) => item) : null;
+}
+
+/**
+ * 切换 searchBar 显示状态
+ */
+function switchSearchBarShowStatus() {
+  searchIsHide = !searchIsHide;
+  localStorage.setItem("SHOW_SEARCH_BAR", searchIsHide ? "false" : "true");
+  const extraClass = searchIsHide ? "" : "show";
+  const container = document.querySelector("#search-wrapper");
+  const containerHeight = container.clientHeight;
+  const bookmarksContainer = document.querySelector("#bookmarks");
+  if (container) {
+    container.classList.remove("show");
+
+    if (extraClass) {
+      container.classList.add(extraClass);
+      bookmarksContainer.style.transform = `translateY(0)`;
+      searchInput.focus();
+    } else {
+      bookmarksContainer.style.transform = `translateY(-${containerHeight}px)`;
+    }
+  }
 }
 
 /**
@@ -148,6 +182,22 @@ searchInput.addEventListener(
   }, 30)
 );
 
+hideArrow.addEventListener("click", function () {
+  switchSearchBarShowStatus();
+  if (!searchIsHide) {
+    searchInput.focus();
+  }
+});
+
+hideArrow.addEventListener("mouseover", function () {
+  const tips = searchIsHide ? ShowSearchWrapper : HideSearchWrapper;
+  Notification.show(tips);
+});
+
+hideArrow.addEventListener("mouseleave", function () {
+  Notification.hide();
+});
+
 window.addEventListener("keydown", function (event) {
   if (event.key === "Escape") {
     event.preventDefault();
@@ -166,11 +216,13 @@ window.addEventListener("keydown", function (event) {
   }
 
   if (event.key === "ArrowLeft") {
+    if (searchIsHide) return;
     updateActiveBestMatch(activeBestMatchIndex - 1);
     Notification.show(bestMatches[activeBestMatchIndex].title, 1500);
   }
 
   if (event.key === "ArrowRight") {
+    if (searchIsHide) return;
     updateActiveBestMatch(activeBestMatchIndex + 1);
     Notification.show(bestMatches[activeBestMatchIndex].title, 1500);
   }
@@ -181,6 +233,11 @@ window.addEventListener("keydown", function (event) {
       chrome.tabs.create({ url: bestMatches[activeBestMatchIndex].url });
     }
   }
+
+  if (event.ctrlKey && event.key === "s") {
+    event.preventDefault();
+    switchSearchBarShowStatus();
+  }
 });
 
 window.onload = async function () {
@@ -188,10 +245,24 @@ window.onload = async function () {
 
   const bookmarkTreeNodes = await chrome.bookmarks.getTree();
   folderCount = countFolders(bookmarkTreeNodes[0].children);
+  const container = document.querySelector("#search-wrapper");
+  const bookmarksContainer = document.querySelector("#bookmarks");
 
   createBookmarks(bookmarkTreeNodes);
   setTimeout(saveCurrentHeight, 600);
-  searchInput.focus();
+
+  if (searchIsHide) {
+    const searchBarContainerHeight = container.clientHeight;
+    bookmarksContainer.style.transform = `translateY(-${searchBarContainerHeight}px)`;
+    container.style.transition = "all .3s ease";
+    bookmarksContainer.style.transition = "all .3s ease";
+  } else {
+    container.classList.add("show");
+    bookmarksContainer.style.transform = `translateY(0)`;
+    searchInput.focus();
+    bookmarksContainer.style.transition = "all .3s ease";
+    container.style.transition = "all .3s ease";
+  }
 };
 
 function setBodyHeightFromStorage() {
