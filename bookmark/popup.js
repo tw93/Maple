@@ -101,6 +101,23 @@ function updateActiveBestMatch(index) {
 }
 
 /**
+ * 获取当前选中的最佳匹配项
+ * @returns {HTMLElement} 当前选中的最佳匹配项
+ */
+function getActiveBestMatch() {
+  const bestMatch = Array.from(document.querySelectorAll("#best-match .bookmark"));
+  return bestMatch[activeBestMatchIndex];
+}
+
+function showBestMatchTips() {
+  const curBestMathEle = getActiveBestMatch();
+  const tipsCon = curBestMathEle.querySelector("p");
+  if (checkOverflow(tipsCon)) {
+    Notification.show(bestMatches[activeBestMatchIndex].title, 1500);
+  }
+}
+
+/**
  * @description 更新 header 的内容，如果匹配失败则不更新
  * @param headerFuzeMatch {{ title: string, url: string, favicon: string }[]|null} 匹配到的 对象数组 或 null
  * @param init {boolean} 是否是初始化
@@ -131,6 +148,23 @@ function updateHeader(headerFuzeMatch, init = false) {
   localStorage.setItem("persistedHeader", JSON.stringify(headerFuzeMatch));
   document.querySelector("#best-match").appendChild(bestMatchFolder);
   updateActiveBestMatch(0);
+}
+
+/**
+ * 检测文本是否溢出
+ * @param {HTMLElement} el 检测溢出的元素
+ * @returns
+ */
+function checkOverflow(el) {
+  const curOverflow = el.style.overflow;
+
+  if (!curOverflow || curOverflow === "visible") el.style.overflow = "hidden";
+
+  const isOverflowing = el.clientWidth < el.scrollWidth || el.clientHeight < el.scrollHeight;
+
+  el.style.overflow = curOverflow;
+
+  return isOverflowing;
 }
 
 searchInput.addEventListener(
@@ -218,13 +252,13 @@ window.addEventListener("keydown", function (event) {
   if (event.key === "ArrowLeft") {
     if (searchIsHide) return;
     updateActiveBestMatch(activeBestMatchIndex - 1);
-    Notification.show(bestMatches[activeBestMatchIndex].title, 1500);
+    showBestMatchTips();
   }
 
   if (event.key === "ArrowRight") {
     if (searchIsHide) return;
     updateActiveBestMatch(activeBestMatchIndex + 1);
-    Notification.show(bestMatches[activeBestMatchIndex].title, 1500);
+    showBestMatchTips();
   }
 
   if (event.key === "Enter") {
@@ -329,8 +363,11 @@ function createBookmarkItem(bookmarkNode, parent) {
     }
   });
 
+  let linkTitle = createElement("p", "", bookmarkNode.title ? bookmarkNode.title : getTitleFromUrl(bookmarkNode.url));
+  bookItem.appendChild(linkTitle);
+
   bookItem.addEventListener("mouseover", function () {
-    if (bookmarkNode.title.length > 4) {
+    if (checkOverflow(linkTitle)) {
       Notification.show(bookmarkNode.title);
     }
   });
@@ -338,9 +375,6 @@ function createBookmarkItem(bookmarkNode, parent) {
   bookItem.addEventListener("mouseleave", function () {
     Notification.hide();
   });
-
-  let linkTitle = createElement("p", "", bookmarkNode.title ? bookmarkNode.title : getTitleFromUrl(bookmarkNode.url));
-  bookItem.appendChild(linkTitle);
 
   parent.appendChild(bookItem);
 }

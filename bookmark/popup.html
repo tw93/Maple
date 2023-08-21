@@ -11,11 +11,15 @@
         box-sizing: border-box;
       }
 
+      body:hover  #search-wrapper .arrow {
+        opacity: 1;
+      }
+
       #notification-container {
         padding: 10px 12px;
         position: fixed;
         left: 0;
-        top: 40px;
+        top: 0;
         z-index: 99;
         max-width: 80%;
         background-color: rgba(0,0,0,0.8);
@@ -23,7 +27,7 @@
         font-weight: 600;
         font-family: Arial, Helvetica, sans-serif;
         color: #fff;
-        transform: translatex(-100%);
+        transform: translatex(-105%);
         transition: transform .3s ease;
         border-radius: 0 5px 5px 0;
         word-break: break-all;
@@ -83,19 +87,20 @@
         align-items: center;
         justify-content: center;
         position: absolute;
-        top: 105%;
+        top: 108%;
         height: 20px;
         cursor: pointer;
       }
 
       #search-wrapper .arrow {
+        opacity: 0;
         content: '';
         border: solid black;
         border-width: 0 2px 2px 0;
         display: inline-block;
         padding: 4px;
         transform: rotate(45deg);
-        transition: transform 0.3s ease;
+        transition: all 0.3s ease;
         cursor: pointer;
       }
 

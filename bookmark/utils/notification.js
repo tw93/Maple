@@ -7,7 +7,7 @@ export const Notification = {
    */
   show(message, hideTime = 0) {
     const container = document.querySelector("#notification-container");
-    container.style.transform = `translateX(-100%)`;
+    container.style.transform = `translateX(-105%)`;
     container.textContent = message;
     container.style.transform = `translateX(0)`;
     if (hideTime > 0) {
@@ -26,6 +26,6 @@ export const Notification = {
    */
   hide() {
     const container = document.querySelector("#notification-container");
-    container.style.transform = `translateX(-100%)`;
+    container.style.transform = `translateX(-105%)`;
   },
 };
