@@ -15,6 +15,10 @@
         opacity: 1;
       }
 
+      body:hover #search-wrapper {
+        margin-top: 0;
+      }
+
       #notification-container {
         padding: 10px 12px;
         position: fixed;
@@ -23,8 +27,8 @@
         z-index: 99;
         max-width: 80%;
         background-color: rgba(0,0,0,0.8);
-        font-size: 15px;
-        font-weight: 600;
+        font-size: 14px;
+        font-weight: 500;
         font-family: Arial, Helvetica, sans-serif;
         color: #fff;
         transform: translatex(-105%);
@@ -67,18 +71,21 @@
       }
 
       #search-wrapper {
-        margin-bottom: 18px;
+        margin-bottom: 22px;
         position: relative;
+        margin-top: -30px;
         transform: translateY(-105%);
       }
 
       #search-wrapper.show {
-        transform: translateY(0);
-        height: auto;
+        transform: translateY(0) !important;
+        margin-top: 0 !important;
+        height: auto !important;
       }
 
       #search-wrapper.show .arrow {
         transform: rotate(-135deg);
+        opacity: 1 !important;
       }
 
       .search-action {
