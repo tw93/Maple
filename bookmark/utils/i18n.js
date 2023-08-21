@@ -17,4 +17,15 @@ const BestMatch = isZh ? "最佳匹配" : "Best Match";
 
 const EmptyBookmarkMessage = isZh ? "🍁 没有找到书签" : "🍁 No bookmarks in the current browser";
 
-export { keyText, BestMatchTitle, LastBestMatch, BestMatch, EmptyBookmarkMessage };
+const ShowSearchWrapper = isZh ? "显示搜索框" : "Show Search Box";
+const HideSearchWrapper = isZh ? "隐藏搜索框" : "Hide Search Box";
+
+export {
+  keyText,
+  BestMatchTitle,
+  LastBestMatch,
+  BestMatch,
+  EmptyBookmarkMessage,
+  ShowSearchWrapper,
+  HideSearchWrapper,
+};
