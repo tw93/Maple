@@ -286,11 +286,12 @@ window.onload = async function () {
   setTimeout(saveCurrentHeight, 600);
 
   if (searchIsHide) {
-    const searchBarContainerHeight = container.clientHeight;
+    // -8 是因为有 8px 的 margin
+    const searchBarContainerHeight = container.clientHeight - 8;
     bookmarksContainer.style.transform = `translateY(-${searchBarContainerHeight}px)`;
   } else {
     container.classList.add("show");
-    bookmarksContainer.style.transform = `translateY(0)`;
+    bookmarksContainer.style.transform = `translateY(-8)`;
     searchInput.focus();
   }
   setTimeout(() => {
