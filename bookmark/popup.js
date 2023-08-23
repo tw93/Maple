@@ -72,7 +72,8 @@ function switchSearchBarShowStatus() {
   localStorage.setItem("SHOW_SEARCH_BAR", searchIsHide ? "false" : "true");
   const extraClass = searchIsHide ? "" : "show";
   const container = document.querySelector("#search-wrapper");
-  const containerHeight = container.clientHeight;
+  // 有一个8px的间距，所以减去8
+  const containerHeight = container.clientHeight - 8;
   const bookmarksContainer = document.querySelector("#bookmarks");
   if (container) {
     container.classList.remove("show");
