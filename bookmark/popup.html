@@ -11,12 +11,14 @@
         box-sizing: border-box;
       }
 
-      body:hover  #search-wrapper .arrow {
-        opacity: 1;
-      }
-
-      body:hover #search-wrapper {
-        margin-top: 0;
+      #hot-area {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 60px;
+        z-index: 100;
+        cursor: pointer;
       }
 
       #notification-container {
@@ -108,7 +110,7 @@
         display: inline-block;
         padding: 4px;
         transform: rotate(45deg);
-        transition: all 0.3s ease;
+        transition: opacity 0.3s ease;
         cursor: pointer;
       }
 
@@ -220,6 +222,7 @@
     </style>
   </head>
   <body>
+    <div id="hot-area"></div>
     <div id="notification-container"></div>
     <div id="search-wrapper">
       <div id="header">
