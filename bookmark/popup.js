@@ -18,12 +18,14 @@ const CLASS_NAMES = {
   folder: "folder",
   childContainer: "childContainer",
   Notification: "Notification",
+  folderTitle: "folderTitle",
 };
 
 let folderCount;
 
 let searchInput = document.getElementById("searchInput");
 let hideArrow = document.querySelector(".search-action");
+let hotArea = document.querySelector("#hot-area");
 
 let activeBestMatchIndex = 0;
 let searchIsHide = !(localStorage.getItem("SHOW_SEARCH_BAR") === "true");
@@ -74,13 +76,14 @@ function switchSearchBarShowStatus() {
   const bookmarksContainer = document.querySelector("#bookmarks");
   if (container) {
     container.classList.remove("show");
-
     if (extraClass) {
       container.classList.add(extraClass);
       bookmarksContainer.style.transform = `translateY(0)`;
       searchInput.focus();
+      hotArea.style.display = "none";
     } else {
       bookmarksContainer.style.transform = `translateY(-${containerHeight}px)`;
+      hotArea.style.display = "block";
     }
   }
 }
@@ -216,6 +219,21 @@ searchInput.addEventListener(
   }, 30)
 );
 
+// fix under mask click
+document.addEventListener("click", function (e) {
+  const underMaskEle = [...document.elementsFromPoint(e.clientX, e.clientY)].find(
+    (el) =>
+      (el.classList.contains("search-action") || el.classList.contains(CLASS_NAMES.folderTitle)) &&
+      e.target.id === "hot-area"
+  );
+  if (underMaskEle) {
+    const clickEvent = new CustomEvent("click", {
+      detail: {},
+    });
+    underMaskEle.dispatchEvent(clickEvent);
+  }
+});
+
 hideArrow.addEventListener("click", function () {
   switchSearchBarShowStatus();
   if (!searchIsHide) {
@@ -289,15 +307,18 @@ window.onload = async function () {
     // -8 是因为有 8px 的 margin
     const searchBarContainerHeight = container.clientHeight - 8;
     bookmarksContainer.style.transform = `translateY(-${searchBarContainerHeight}px)`;
+    hotArea.style.display = "block";
   } else {
     container.classList.add("show");
     bookmarksContainer.style.transform = `translateY(-8)`;
     searchInput.focus();
+    hotArea.style.display = "none";
   }
+  // delay to add transition animation to stop initial animation
   setTimeout(() => {
     container.style.transition = "all .3s ease";
     bookmarksContainer.style.transition = "all .3s ease";
-  }, 0);
+  }, 100);
 };
 
 function setBodyHeightFromStorage() {
@@ -323,6 +344,22 @@ function createBookmarks(bookmarkTreeNodes) {
   } else {
     showBookmarks(bookmarkTreeNodes, bookmarksContainer);
   }
+  bindSwitchModeToFirstFolder();
+}
+
+function bindSwitchModeToFirstFolder() {
+  const hotArea = document.querySelector("#hot-area");
+  const searchWrapper = document.querySelector("#search-wrapper");
+  const arrow = document.querySelector(".arrow");
+  hotArea.addEventListener("mouseover", () => {
+    arrow.style.opacity = 1;
+    searchWrapper.style.marginTop = 0;
+  });
+
+  hotArea.addEventListener("mouseleave", () => {
+    arrow.style.opacity = 0;
+    searchWrapper.style.marginTop = "-30px";
+  });
 }
 
 function showEmptyBookmarkMessage() {
@@ -397,7 +434,7 @@ function createFolderForBookmarks(bookmarkNode, parent, parentTitle = []) {
         }
       }
 
-      let folderTitle = createElement("h2", "", folderName);
+      let folderTitle = createElement("h2", CLASS_NAMES.folderTitle, folderName);
 
       if (bookmarkNode.title !== "Favorites Bar" && bookmarkNode.title !== "收藏夹栏") {
         folderTitle.title = keyText;
