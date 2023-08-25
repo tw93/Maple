@@ -25,6 +25,7 @@ let folderCount;
 
 let searchInput = document.getElementById("searchInput");
 let hideArrow = document.querySelector(".search-action");
+let hideArrowIcon = document.querySelector(".search-action i");
 let hotArea = document.querySelector("#hot-area");
 
 let activeBestMatchIndex = 0;
@@ -242,12 +243,12 @@ hideArrow.addEventListener("click", function () {
   }
 });
 
-hideArrow.addEventListener("mouseover", function () {
+hideArrowIcon.addEventListener("mouseover", function () {
   const tips = searchIsHide ? ShowSearchWrapper : HideSearchWrapper;
   Notification.show(tips);
 });
 
-hideArrow.addEventListener("mouseleave", function () {
+hideArrowIcon.addEventListener("mouseleave", function () {
   Notification.hide();
 });
 
