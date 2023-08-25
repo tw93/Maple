@@ -37,11 +37,11 @@ jobs:
           prerelease: false
           files: dist/*
 
-      - uses: wdzeng/chrome-extension@v1
-        with:
-          extension-id: fobmbldflolfooglijmbibmnhoflbjlb
-          zip-path: dist/Maple.zip
-          tester-only: false
-          client-id: ${{ secrets.CHROME_CLIENT_ID }}
-          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
-          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+      # - uses: wdzeng/chrome-extension@v1
+      #   with:
+      #     extension-id: lgncmpklmepncbjpiebhdoejhmbcnjad
+      #     zip-path: dist/Maple.zip
+      #     tester-only: false
+      #     client-id: ${{ secrets.CHROME_CLIENT_ID }}
+      #     client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+      #     refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
