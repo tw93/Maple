@@ -40,8 +40,8 @@ The bookmarks bar can occupy the browsing window and affect concentration, so I 
 
 ## Installation
 
-- 使用 Chrome Web Store 来安装 [**Maple Bookmarks**](https://chrome.google.com/webstore/detail/maple-bookmarks/lgncmpklmepncbjpiebhdoejhmbcnjad)，假如好用很欢迎评价。
-- 假如你不可访问，可以下载 [Maple.zip](https://github.com/tw93/Maple/releases/latest/download/Maple.zip)，解压以后，参考 [Loading an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked) 来使用本地包。
+- Install [**Maple Bookmarks**](https://chrome.google.com/webstore/detail/maple-bookmarks/lgncmpklmepncbjpiebhdoejhmbcnjad) from the Chrome Web Store. If you find it useful, we'd appreciate your review.
+- If you're unable to access the Chrome Web Store, you can download [Maple.zip](https://github.com/tw93/Maple/releases/latest/download/Maple.zip). After unzipping, refer to [Loading an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked) to use the local package.
 
 ## More
 
