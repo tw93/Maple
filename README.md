@@ -20,7 +20,7 @@
 The bookmarks bar can occupy the browsing window and affect concentration, so I often hide it. However, this makes accessing bookmarks inconvenient. Therefore, I developed the Maple Bookmarks extension. By just using the shortcut, you can quickly access your bookmarks, even input can be searched instantly, which is practical and convenient.
 
 <kbd>
-    <img src="https://raw.githubusercontent.com/tw93/static/master/pic/maple.gif" width="100%">
+    <img src="https://raw.githubusercontent.com/tw93/static/master/pic/maple1.gif" width="100%">
 </kbd>
 <br/>
 <details>

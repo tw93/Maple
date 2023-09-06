@@ -21,7 +21,7 @@
 书签栏会占据浏览窗口且影响专注力，我常将其隐藏。但这使得访问书签很不方便，因此我开发了枫叶书签扩展，只需使用快捷键 `Command + E`(Mac)、`Ctrl+B`(Windows) 就能快速访问书签，甚至可以输入即搜索，实用且方便。
 
 <kbd>
-  <img src="https://raw.githubusercontent.com/tw93/static/master/pic/maple.gif" width="100%">
+  <img src="https://raw.githubusercontent.com/tw93/static/master/pic/maple1.gif" width="100%">
 </kbd>
 <br/>
 <details>
