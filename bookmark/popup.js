@@ -11,6 +11,7 @@ import {
 } from "./utils/i18n.js";
 import { Notification } from "./utils/notification.js";
 import { createElement } from "./utils/element.js";
+import { getFavicon } from "./utils/favicon.js";
 
 const CLASS_NAMES = {
   bookmark: "bookmark",
@@ -389,7 +390,7 @@ function showBookmarks(bookmarkNodes, parent, parentTitle = []) {
 
 function createBookmarkItem(bookmarkNode, parent) {
   let favicon = createElement("img", CLASS_NAMES.favicon);
-  favicon.src = `${chrome.runtime.getURL("/_favicon?")}pageUrl=${encodeURIComponent(bookmarkNode.url)}&size=32`;
+  favicon.src = getFavicon(bookmarkNode.url);
 
   let bookItem = createElement("a", CLASS_NAMES.bookmark);
   bookItem.href = bookmarkNode.url;
@@ -399,7 +400,13 @@ function createBookmarkItem(bookmarkNode, parent) {
   bookItem.addEventListener("click", function (event) {
     if (bookmarkNode.url.startsWith("chrome://") || bookmarkNode.url.startsWith("edge://")) {
       event.preventDefault();
-      chrome.tabs.create({ url: bookmarkNode.url });
+      if (typeof browser !== "undefined") {
+        // Firefox
+        browser.tabs.create({ url: bookmarkNode.url });
+      } else {
+        // Chrome
+        chrome.tabs.create({ url: bookmarkNode.url });
+      }
     }
   });
 
@@ -492,7 +499,7 @@ function countFolders(bookmarkNodes) {
 }
 
 function getTitleFromUrl(url) {
-  if (url.startsWith("chrome://") || url.startsWith("edge://")) {
+  if (url.startsWith("chrome://") || url.startsWith("edge://") || url.startsWith("about:")) {
     return url.split("//")[1].split("/")[0].charAt(0).toUpperCase() + url.split("//")[1].split("/")[0].slice(1);
   }
 
