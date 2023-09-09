@@ -5,7 +5,7 @@
   "main": "bookmark/popup.js",
   "scripts": {
     "bookmark": "zip -r ./dist/Maple.zip ./bookmark",
-    "bookmark-firefox": "cp -R ./bookmark ./bookmark-firefox && cp ./bookmark/manifest_firefox.json ./bookmark-firefox/manifest.json && zip -r ./dist/FirefoxMaple.zip ./bookmark-firefox && rm -rf ./bookmark-firefox",
+    "bookmark-firefox": "cp -R ./bookmark ./bookmark-firefox && cp ./bookmark/manifest_firefox.json ./bookmark-firefox/manifest.json && cd ./bookmark-firefox && zip -r ../dist/FirefoxMaple.zip . && cd .. && rm -rf ./bookmark-firefox",
     "newtab": "zip -r ./dist/NewTab.zip ./newtab",
     "build": "mkdir -p ./dist && yarn lint && yarn bookmark && yarn bookmark-firefox && yarn newtab",
     "lint": "eslint . --ext .js --fix"
