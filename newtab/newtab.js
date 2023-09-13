@@ -15,12 +15,14 @@ window.onload = function () {
       blank: "空白页",
       random: "随机图",
       bing: "必应图",
+      unsplash: "Unsplash",
     },
     en: {
       title: "New Tab",
       blank: "Blank",
       random: "Image",
       bing: "Bing",
+      unsplash: "Unsplash",
     },
   };
 
@@ -33,6 +35,7 @@ window.onload = function () {
   document.querySelector('#bg-selector option[value="blank"]').textContent = mapping.blank;
   document.querySelector('#bg-selector option[value="random"]').textContent = mapping.random;
   document.querySelector('#bg-selector option[value="bing"]').textContent = mapping.bing;
+  document.querySelector('#bg-selector option[value="unsplash"]').textContent = mapping.unsplash;
 
   // 根据浏览器类型和颜色模式设置背景色
   function setBackgroundColor() {
@@ -44,12 +47,16 @@ window.onload = function () {
   }
 
   function convertToLinkElement(data) {
-    bgDescription.textContent = `${data.title} · ${data.date}`;
-    bgDescription.href = "#";
-    bgDescription.onclick = function (e) {
-      e.preventDefault();
-      chrome.tabs.create({ url: data.url });
-    };
+    if (!title) {
+      bgDescription.textContent = "";
+    } else {
+      bgDescription.textContent = `${data.title} · ${data.date}`;
+      bgDescription.href = "#";
+      bgDescription.onclick = function (e) {
+        e.preventDefault();
+        chrome.tabs.create({ url: data.url });
+      };
+    }
   }
 
   // 随机设置背景图片
@@ -104,6 +111,24 @@ window.onload = function () {
       });
   }
 
+  function setUnsplashBackgroundImage() {
+    const apiBaseUrl = "https://ai.xrender.fun/photos/3200/1800";
+
+    fetch(apiBaseUrl)
+      .then((r) => {
+        const imageUrl = r.url.replace("https://fastly.picsum.photos", "https://ai.xrender.fun/picsum");
+        body.style.backgroundImage = `url(${imageUrl})`;
+        localStorage.setItem("bgUnsplashUrl", imageUrl);
+        localStorage.setItem("bgUnsplashDate", new Date().toISOString().slice(0, 10));
+        localStorage.setItem("bgUnsplashInfo", {
+          title: "",
+        });
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+
   /**
    * @description 处理选择非空白背景时的逻辑
    * @param type 选择的背景类型，random 或 bing
@@ -120,12 +145,16 @@ window.onload = function () {
 
     if (imageUrl && imageDate === currentDate) {
       body.style.backgroundImage = `url(${imageUrl})`;
-      convertToLinkElement(JSON.parse(imageInfo));
+      if (type !== "unsplash") {
+        convertToLinkElement(JSON.parse(imageInfo));
+      }
     } else {
       if (type === "random") {
         setRandomBackgroundImage();
       } else if (type === "bing") {
         setBingBackgroundImage();
+      } else if (type === "unsplash") {
+        setUnsplashBackgroundImage();
       }
     }
   }
@@ -144,6 +173,8 @@ window.onload = function () {
       handleSetBackground(bgType, "bgImageUrl", "bgImageDate", "bgImageInfo");
     } else if (bgType === "bing") {
       handleSetBackground(bgType, "bgBingUrl", "bgBingDate", "bgBingInfo");
+    } else if (bgType === "unsplash") {
+      handleSetBackground(bgType, "bgUnsplashUrl", "bgUnsplashDate", "bgUnsplashInfo");
     }
   }
 

@@ -413,15 +413,28 @@ function createBookmarkItem(bookmarkNode, parent) {
   let linkTitle = createElement("p", "", bookmarkNode.title ? bookmarkNode.title : getTitleFromUrl(bookmarkNode.url));
   bookItem.appendChild(linkTitle);
 
+  let hideTimeout = null;
+
+  let mouseleaveHandler = function () {
+    // 在mouseleave事件中，设置一个延时，然后隐藏Notification
+    hideTimeout = setTimeout(() => {
+      Notification.hide();
+    }, 500);
+  };
+
   bookItem.addEventListener("mouseover", function () {
+    // 如果已经计划了隐藏通知的操作，取消它
+    if (hideTimeout) {
+      clearTimeout(hideTimeout);
+      hideTimeout = null;
+    }
+
     if (checkOverflow(linkTitle)) {
       Notification.show(bookmarkNode.title);
     }
   });
 
-  bookItem.addEventListener("mouseleave", function () {
-    Notification.hide();
-  });
+  bookItem.addEventListener("mouseleave", mouseleaveHandler);
 
   parent.appendChild(bookItem);
 }
