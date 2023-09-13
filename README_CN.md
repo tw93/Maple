@@ -41,7 +41,7 @@
 
 ## 安装
 
-- 使用 Chrome Web Store 来安装 [**Maple Bookmarks**](https://chrome.google.com/webstore/detail/maple-bookmarks/lgncmpklmepncbjpiebhdoejhmbcnjad)，假如好用很欢迎评价。
+- 使用 Chrome Web Store 来安装 [**Maple Bookmarks**](https://chrome.google.com/webstore/detail/maple-bookmarks/lgncmpklmepncbjpiebhdoejhmbcnjad)，假如你是火狐用户，请通过 [Firefox Addon](https://addons.mozilla.org/zh-CN/firefox/addon/maple-bookmarks/) 来安装使用，好用很欢迎评价。
 - 假如你不可访问，可以下载 [Maple.zip](https://github.com/tw93/Maple/releases/latest/download/Maple.zip)，解压以后，参考 [Loading an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked) 来使用本地包。
 
 ## 标签页
@@ -55,7 +55,7 @@
 1. 先整理好书签，可以调整常用顺序以及删除不常使用的，有文件夹的放后面，让它更整齐。
 2. 使用 `Command+Shift+B`(Mac)、`Ctrl+Shift+B`(Windows)，或者在书签栏上右键隐藏掉书签栏。
 3. 点击扩展图标，将 `Maple Bookmarks` 给固定到工具栏上。
-4. 试试使用 `Command + E`(Mac)、`Ctrl+B`(Windows) 来快速访问书签吧。
+4. 试试使用 `Command + E`(Mac)、`Ctrl+B`(Windows / Firefox) 来快速访问书签吧。
 5. **假如你的书签很多，可以直接输入关键词来搜索，支持中文、英文、域名等**，默认不开启搜索，使用快捷键 `Ctrl + S` 或者点击界面上方小箭头打开搜索模式。
 6. 每次搜索会在最上方保留最匹配的三个结果，通过键盘的 `←` 和 `→` 可以快速切换最匹配结果，`Entry` 快速打开高亮的选中书签。
 
