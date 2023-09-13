@@ -47,7 +47,7 @@
 ## 标签页
 
 1. 由于 Chrome 的原因，即使隐藏掉书签栏，在默认标签页上还有，可以用 [Maple NewTab](https://chrome.google.com/webstore/detail/maple-newtab/fobmbldflolfooglijmbibmnhoflbjlb/related?hl=en&authuser=0) 扩展来替换掉，这样就可彻底隐藏掉书签栏了。
-2. `Maple NewTab` 当前支持`空白纯净页`、`潮流周刊图`、`Bing 图`三种形式的效果，光标放置背景图上，等待 2s 会出现切换框，点击即可切换。
+2. `Maple NewTab` 当前支持`空白纯净页`、`潮流周刊图`、`Bing 图`、`Unsplash` 4 种形式的效果，光标放置背景图上，等待 2s 会出现切换框，点击即可切换。
 3. 假如你更喜欢现在自己的标签页，可以在扩展中移除掉 `Maple NewTab`，这样就能恢复到默认标签页了。
 
 ## 实践

@@ -46,7 +46,7 @@ The bookmarks bar can occupy the browsing window and affect concentration, so I 
 ## More
 
 1. Due to Chrome's limitations, even if the bookmarks bar is hidden, it will still appear on the default tab page. At this time, you can use [Maple NewTab](https://chrome.google.com/webstore/detail/maple-newtab/fobmbldflolfooglijmbibmnhoflbjlb/related?hl=en&authuser=0) to replace the default tab page, thus completely hiding the bookmarks bar.
-2. `Maple NewTab` currently supports three types of displays: `blank pure page`, `trendy weekly picture`, and `Bing image`. Place the cursor on the background image, wait for 2 seconds, and a switch box will appear. Click to switch.
+2. `Maple NewTab` currently supports four types of displays: `blank pure page`,`Unsplash`,`trendy weekly picture`, and `Bing image`. Place the cursor on the background image, wait for 2 seconds, and a switch box will appear. Click to switch.
 3. If you prefer your current tab page, you can remove the `Maple NewTab` extension. This way, you can revert to the default tab page.
 
 ## Practice
