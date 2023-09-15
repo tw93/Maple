@@ -47,9 +47,7 @@ window.onload = function () {
   }
 
   function convertToLinkElement(data) {
-    if (!title) {
-      bgDescription.textContent = "";
-    } else {
+    if (data.title && data.date) {
       bgDescription.textContent = `${data.title} · ${data.date}`;
       bgDescription.href = "#";
       bgDescription.onclick = function (e) {
@@ -111,18 +109,21 @@ window.onload = function () {
       });
   }
 
+  /**
+   * @description 设置Unsplash背景图片，用了下代理
+   */
   function setUnsplashBackgroundImage() {
-    const apiBaseUrl = "https://ai.xrender.fun/photos/3200/1800";
+    const apiBaseUrl = "https://picsum.photos/3200/1800";
 
     fetch(apiBaseUrl)
       .then((r) => {
-        const imageUrl = r.url.replace("https://fastly.picsum.photos", "https://ai.xrender.fun/picsum");
+        const imageUrl = r.url;
         body.style.backgroundImage = `url(${imageUrl})`;
+        bgDescription.textContent = "";
         localStorage.setItem("bgUnsplashUrl", imageUrl);
         localStorage.setItem("bgUnsplashDate", new Date().toISOString().slice(0, 10));
-        localStorage.setItem("bgUnsplashInfo", {
-          title: "",
-        });
+        // 由于没有其他的信息获取
+        localStorage.setItem("bgUnsplashInfo", JSON.stringify({ title: "" }));
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -145,8 +146,10 @@ window.onload = function () {
 
     if (imageUrl && imageDate === currentDate) {
       body.style.backgroundImage = `url(${imageUrl})`;
-      if (type !== "unsplash") {
+      try {
         convertToLinkElement(JSON.parse(imageInfo));
+      } catch (error) {
+        console.log(error);
       }
     } else {
       if (type === "random") {

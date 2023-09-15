@@ -55,8 +55,9 @@ The bookmarks bar can occupy the browsing window and affect concentration, so I 
 2. Use `Command+Shift+B`(Mac)、`Ctrl+Shift+B`(Windows) or right-click on the bookmarks bar to hide it.
 3. Click on the extension icon and pin `Maple Bookmarks` to the toolbar.
 4. Try using `Command + E`(Mac)、`Ctrl+B`(Windows / Firefox) to quickly access your bookmarks.
-5. If you have an extensive collection of bookmarks, you can conveniently search through them using keywords. The search feature supports Chinese, English, and domain names. By default, the search function is not activated. To enable it, use the `Ctrl + S` shortcut or click the small arrow located at the top of the interface to switch to search mode.
-6. Each search will prioritize and display the top three most relevant results. You can easily navigate between these top results using the `←` and `→` keys on your keyboard. To swiftly access the highlighted bookmark, simply press the Enter key.
+5. Clicking on the folder name can collapse and expand it, making it more comfortable for users with many bookmarks to use.
+6. If you have an extensive collection of bookmarks, you can conveniently search through them using keywords. The search feature supports Chinese, English, and domain names. By default, the search function is not activated. To enable it, use the `Ctrl + S` shortcut or click the small arrow located at the top of the interface to switch to search mode.
+7. Each search will prioritize and display the top three most relevant results. You can easily navigate between these top results using the `←` and `→` keys on your keyboard. To swiftly access the highlighted bookmark, simply press the Enter key.
 
 ## Support
 
