@@ -49,6 +49,12 @@ The bookmarks bar can occupy the browsing window and affect concentration, so I 
 2. `Maple NewTab` currently supports four types of displays: `Blank pure page`,`Unsplash`,`Trendy weekly picture`, and `Bing image`. Place the cursor on the background image, wait for 2 seconds, and a switch box will appear. Click to switch.
 3. If you prefer your current tab page, you can remove the `Maple NewTab` extension. This way, you can revert to the default tab page.
 
+## White Theme
+
+Since the default new theme of Chrome is not very appealing to me, I prefer a simple and clean effect, so I developed a [Maple Theme](https://chromewebstore.google.com/detail/cghofkeabdkcdoanmjhkadklfdlelaao) on the side. It doesn't include any other messy colors, making your browser look very clean.
+
+<img src="https://cdn.fliggy.com/upic/acV6PC.png" width="100%" />
+
 ## Practice
 
 1. First, organize your bookmarks. You can adjust the order of frequently used ones and delete those not often used to make it tidier.

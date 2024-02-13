@@ -1,0 +1,100 @@
+{
+  "manifest_version": 3,
+  "name": "Maple Theme",
+  "description": "A super simple and clean theme",
+  "version": "1.0",
+  "theme": {
+		"colors": {
+			"frame": [
+				255,
+				255,
+				255
+			],
+			"frame_inactive": [
+				255,
+				255,
+				255
+			],
+			"frame_incognito": [
+				32,
+				33,
+				36
+			],
+			"frame_incognito_inactive": [
+				60,
+				64,
+				67
+			],
+			"background_tab": [
+				255,
+				255,
+				255
+			],
+			"background_tab_inactive": [
+				255,
+				255,
+				255
+			],
+			"background_tab_incognito": [
+				32,
+				33,
+				36
+			],
+			"background_tab_incognito_inactive": [
+				60,
+				64,
+				67
+			],
+			"bookmark_text": [
+				51,
+				51,
+				51
+			],
+			"tab_background_text": [
+				85,
+				85,
+				85
+			],
+			"tab_background_text_inactive": [
+				119,
+				119,
+				119
+			],
+			"tab_background_text_incognito": [
+				189,
+				193,
+				198
+			],
+			"tab_background_text_incognito_inactive": [
+				167,
+				171,
+				174
+			],
+			"tab_text": [
+				0,
+				0,
+				0
+			],
+			"toolbar": [
+				255,
+				255,
+				255
+			],
+			"toolbar_button_icon": [
+				85,
+				85,
+				85
+			],
+			"omnibox_text": [
+				51,
+				51,
+				51
+			],
+			"omnibox_background": [
+				245,
+				245,
+				245
+			]
+		}
+	}
+}

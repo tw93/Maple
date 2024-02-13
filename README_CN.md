@@ -50,6 +50,12 @@
 2. `Maple NewTab` 当前支持`空白纯净页`、`潮流周刊图`、`Bing 图`、`Unsplash` 4 种形式的效果，光标放置背景图上，等待 2s 会出现切换框，点击即可切换。
 3. 假如你更喜欢现在自己的标签页，可以在扩展中移除掉 `Maple NewTab`，这样就能恢复到默认标签页了。
 
+## 白色主题
+
+由于Chrome的默认新主题不是很好看，我比较喜欢简单纯净的效果，就顺便开发了一个 [Maple Theme](https://chromewebstore.google.com/detail/cghofkeabdkcdoanmjhkadklfdlelaao)，没有其他乱七八糟的颜色，让你的浏览器看着很干净。
+
+<img src="https://cdn.fliggy.com/upic/acV6PC.png" width="100%" />
+
 ## 实践
 
 1. 先整理好书签，可以调整常用顺序以及删除不常使用的，有文件夹的放后面，让它更整齐。
