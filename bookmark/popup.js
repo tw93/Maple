@@ -30,6 +30,7 @@ let hideArrowIcon = document.querySelector(".search-action i");
 let hotArea = document.querySelector("#hot-area");
 
 let activeBestMatchIndex = 0;
+let hideTimeout = null;
 let searchIsHide = !(localStorage.getItem("SHOW_SEARCH_BAR") === "true");
 
 let bestMatches = [];
@@ -413,9 +414,11 @@ function createBookmarkItem(bookmarkNode, parent) {
   let linkTitle = createElement("p", "", bookmarkNode.title ? bookmarkNode.title : getTitleFromUrl(bookmarkNode.url));
   bookItem.appendChild(linkTitle);
 
-  let hideTimeout = null;
-
   let mouseleaveHandler = function () {
+    if (hideTimeout) {
+      clearTimeout(hideTimeout);
+      hideTimeout = null;
+    }
     // 在mouseleave事件中，设置一个延时，然后隐藏Notification
     hideTimeout = setTimeout(() => {
       Notification.hide();
@@ -423,13 +426,13 @@ function createBookmarkItem(bookmarkNode, parent) {
   };
 
   bookItem.addEventListener("mouseover", function () {
-    // 如果已经计划了隐藏通知的操作，取消它
-    if (hideTimeout) {
-      clearTimeout(hideTimeout);
-      hideTimeout = null;
-    }
-
+    // 只有在文本溢出的时候才做处理
     if (checkOverflow(linkTitle)) {
+      // 如果已经计划了隐藏通知的操作，取消它
+      if (hideTimeout) {
+        clearTimeout(hideTimeout);
+        hideTimeout = null;
+      }
       Notification.show(bookmarkNode.title);
     }
   });
