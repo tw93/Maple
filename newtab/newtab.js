@@ -48,37 +48,37 @@ window.onload = function () {
   function convertToLinkElement(data, showRefreshBtn = false) {
     const bgContent = document.querySelector(".bg-content");
     const refreshBtn = document.getElementById("refresh-btn");
-    
+
     if (data && data.title) {
       // 清除之前的内容
       bgContent.innerHTML = "";
-      
+
       // 创建标题容器（包含标题文本和刷新按钮）
       const titleContainer = document.createElement("div");
       // 只有随机模式(潮流周刊)才使用粗体
-      titleContainer.style.fontWeight = (bgSelector.value === "random") ? "bold" : "normal";
+      titleContainer.style.fontWeight = bgSelector.value === "random" ? "bold" : "normal";
       titleContainer.style.marginBottom = "4px";
       titleContainer.style.display = "flex";
       titleContainer.style.alignItems = "flex-start";
       titleContainer.style.gap = "6px";
-      
+
       // 创建标题文本元素
       const titleText = document.createElement("span");
-      
+
       // 格式化标题显示：如果有期数则显示为"第xxx期 - 标题"格式，并在数字后添加空格
       let displayTitle = data.title;
       if (data.num) {
         displayTitle = `第 ${data.num} 期 - ${data.title}`;
       }
-      
+
       // 如果有日期则显示在标题后
       if (data.date) {
         displayTitle += ` · ${data.date}`;
       }
-      
+
       titleText.textContent = displayTitle;
       titleContainer.appendChild(titleText);
-      
+
       // 如果需要刷新按钮，直接添加到标题容器中
       if (showRefreshBtn) {
         const inlineRefreshBtn = document.createElement("button");
@@ -97,7 +97,7 @@ window.onload = function () {
           line-height: 1;
           margin-top: ${bgSelector.value === "bing" ? "2px" : "0"};
         `;
-        
+
         inlineRefreshBtn.onmouseover = () => {
           inlineRefreshBtn.style.transform = "rotate(180deg)";
           inlineRefreshBtn.style.opacity = "1";
@@ -106,7 +106,7 @@ window.onload = function () {
           inlineRefreshBtn.style.transform = "rotate(0deg)";
           inlineRefreshBtn.style.opacity = "0.8";
         };
-        
+
         inlineRefreshBtn.onclick = function (e) {
           e.preventDefault();
           e.stopPropagation();
@@ -122,15 +122,15 @@ window.onload = function () {
             setBingBackgroundImage();
           }
         };
-        
+
         titleContainer.appendChild(inlineRefreshBtn);
         refreshBtn.classList.remove("show");
       } else {
         refreshBtn.classList.remove("show");
       }
-      
+
       bgContent.appendChild(titleContainer);
-      
+
       // 如果有描述字段，添加描述元素
       if (data.description) {
         const descElement = document.createElement("div");
@@ -139,7 +139,7 @@ window.onload = function () {
         descElement.textContent = data.description;
         bgContent.appendChild(descElement);
       }
-      
+
       bgDescription.href = "#";
       bgDescription.style.cursor = data.url ? "pointer" : "default";
       bgDescription.onclick = function (e) {
@@ -198,113 +198,110 @@ window.onload = function () {
   function setBingBackgroundImage() {
     // 专门搜索本身就是黑白的艺术摄影作品
     const bwKeywords = [
-      'black and white photography', 
-      'monochrome photography', 
-      'black white architecture', 
-      'monochrome portrait', 
-      'black white street photography', 
-      'monochrome minimalism',
-      'black white abstract art',
-      'noir photography',
-      'grayscale art'
+      "black and white photography",
+      "monochrome photography",
+      "black white architecture",
+      "monochrome portrait",
+      "black white street photography",
+      "monochrome minimalism",
+      "black white abstract art",
+      "noir photography",
+      "grayscale art",
     ];
     const randomKeyword = bwKeywords[Math.floor(Math.random() * bwKeywords.length)];
     const apiUrl = `https://api.pexels.com/v1/search?query=${encodeURIComponent(randomKeyword)}&per_page=30&orientation=landscape&color=black_and_white`;
-    
+
     const today = new Date();
     const date = today.getFullYear() + "/" + (today.getMonth() + 1) + "/" + today.getDate();
 
     fetch(apiUrl, {
       headers: {
-        'Authorization': '2b1sfykhv5szbTVFvohmurxQDC6IPaa5CRJ7ckTWMwCZj2Ltkq1ErhnA'
-      }
+        Authorization: "2b1sfykhv5szbTVFvohmurxQDC6IPaa5CRJ7ckTWMwCZj2Ltkq1ErhnA",
+      },
     })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.photos && data.photos.length > 0) {
-        const randomPhoto = data.photos[Math.floor(Math.random() * data.photos.length)];
-        // 使用最高分辨率的图片
-        const imageUrl = randomPhoto.src.large2x || randomPhoto.src.large || randomPhoto.src.medium;
-        
-        const Info = {
-          title: randomPhoto.alt || `黑白艺术摄影 by ${randomPhoto.photographer}`,
-          url: randomPhoto.url || "#",
-          date: date,
-          pic: imageUrl,
-        };
-        convertToLinkElement(Info, true);
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.photos && data.photos.length > 0) {
+          const randomPhoto = data.photos[Math.floor(Math.random() * data.photos.length)];
+          // 使用最高分辨率的图片
+          const imageUrl = randomPhoto.src.large2x || randomPhoto.src.large || randomPhoto.src.medium;
 
-        // 不再使用滤镜，因为图片本身就是黑白的
-        body.style.backgroundImage = `url(${imageUrl})`;
-        body.style.filter = "contrast(1.1)"; // 只是稍微增强对比度
-        
-        localStorage.setItem("bgBingUrl", imageUrl);
-        localStorage.setItem("bgBingDate", new Date().toISOString().slice(0, 10));
-        localStorage.setItem("bgBingInfo", JSON.stringify(Info));
-      } else {
-        // 如果没有数据，使用备选方案
+          const Info = {
+            title: randomPhoto.alt || `黑白艺术摄影 by ${randomPhoto.photographer}`,
+            url: randomPhoto.url || "#",
+            date: date,
+            pic: imageUrl,
+          };
+          convertToLinkElement(Info, true);
+
+          // 不再使用滤镜，因为图片本身就是黑白的
+          body.style.backgroundImage = `url(${imageUrl})`;
+          body.style.filter = "contrast(1.1)"; // 只是稍微增强对比度
+
+          localStorage.setItem("bgBingUrl", imageUrl);
+          localStorage.setItem("bgBingDate", new Date().toISOString().slice(0, 10));
+          localStorage.setItem("bgBingInfo", JSON.stringify(Info));
+        } else {
+          // 如果没有数据，使用备选方案
+          useSimpleFallback();
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching Pexels:", error);
+        // 如果 Pexels 失败，使用备选方案
         useSimpleFallback();
-      }
-    })
-    .catch((error) => {
-      console.error("Error fetching Pexels:", error);
-      // 如果 Pexels 失败，使用备选方案
-      useSimpleFallback();
-    });
+      });
   }
-
 
   // 黑白艺术摄影备选方案，使用 Pexels Curated
   function useSimpleFallback() {
     const page = Math.floor(Math.random() * 10) + 1; // 随机页面
     const apiUrl = `https://api.pexels.com/v1/curated?per_page=30&page=${page}`;
-    
+
     const today = new Date();
     const date = today.getFullYear() + "/" + (today.getMonth() + 1) + "/" + today.getDate();
 
     fetch(apiUrl, {
       headers: {
-        'Authorization': '2b1sfykhv5szbTVFvohmurxQDC6IPaa5CRJ7ckTWMwCZj2Ltkq1ErhnA'
-      }
+        Authorization: "2b1sfykhv5szbTVFvohmurxQDC6IPaa5CRJ7ckTWMwCZj2Ltkq1ErhnA",
+      },
     })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.photos && data.photos.length > 0) {
-        const randomPhoto = data.photos[Math.floor(Math.random() * data.photos.length)];
-        const imageUrl = randomPhoto.src.large2x || randomPhoto.src.large || randomPhoto.src.medium;
-        
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.photos && data.photos.length > 0) {
+          const randomPhoto = data.photos[Math.floor(Math.random() * data.photos.length)];
+          const imageUrl = randomPhoto.src.large2x || randomPhoto.src.large || randomPhoto.src.medium;
+
+          const Info = {
+            title: randomPhoto.alt || `黑白艺术摄影 by ${randomPhoto.photographer}`,
+            url: randomPhoto.url || "#",
+            date: date,
+            pic: imageUrl,
+          };
+          convertToLinkElement(Info, true);
+
+          body.style.backgroundImage = `url(${imageUrl})`;
+          body.style.filter = "contrast(1.1)"; // 只增强对比度，不强制灰度
+
+          localStorage.setItem("bgBingUrl", imageUrl);
+          localStorage.setItem("bgBingDate", new Date().toISOString().slice(0, 10));
+          localStorage.setItem("bgBingInfo", JSON.stringify(Info));
+        }
+      })
+      .catch((error) => {
+        console.error("Fallback Error:", error);
+        // 最后的最后，使用一个静态的黑白样式
         const Info = {
-          title: randomPhoto.alt || `黑白艺术摄影 by ${randomPhoto.photographer}`,
-          url: randomPhoto.url || "#",
+          title: "黑白艺术摄影",
+          url: "#",
           date: date,
-          pic: imageUrl,
+          pic: "",
         };
         convertToLinkElement(Info, true);
-
-        body.style.backgroundImage = `url(${imageUrl})`;
-        body.style.filter = "contrast(1.1)"; // 只增强对比度，不强制灰度
-        
-        localStorage.setItem("bgBingUrl", imageUrl);
-        localStorage.setItem("bgBingDate", new Date().toISOString().slice(0, 10));
-        localStorage.setItem("bgBingInfo", JSON.stringify(Info));
-      }
-    })
-    .catch((error) => {
-      console.error("Fallback Error:", error);
-      // 最后的最后，使用一个静态的黑白样式
-      const Info = {
-        title: "黑白艺术摄影",
-        url: "#",
-        date: date,
-        pic: "",
-      };
-      convertToLinkElement(Info, true);
-      body.style.backgroundImage = "linear-gradient(45deg, #1a1a1a 0%, #4a4a4a 50%, #7a7a7a 100%)";
-      body.style.filter = "contrast(1.1)";
-    });
+        body.style.backgroundImage = "linear-gradient(45deg, #1a1a1a 0%, #4a4a4a 50%, #7a7a7a 100%)";
+        body.style.filter = "contrast(1.1)";
+      });
   }
-
-
 
   /**
    * @description 处理选择非空白背景时的逻辑
@@ -389,7 +386,7 @@ window.onload = function () {
     isDarkMode = e.matches;
     setBackgroundColor();
   };
-  
+
   if (darkModeMediaQuery.addEventListener) {
     darkModeMediaQuery.addEventListener("change", handleColorSchemeChange);
   } else {
@@ -403,7 +400,7 @@ window.onload = function () {
 
   function showUI() {
     if (isUIVisible) return;
-    
+
     clearTimeout(hideTimeout);
     const selectorContainer = document.querySelector(".selector-container");
 
@@ -413,7 +410,7 @@ window.onload = function () {
 
   function hideUI() {
     if (!isUIVisible) return;
-    
+
     clearTimeout(showTimeout);
     const selectorContainer = document.querySelector(".selector-container");
 
@@ -425,20 +422,19 @@ window.onload = function () {
   document.body.addEventListener("mousemove", function (e) {
     const { clientX, clientY } = e;
     const { innerWidth, innerHeight } = window;
-    
+
     // 如果鼠标接近边缘区域，立即显示
-    const nearEdge = clientX < 50 || clientX > innerWidth - 200 || 
-                     clientY < 50 || clientY > innerHeight - 100;
-    
+    const nearEdge = clientX < 50 || clientX > innerWidth - 200 || clientY < 50 || clientY > innerHeight - 100;
+
     clearTimeout(showTimeout);
     clearTimeout(hideTimeout);
-    
+
     if (nearEdge) {
       showUI();
     } else if (!isUIVisible) {
       showTimeout = setTimeout(showUI, 800);
     }
-    
+
     // 如果UI已显示，设置隐藏计时器
     if (isUIVisible) {
       hideTimeout = setTimeout(hideUI, 3000);

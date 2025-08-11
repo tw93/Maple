@@ -388,7 +388,7 @@ window.onload = async function () {
   const bookmarksContainer = document.querySelector("#bookmarks");
 
   createBookmarks(bookmarkTreeNodes);
-  
+
   // 立即计算并设置正确的高度
   requestAnimationFrame(() => {
     const actualHeight = calculateOptimalHeight();
@@ -437,24 +437,19 @@ function setBodyHeightFromStorage() {
 function calculateOptimalHeight() {
   const bookmarksContainer = document.getElementById("bookmarks");
   const searchWrapper = document.querySelector("#search-wrapper");
-  
+
   let totalHeight = 20; // 基础padding
-  
+
   if (bookmarksContainer) {
     totalHeight += bookmarksContainer.scrollHeight;
   }
-  
+
   if (isSearchEnabled() && !searchIsHide) {
     totalHeight += searchWrapper ? searchWrapper.scrollHeight : 0;
   }
-  
+
   // 限制最大高度
   return Math.min(Math.max(totalHeight, 200), 618);
-}
-
-function saveCurrentHeight() {
-  let currentHeight = calculateOptimalHeight();
-  localStorage.setItem("savedHeight", (currentHeight - 8).toString());
 }
 
 function createBookmarks(bookmarkTreeNodes) {
