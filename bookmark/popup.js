@@ -13,6 +13,16 @@ import { Notification } from "./utils/notification.js";
 import { createElement } from "./utils/element.js";
 import { getFavicon } from "./utils/favicon.js";
 
+// 设置相关常量
+const SETTINGS_KEYS = {
+  SEARCH_ENABLED: "MAPLE_SEARCH_ENABLED",
+};
+
+// 获取搜索功能开启状态
+function isSearchEnabled() {
+  return localStorage.getItem(SETTINGS_KEYS.SEARCH_ENABLED) === "true";
+}
+
 const CLASS_NAMES = {
   bookmark: "bookmark",
   favicon: "favicon",
@@ -28,15 +38,73 @@ let searchInput = document.getElementById("searchInput");
 let hideArrow = document.querySelector(".search-action");
 let hideArrowIcon = document.querySelector(".search-action i");
 let hotArea = document.querySelector("#hot-area");
+let settingsBtn = document.getElementById("settingsBtn");
 
 let activeBestMatchIndex = 0;
 let hideTimeout = null;
-let searchIsHide = !(localStorage.getItem("SHOW_SEARCH_BAR") === "true");
+// 基于设置来决定搜索是否默认隐藏，如果搜索功能关闭，则强制隐藏
+let searchIsHide;
+if (isSearchEnabled()) {
+  searchIsHide = !(localStorage.getItem("SHOW_SEARCH_BAR") === "true");
+} else {
+  // 搜索功能关闭时，强制隐藏搜索框
+  searchIsHide = true;
+}
 
 let bestMatches = [];
 // 恢复 header 元素
-updateHeader(JSON.parse(localStorage.getItem("persistedHeader")), true);
+if (isSearchEnabled()) {
+  updateHeader(JSON.parse(localStorage.getItem("persistedHeader")), true);
+}
 updateActiveBestMatch(activeBestMatchIndex);
+
+// 设置按钮事件监听
+if (settingsBtn) {
+  // 设置国际化文本
+  const browserLanguage = navigator.language.startsWith("zh") ? "zh" : "en";
+  const isZh = browserLanguage === "zh";
+  settingsBtn.title = isZh ? "设置" : "Settings";
+
+  settingsBtn.addEventListener("click", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      if (typeof chrome !== "undefined" && chrome.runtime) {
+        chrome.runtime.openOptionsPage();
+      } else {
+        // 兼容Firefox
+        window.open("settings.html", "_blank");
+      }
+    } catch (error) {
+      console.error("Failed to open settings page:", error);
+      // 备用方案：直接打开设置页面
+      window.open("settings.html", "_blank");
+    }
+  });
+} else {
+  console.error("Settings button not found");
+}
+
+// 更新搜索功能显示状态
+function updateSearchFeatureVisibility() {
+  const searchWrapper = document.querySelector("#search-wrapper");
+  const hotArea = document.querySelector("#hot-area");
+
+  if (!isSearchEnabled()) {
+    // 搜索功能关闭时，完全隐藏搜索相关元素
+    searchWrapper.style.display = "none";
+    hotArea.style.display = "none";
+    // 清空最佳匹配
+    const bestMatchContainer = document.querySelector("#best-match");
+    if (bestMatchContainer) {
+      bestMatchContainer.innerHTML = "";
+    }
+  } else {
+    // 搜索功能开启时，恢复正常显示
+    searchWrapper.style.display = "block";
+    hotArea.style.display = searchIsHide ? "block" : "none";
+  }
+}
 
 /**
  * @description 使用 Fuse 进行模糊匹配，返回最佳匹配项或false
@@ -71,6 +139,11 @@ function FuseStrMatch(searchTerm, data) {
  * 切换 searchBar 显示状态
  */
 function switchSearchBarShowStatus() {
+  // 如果搜索功能关闭，则不允许切换
+  if (!isSearchEnabled()) {
+    return;
+  }
+
   searchIsHide = !searchIsHide;
   localStorage.setItem("SHOW_SEARCH_BAR", searchIsHide ? "false" : "true");
   const extraClass = searchIsHide ? "" : "show";
@@ -174,54 +247,73 @@ function checkOverflow(el) {
   return isOverflowing;
 }
 
-searchInput.addEventListener(
-  "input",
-  debounce(function () {
-    let searchTerm = searchInput.value.toLowerCase();
-    let folders = document.getElementsByClassName(CLASS_NAMES.folder);
+// 只在搜索功能开启时才添加搜索相关的事件监听器
+if (isSearchEnabled()) {
+  searchInput.addEventListener(
+    "input",
+    debounce(function () {
+      let searchTerm = searchInput.value.toLowerCase();
+      let folders = document.getElementsByClassName(CLASS_NAMES.folder);
 
-    const headerData = [];
+      const headerData = [];
 
-    for (let folder of folders) {
-      let bookmarks = folder.getElementsByClassName(CLASS_NAMES.bookmark);
-      let hasVisibleBookmark = false;
+      for (let folder of folders) {
+        let bookmarks = folder.getElementsByClassName(CLASS_NAMES.bookmark);
+        let hasVisibleBookmark = false;
 
-      for (let bookmark of bookmarks) {
-        // push 查询数据
-        headerData.push({
-          title: bookmark.textContent,
-          url: bookmark.href,
-          favicon: bookmark.querySelector(".favicon")?.src,
-        });
+        for (let bookmark of bookmarks) {
+          // push 查询数据
+          headerData.push({
+            title: bookmark.textContent,
+            url: bookmark.href,
+            favicon: bookmark.querySelector(".favicon")?.src,
+          });
 
-        let title = bookmark.textContent.toLowerCase();
-        let url = bookmark.href.toLowerCase();
+          let title = bookmark.textContent.toLowerCase();
+          let url = bookmark.href.toLowerCase();
 
-        // 当直接匹配失败时，使用模糊匹配
-        if (
-          title.includes(searchTerm) ||
-          url.includes(searchTerm) ||
-          FuseStrMatch(searchTerm, [
-            {
-              title: title,
-              url: url,
-              favicon: "",
-            },
-          ])
-        ) {
-          bookmark.style.display = "flex";
-          hasVisibleBookmark = true;
-        } else {
-          bookmark.style.display = "none";
+          // 当直接匹配失败时，使用模糊匹配
+          if (
+            title.includes(searchTerm) ||
+            url.includes(searchTerm) ||
+            FuseStrMatch(searchTerm, [
+              {
+                title: title,
+                url: url,
+                favicon: "",
+              },
+            ])
+          ) {
+            bookmark.style.display = "flex";
+            hasVisibleBookmark = true;
+          } else {
+            bookmark.style.display = "none";
+          }
         }
+
+        folder.style.display = hasVisibleBookmark ? "block" : "none";
       }
 
-      folder.style.display = hasVisibleBookmark ? "block" : "none";
-    }
+      updateHeader(FuseStrMatch(searchTerm, headerData));
+    }, 30)
+  );
 
-    updateHeader(FuseStrMatch(searchTerm, headerData));
-  }, 30)
-);
+  hideArrow.addEventListener("click", function () {
+    switchSearchBarShowStatus();
+    if (!searchIsHide) {
+      searchInput.focus();
+    }
+  });
+
+  hideArrowIcon.addEventListener("mouseover", function () {
+    const tips = searchIsHide ? ShowSearchWrapper : HideSearchWrapper;
+    Notification.show(tips);
+  });
+
+  hideArrowIcon.addEventListener("mouseleave", function () {
+    Notification.hide();
+  });
+}
 
 // fix under mask click
 document.addEventListener("click", function (e) {
@@ -238,65 +330,56 @@ document.addEventListener("click", function (e) {
   }
 });
 
-hideArrow.addEventListener("click", function () {
-  switchSearchBarShowStatus();
-  if (!searchIsHide) {
-    searchInput.focus();
-  }
-});
-
-hideArrowIcon.addEventListener("mouseover", function () {
-  const tips = searchIsHide ? ShowSearchWrapper : HideSearchWrapper;
-  Notification.show(tips);
-});
-
-hideArrowIcon.addEventListener("mouseleave", function () {
-  Notification.hide();
-});
-
 window.addEventListener("keydown", function (event) {
   if (event.key === "Escape") {
     event.preventDefault();
-    searchInput.value = "";
+    // 只在搜索功能开启时才处理清空搜索
+    if (isSearchEnabled()) {
+      searchInput.value = "";
 
-    let bookmarks = document.getElementsByClassName(CLASS_NAMES.bookmark);
-    let folders = document.getElementsByClassName(CLASS_NAMES.folder);
+      let bookmarks = document.getElementsByClassName(CLASS_NAMES.bookmark);
+      let folders = document.getElementsByClassName(CLASS_NAMES.folder);
 
-    for (let bookmark of bookmarks) {
-      bookmark.style.display = "flex";
-    }
+      for (let bookmark of bookmarks) {
+        bookmark.style.display = "flex";
+      }
 
-    for (let folder of folders) {
-      folder.style.display = "block";
+      for (let folder of folders) {
+        folder.style.display = "block";
+      }
     }
   }
 
   if (event.key === "ArrowLeft") {
-    if (searchIsHide) return;
+    if (searchIsHide || !isSearchEnabled()) return;
     updateActiveBestMatch(activeBestMatchIndex - 1);
     showBestMatchTips();
   }
 
   if (event.key === "ArrowRight") {
-    if (searchIsHide) return;
+    if (searchIsHide || !isSearchEnabled()) return;
     updateActiveBestMatch(activeBestMatchIndex + 1);
     showBestMatchTips();
   }
 
   if (event.key === "Enter") {
     event.preventDefault();
-    if (bestMatches.length !== 0) {
+    if (isSearchEnabled() && bestMatches.length !== 0) {
       chrome.tabs.create({ url: bestMatches[activeBestMatchIndex].url });
     }
   }
 
   if (event.ctrlKey && event.key === "s") {
     event.preventDefault();
-    switchSearchBarShowStatus();
+    // 只在搜索功能开启时才允许切换
+    if (isSearchEnabled()) {
+      switchSearchBarShowStatus();
+    }
   }
 });
 
 window.onload = async function () {
+  // 预设初始高度，避免闪烁
   setBodyHeightFromStorage();
 
   const bookmarkTreeNodes = await chrome.bookmarks.getTree();
@@ -305,24 +388,37 @@ window.onload = async function () {
   const bookmarksContainer = document.querySelector("#bookmarks");
 
   createBookmarks(bookmarkTreeNodes);
-  setTimeout(saveCurrentHeight, 600);
+  
+  // 立即计算并设置正确的高度
+  requestAnimationFrame(() => {
+    const actualHeight = calculateOptimalHeight();
+    document.body.style.height = `${actualHeight}px`;
+    localStorage.setItem("savedHeight", (actualHeight - 8).toString());
+  });
 
-  if (searchIsHide) {
-    // -8 是因为有 8px 的 margin
-    const searchBarContainerHeight = container.clientHeight - 8;
-    bookmarksContainer.style.transform = `translateY(-${searchBarContainerHeight}px)`;
-    hotArea.style.display = "block";
-  } else {
-    container.classList.add("show");
-    bookmarksContainer.style.transform = `translateY(-8)`;
-    searchInput.focus();
-    hotArea.style.display = "none";
+  // 首先更新搜索功能的显示状态
+  updateSearchFeatureVisibility();
+
+  // 只在搜索功能开启时才处理搜索框的显示/隐藏
+  if (isSearchEnabled()) {
+    if (searchIsHide) {
+      // -8 是因为有 8px 的 margin
+      const searchBarContainerHeight = container.clientHeight - 8;
+      bookmarksContainer.style.transform = `translateY(-${searchBarContainerHeight}px)`;
+      hotArea.style.display = "block";
+    } else {
+      container.classList.add("show");
+      bookmarksContainer.style.transform = `translateY(-8)`;
+      searchInput.focus();
+      hotArea.style.display = "none";
+    }
   }
+
   // delay to add transition animation to stop initial animation
   setTimeout(() => {
     container.style.transition = "all .3s ease";
     bookmarksContainer.style.transition = "all .3s ease";
-  }, 100);
+  }, 50);
 };
 
 function setBodyHeightFromStorage() {
@@ -332,11 +428,32 @@ function setBodyHeightFromStorage() {
     if (savedHeight > 618) {
       document.body.style.height = "618px";
     }
+  } else {
+    // 如果没有保存的高度，设置一个合适的初始高度避免闪烁
+    document.body.style.height = "400px";
   }
 }
 
+function calculateOptimalHeight() {
+  const bookmarksContainer = document.getElementById("bookmarks");
+  const searchWrapper = document.querySelector("#search-wrapper");
+  
+  let totalHeight = 20; // 基础padding
+  
+  if (bookmarksContainer) {
+    totalHeight += bookmarksContainer.scrollHeight;
+  }
+  
+  if (isSearchEnabled() && !searchIsHide) {
+    totalHeight += searchWrapper ? searchWrapper.scrollHeight : 0;
+  }
+  
+  // 限制最大高度
+  return Math.min(Math.max(totalHeight, 200), 618);
+}
+
 function saveCurrentHeight() {
-  let currentHeight = document.getElementById("bookmarks").clientHeight;
+  let currentHeight = calculateOptimalHeight();
   localStorage.setItem("savedHeight", (currentHeight - 8).toString());
 }
 
@@ -352,6 +469,11 @@ function createBookmarks(bookmarkTreeNodes) {
 }
 
 function bindSwitchModeToFirstFolder() {
+  // 只在搜索功能开启时才绑定hover效果
+  if (!isSearchEnabled()) {
+    return;
+  }
+
   const hotArea = document.querySelector("#hot-area");
   const searchWrapper = document.querySelector("#search-wrapper");
   const arrow = document.querySelector(".arrow");

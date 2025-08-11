@@ -1,0 +1,248 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Maple Bookmarks Settings</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+      }
+
+      .container {
+        width: 420px;
+        padding: 32px;
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e5e5e5;
+        box-sizing: border-box;
+      }
+
+      .header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 32px;
+        padding-bottom: 20px;
+        position: relative;
+      }
+
+      .header h1 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 600;
+        color: #333;
+        flex: 1;
+        text-align: center;
+      }
+
+      .back-btn {
+        background: #f5f5f5;
+        border: 1px solid #d5d5d5;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        padding: 8px 12px;
+        border-radius: 6px;
+        color: #666;
+        transition: all 0.2s ease;
+        position: absolute;
+        left: 0;
+        top: 0;
+      }
+
+      .back-btn:hover {
+        background: #e5e5e5;
+        color: #333;
+      }
+
+      .setting-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 24px 0;
+        transition: all 0.3s ease;
+      }
+
+      .setting-item:last-child {
+        border-bottom: none;
+      }
+
+      .setting-item:hover {
+        background: #f9f9f9;
+        margin: 0 -16px;
+        padding: 24px 16px;
+        border-radius: 6px;
+      }
+
+      .setting-label {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+
+      .setting-title {
+        font-size: 16px;
+        font-weight: 500;
+        color: #333;
+        margin-bottom: 6px;
+      }
+
+      .setting-description {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.5;
+      }
+
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 48px;
+        height: 24px;
+      }
+
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: 0.3s;
+        border-radius: 24px;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.3s;
+        border-radius: 50%;
+      }
+
+      input:checked + .slider {
+        background-color: #007bff;
+      }
+
+      input:checked + .slider:before {
+        transform: translateX(24px);
+      }
+
+      .footer {
+        margin-top: 40px;
+        padding-top: 20px;
+        text-align: center;
+      }
+
+      .version {
+        font-size: 12px;
+        color: #999;
+        font-weight: 400;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: #1a1a1a;
+        }
+
+        .container {
+          background: #2a2a2a;
+          border: 1px solid #404040;
+        }
+
+        .header {
+        }
+
+        .header h1 {
+          color: #ffffff;
+        }
+
+        .back-btn {
+          background: #404040;
+          border: 1px solid #555;
+          color: #ccc;
+        }
+
+        .back-btn:hover {
+          background: #4a4a4a;
+          color: #fff;
+        }
+
+        .setting-item {
+        }
+
+        .setting-item:hover {
+          background: #333;
+        }
+
+        .setting-title {
+          color: #ffffff;
+        }
+
+        .setting-description {
+          color: #ccc;
+        }
+
+        .slider {
+          background-color: #555;
+        }
+
+        input:checked + .slider {
+          background-color: #0066cc;
+        }
+
+        .footer {
+        }
+
+        .version {
+          color: #999;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <button class="back-btn" id="backBtn">← 返回</button>
+        <h1 id="title">设置</h1>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-label">
+          <div class="setting-title" id="searchFeatureTitle">启用搜索功能</div>
+          <div class="setting-description" id="searchFeatureDesc">
+            开启后可以使用搜索框搜索书签，关闭后将隐藏搜索相关功能
+          </div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="searchEnabled">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="footer">
+        <div class="version">Maple Bookmarks v1.10</div>
+      </div>
+    </div>
+
+    <script src="settings.js"></script>
+  </body>
+</html>

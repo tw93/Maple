@@ -57,19 +57,73 @@
         position: fixed;
         bottom: 16px;
         left: 26px;
-        display: inline-block;
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
         cursor: pointer;
         text-decoration: none;
         font-size: 14px;
         color: #fff;
-        text-shadow: 2px 2px 4px rgba(50, 50, 100, 0.5);
+        text-shadow:
+          0 0 6px rgba(0, 0, 0, 0.7),
+          0 0 12px rgba(0, 0, 0, 0.5),
+          1px 1px 2px rgba(0, 0, 0, 0.6);
+        line-height: 1.4;
+        max-width: 400px;
       }
 
-      .selector-container,
-      #bg-description {
+      .bg-content {
+        flex: 1;
+      }
+
+      .refresh-btn {
+        display: none;
+        width: 24px;
+        height: 24px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        color: #fff;
+        font-size: 16px;
+        text-shadow:
+          0 0 6px rgba(0, 0, 0, 0.7),
+          0 0 12px rgba(0, 0, 0, 0.5),
+          1px 1px 2px rgba(0, 0, 0, 0.6);
+        transition: transform 0.2s ease;
+        flex-shrink: 0;
+        margin-top: 0px;
+        opacity: 0.8;
+      }
+
+      .refresh-btn:hover {
+        transform: rotate(180deg);
+        opacity: 1;
+      }
+
+      .refresh-btn.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .selector-container {
         visibility: hidden;
         opacity: 0;
-        transition: opacity 0.3s linear;
+        transition: all 0.3s ease-in-out;
+        transform: translateY(-10px);
+      }
+
+      .selector-container.visible {
+        visibility: visible;
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      #bg-description {
+        visibility: visible;
+        opacity: 1;
+        transition: all 0.3s ease-in-out;
+        transform: translateY(0);
       }
 
       @media (prefers-color-scheme: light) {
@@ -79,19 +133,26 @@
           color: #333;
           text-shadow: none;
         }
+
+        body.blank .refresh-btn {
+          color: #333;
+          text-shadow: none;
+        }
       }
     </style>
   </head>
   <body>
     <div class="selector-container">
       <select id="bg-selector">
-        <option value="bing">必应图</option>
-        <option value="unsplash">Unsplash</option>
-        <option value="blank">空白页</option>
-        <option value="random">随机图</option>
+        <option value="bing">黑白艺术</option>
+        <option value="blank">空白页面</option>
+        <option value="random">潮流周刊</option>
       </select>
     </div>
-    <a id="bg-description"></a>
+    <a id="bg-description">
+      <div class="bg-content"></div>
+      <button class="refresh-btn" id="refresh-btn" title="刷新内容">⟲</button>
+    </a>
     <script src="newtab.js"></script>
   </body>
 </html>
