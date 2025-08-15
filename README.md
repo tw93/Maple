@@ -15,16 +15,6 @@
 <p align="center">Hide the bookmark bar, use <code>Maple Bookmarks</code> to surf smoothly.</p>
 </p>
 
-## Download
-
-<div align="left">
-
-[![Maple Bookmarks](https://img.shields.io/badge/Maple%20Bookmarks-Install-blue?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chrome.google.com/webstore/detail/maple-bookmarks/lgncmpklmepncbjpiebhdoejhmbcnjad)
-[![Maple NewTab](https://img.shields.io/badge/Maple%20NewTab-Install-blue?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chrome.google.com/webstore/detail/maple-newtab/fobmbldflolfooglijmbibmnhoflbjlb)
-[![Maple Theme](https://img.shields.io/badge/Maple%20Theme-Install-blue?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/cghofkeabdkcdoanmjhkadklfdlelaao)
-
-</div>
-
 ## Introduction
 
 The bookmarks bar can occupy the browsing window and affect concentration, so I often hide it. However, this makes accessing bookmarks inconvenient. Therefore, I developed the Maple Bookmarks extension. By just using the shortcut, you can quickly access your bookmarks, even input can be searched instantly, which is practical and convenient.
@@ -47,6 +37,16 @@ The bookmarks bar can occupy the browsing window and affect concentration, so I 
 </table>
 
 </details>
+
+## Download
+
+<div align="left">
+
+[![Maple Bookmarks](https://img.shields.io/badge/Maple%20Bookmarks-Install-blue?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chrome.google.com/webstore/detail/maple-bookmarks/lgncmpklmepncbjpiebhdoejhmbcnjad)
+[![Maple NewTab](https://img.shields.io/badge/Maple%20NewTab-Install-blue?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chrome.google.com/webstore/detail/maple-newtab/fobmbldflolfooglijmbibmnhoflbjlb)
+[![Maple Theme](https://img.shields.io/badge/Maple%20Theme-Install-blue?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/cghofkeabdkcdoanmjhkadklfdlelaao)
+
+</div>
 
 ## More
 
