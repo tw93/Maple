@@ -16,6 +16,23 @@
 <p align="center">隐藏书签栏，使用 <code>枫叶书签</code> 让你行云流水。</p>
 </p>
 
+## 下载安装
+
+<div align="center">
+
+[![枫叶书签](https://img.shields.io/badge/枫叶书签-立即安装-blue?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chrome.google.com/webstore/detail/maple-bookmarks/lgncmpklmepncbjpiebhdoejhmbcnjad)
+[![枫叶标签页](https://img.shields.io/badge/枫叶标签页-立即安装-blue?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chrome.google.com/webstore/detail/maple-newtab/fobmbldflolfooglijmbibmnhoflbjlb)
+[![枫叶主题](https://img.shields.io/badge/枫叶主题-立即安装-blue?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/cghofkeabdkcdoanmjhkadklfdlelaao)
+
+**安装说明：**
+
+- 使用 Chrome Web Store 来安装 **枫叶书签**，假如你是火狐用户，请通过 [Firefox Addon](https://addons.mozilla.org/zh-CN/firefox/addon/maple-bookmarks/) 来安装使用，好用很欢迎评价。
+- 假如你不可访问，可以下载 [Maple.zip](https://github.com/tw93/Maple/releases/latest/download/Maple.zip)，解压以后，参考 [Loading an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked) 来使用本地包。
+
+</div>
+
+---
+
 ## 介绍
 
 书签栏会占据浏览窗口且影响专注力，我常将其隐藏。但这使得访问书签很不方便，因此我开发了枫叶书签扩展，只需使用快捷键 `Command + E`(Mac)、`Ctrl+B`(Windows) 就能快速访问书签，甚至可以输入即搜索，实用且方便。
@@ -38,11 +55,6 @@
 </table>
 
 </details>
-
-## 安装
-
-- 使用 Chrome Web Store 来安装 [**Maple Bookmarks**](https://chrome.google.com/webstore/detail/maple-bookmarks/lgncmpklmepncbjpiebhdoejhmbcnjad)，假如你是火狐用户，请通过 [Firefox Addon](https://addons.mozilla.org/zh-CN/firefox/addon/maple-bookmarks/) 来安装使用，好用很欢迎评价。
-- 假如你不可访问，可以下载 [Maple.zip](https://github.com/tw93/Maple/releases/latest/download/Maple.zip)，解压以后，参考 [Loading an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked) 来使用本地包。
 
 ## 标签页
 
