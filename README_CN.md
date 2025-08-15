@@ -26,13 +26,6 @@
 
 </div>
 
-**安装说明：**
-
-- 使用 Chrome Web Store 来安装 **枫叶书签**，假如你是火狐用户，请通过 [Firefox Addon](https://addons.mozilla.org/zh-CN/firefox/addon/maple-bookmarks/) 来安装使用，好用很欢迎评价。
-- 假如你不可访问，可以下载 [Maple.zip](https://github.com/tw93/Maple/releases/latest/download/Maple.zip)，解压以后，参考 [Loading an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked) 来使用本地包。
-
----
-
 ## 介绍
 
 书签栏会占据浏览窗口且影响专注力，我常将其隐藏。但这使得访问书签很不方便，因此我开发了枫叶书签扩展，只需使用快捷键 `Command + E`(Mac)、`Ctrl+B`(Windows) 就能快速访问书签，甚至可以输入即搜索，实用且方便。

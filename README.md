@@ -25,13 +25,6 @@
 
 </div>
 
-**Installation Notes:**
-
-- Install **Maple Bookmarks** from the Chrome Web Store. If you are a Firefox user, please install and use [Firefox Addon](https://addons.mozilla.org/zh-CN/firefox/addon/maple-bookmarks/). If you find it useful, we'd appreciate your review.
-- If you're unable to access the Chrome Web Store, you can download [Maple.zip](https://github.com/tw93/Maple/releases/latest/download/Maple.zip). After unzipping, refer to [Loading an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked) to use the local package.
-
----
-
 ## Introduction
 
 The bookmarks bar can occupy the browsing window and affect concentration, so I often hide it. However, this makes accessing bookmarks inconvenient. Therefore, I developed the Maple Bookmarks extension. By just using the shortcut, you can quickly access your bookmarks, even input can be searched instantly, which is practical and convenient.
