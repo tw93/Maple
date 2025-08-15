@@ -1,7 +1,22 @@
+// favicon缓存
+const faviconCache = new Map();
+
 export function getFavicon(url) {
-  const isFirefox = navigator.userAgent.includes("Firefox");
-  if (isFirefox) {
-    return `http://www.google.com/s2/favicons?domain_url=${url}`;
+  // 检查缓存
+  if (faviconCache.has(url)) {
+    return faviconCache.get(url);
   }
-  return `${chrome.runtime.getURL("/_favicon?")}pageUrl=${encodeURIComponent(url)}&size=32`;
+
+  const isFirefox = navigator.userAgent.includes("Firefox");
+  let faviconUrl;
+
+  if (isFirefox) {
+    faviconUrl = `http://www.google.com/s2/favicons?domain_url=${url}`;
+  } else {
+    faviconUrl = `${chrome.runtime.getURL("/_favicon?")}pageUrl=${encodeURIComponent(url)}&size=32`;
+  }
+
+  // 缓存结果
+  faviconCache.set(url, faviconUrl);
+  return faviconUrl;
 }

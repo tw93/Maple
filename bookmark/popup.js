@@ -52,11 +52,20 @@ if (isSearchEnabled()) {
 }
 
 let bestMatches = [];
-// 恢复 header 元素
-if (isSearchEnabled()) {
-  updateHeader(JSON.parse(localStorage.getItem("persistedHeader")), true);
-}
-updateActiveBestMatch(activeBestMatchIndex);
+// 延迟恢复 header 元素，避免阻塞初始渲染
+setTimeout(() => {
+  if (isSearchEnabled()) {
+    const persistedHeader = localStorage.getItem("persistedHeader");
+    if (persistedHeader) {
+      try {
+        updateHeader(JSON.parse(persistedHeader), true);
+        updateActiveBestMatch(activeBestMatchIndex);
+      } catch (e) {
+        // 忽略解析错误
+      }
+    }
+  }
+}, 0);
 
 // 设置按钮事件监听
 if (settingsBtn) {
@@ -378,23 +387,19 @@ window.addEventListener("keydown", function (event) {
   }
 });
 
-window.onload = async function () {
+// 在DOM ready时立即设置高度
+document.addEventListener("DOMContentLoaded", function () {
   // 预设初始高度，避免闪烁
   setBodyHeightFromStorage();
+});
 
+window.onload = async function () {
   const bookmarkTreeNodes = await chrome.bookmarks.getTree();
   folderCount = countFolders(bookmarkTreeNodes[0].children);
   const container = document.querySelector("#search-wrapper");
   const bookmarksContainer = document.querySelector("#bookmarks");
 
   createBookmarks(bookmarkTreeNodes);
-
-  // 立即计算并设置正确的高度
-  requestAnimationFrame(() => {
-    const actualHeight = calculateOptimalHeight();
-    document.body.style.height = `${actualHeight}px`;
-    localStorage.setItem("savedHeight", (actualHeight - 8).toString());
-  });
 
   // 首先更新搜索功能的显示状态
   updateSearchFeatureVisibility();
@@ -414,20 +419,23 @@ window.onload = async function () {
     }
   }
 
+  // 计算并设置正确的高度，无动画
+  const actualHeight = calculateOptimalHeight();
+  document.body.style.height = `${actualHeight}px`;
+  localStorage.setItem("savedHeight", actualHeight.toString());
+
   // delay to add transition animation to stop initial animation
   setTimeout(() => {
     container.style.transition = "all .3s ease";
     bookmarksContainer.style.transition = "all .3s ease";
-  }, 50);
+  }, 100); // 增加延迟确保内容完全加载
 };
 
 function setBodyHeightFromStorage() {
   let savedHeight = localStorage.getItem("savedHeight");
   if (savedHeight && savedHeight > 30) {
-    document.body.style.height = `${savedHeight}px`;
-    if (savedHeight > 618) {
-      document.body.style.height = "618px";
-    }
+    const height = Math.min(Math.max(parseInt(savedHeight), 200), 618);
+    document.body.style.height = `${height}px`;
   } else {
     // 如果没有保存的高度，设置一个合适的初始高度避免闪烁
     document.body.style.height = "400px";

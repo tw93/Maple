@@ -80,7 +80,6 @@ window.onload = function () {
           firstRow.appendChild(datePart);
         }
 
-
         bgContent.appendChild(firstRow);
 
         // 第二行：描述内容（最多两行）
@@ -117,7 +116,6 @@ window.onload = function () {
           datePart.textContent = ` · ${data.date}`;
           titleContainer.appendChild(datePart);
         }
-
 
         bgContent.appendChild(titleContainer);
       }
@@ -156,7 +154,7 @@ window.onload = function () {
       .then((json) => {
         const randomIndex = Math.floor(Math.random() * json.length);
         const randomItem = json[randomIndex];
-        
+
         // 添加期数和描述信息（如果API没有提供，则模拟生成）
         if (!randomItem.num && randomItem.url) {
           // 从URL中提取期数，例如 "posts/30-标题" 中的 30
@@ -165,12 +163,12 @@ window.onload = function () {
             randomItem.num = match[1];
           }
         }
-        
+
         // 为潮流周刊添加简单描述
         if (!randomItem.description) {
           randomItem.description = "探索有趣的技术与生活方式";
         }
-        
+
         body.style.backgroundImage = `url(${randomItem.pic})`;
         convertToLinkElement(randomItem, true);
         localStorage.setItem("bgImageUrl", randomItem.pic);
@@ -185,7 +183,7 @@ window.onload = function () {
           .then((json) => {
             const randomIndex = Math.floor(Math.random() * json.length);
             const randomItem = json[randomIndex];
-            
+
             // 添加期数和描述信息
             if (!randomItem.num && randomItem.url) {
               const match = randomItem.url.match(/posts\/(\d+)-/);
@@ -193,11 +191,11 @@ window.onload = function () {
                 randomItem.num = match[1];
               }
             }
-            
+
             if (!randomItem.description) {
               randomItem.description = "探索有趣的技术与生活方式";
             }
-            
+
             body.style.backgroundImage = `url(${randomItem.pic})`;
             convertToLinkElement(randomItem, true);
             localStorage.setItem("bgImageUrl", randomItem.pic);
@@ -236,7 +234,7 @@ window.onload = function () {
 
         body.style.backgroundImage = `url(${imageUrl})`;
         body.style.filter = ""; // 清除滤镜
-        
+
         localStorage.setItem("bgBingUrl", imageUrl);
         localStorage.setItem("bgBingDate", new Date().toISOString().slice(0, 10));
         localStorage.setItem("bgBingInfo", JSON.stringify(Info));
@@ -252,7 +250,7 @@ window.onload = function () {
   function useBingFallback() {
     const today = new Date();
     const date = today.getFullYear() + "/" + (today.getMonth() + 1) + "/" + today.getDate();
-    
+
     const Info = {
       title: "必应日常壁纸",
       url: "https://cn.bing.com",
@@ -262,7 +260,7 @@ window.onload = function () {
     convertToLinkElement(Info, false);
     body.style.backgroundImage = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
     body.style.filter = "";
-    
+
     localStorage.setItem("bgBingUrl", "");
     localStorage.setItem("bgBingDate", new Date().toISOString().slice(0, 10));
     localStorage.setItem("bgBingInfo", JSON.stringify(Info));
@@ -376,7 +374,7 @@ window.onload = function () {
         convertToLinkElement(Info, true);
         body.style.backgroundImage = "linear-gradient(45deg, #1a1a1a 0%, #4a4a4a 50%, #7a7a7a 100%)";
         body.style.filter = "contrast(1.1)";
-        
+
         localStorage.setItem("bgPexelsUrl", "");
         localStorage.setItem("bgPexelsDate", new Date().toISOString().slice(0, 10));
         localStorage.setItem("bgPexelsInfo", JSON.stringify(Info));
@@ -467,7 +465,11 @@ window.onload = function () {
     localStorage.removeItem("bgUnsplashInfo");
   }
   // 迁移旧的 bing 配置到 pexels（如果用户之前用的是黑白艺术）
-  if (savedBgType === "bing" && localStorage.getItem("bgBingUrl") && localStorage.getItem("bgBingUrl").includes("pexels")) {
+  if (
+    savedBgType === "bing" &&
+    localStorage.getItem("bgBingUrl") &&
+    localStorage.getItem("bgBingUrl").includes("pexels")
+  ) {
     // 这是旧的黑白艺术配置，迁移到 pexels
     const oldUrl = localStorage.getItem("bgBingUrl");
     const oldDate = localStorage.getItem("bgBingDate");
@@ -503,7 +505,6 @@ window.onload = function () {
       setPexelsBackgroundImage();
     }
   });
-
 
   // 监听颜色方案变化
   const handleColorSchemeChange = (e) => {
@@ -545,13 +546,13 @@ window.onload = function () {
   // 鼠标移动处理
   document.body.addEventListener("mousemove", function (e) {
     const { clientX, clientY } = e;
-    const { innerWidth, innerHeight } = window;
+    const { innerHeight } = window;
 
     // 如果鼠标接近边缘区域，立即显示
     const nearBottomEdge = clientY > innerHeight - 120;
     const nearLeftEdge = clientX < 50;
     const nearBottomLeft = clientX < 650 && clientY > innerHeight - 120; // 左下角UI区域
-    
+
     const nearEdge = nearBottomEdge || nearLeftEdge || nearBottomLeft;
 
     clearTimeout(showTimeout);

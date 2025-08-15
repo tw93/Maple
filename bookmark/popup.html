@@ -10,8 +10,9 @@
         width: 408px;
         min-height: 200px;
         max-height: 618px;
+        height: 400px; /* 预设初始高度避免闪烁 */
         box-sizing: border-box;
-        transition: height 0.2s ease;
+        /* 移除transition避免尺寸变化动画 */
       }
 
       #hot-area {
