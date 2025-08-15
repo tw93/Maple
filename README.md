@@ -17,7 +17,7 @@
 
 ## Download
 
-<div align="center">
+<div align="left">
 
 [![Maple Bookmarks](https://img.shields.io/badge/Maple%20Bookmarks-Install-blue?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chrome.google.com/webstore/detail/maple-bookmarks/lgncmpklmepncbjpiebhdoejhmbcnjad)
 [![Maple NewTab](https://img.shields.io/badge/Maple%20NewTab-Install-blue?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chrome.google.com/webstore/detail/maple-newtab/fobmbldflolfooglijmbibmnhoflbjlb)

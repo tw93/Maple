@@ -18,7 +18,7 @@
 
 ## 下载安装
 
-<div align="center">
+<div align="left">
 
 [![枫叶书签](https://img.shields.io/badge/枫叶书签-立即安装-blue?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chrome.google.com/webstore/detail/maple-bookmarks/lgncmpklmepncbjpiebhdoejhmbcnjad)
 [![枫叶标签页](https://img.shields.io/badge/枫叶标签页-立即安装-blue?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chrome.google.com/webstore/detail/maple-newtab/fobmbldflolfooglijmbibmnhoflbjlb)
