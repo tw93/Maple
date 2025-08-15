@@ -27,39 +27,73 @@
 
       #bg-selector {
         outline: none;
-        font-size: 14px;
+        font-size: 12px;
         color: #fff;
-        text-shadow: 2px 2px 4px rgba(50, 50, 100, 0.5);
-        padding: 6px 20px 6px 10px;
-        border: none;
-        border-radius: 6px;
-        background: transparent;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        padding: 4px 16px 4px 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        background: rgba(0, 0, 0, 0.1);
         appearance: none;
+        min-width: 80px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        opacity: 0.7;
       }
-      .selector-container::after {
+      
+      #bg-selector:hover {
+        background: rgba(0, 0, 0, 0.2);
+        border-color: rgba(255, 255, 255, 0.3);
+        opacity: 1;
+      }
+      .select-wrapper {
+        position: relative;
+      }
+      
+      .select-wrapper::after {
         content: "▽";
         color: #fff;
-        text-shadow: 2px 2px 4px rgba(50, 50, 100, 0.5);
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         position: absolute;
-        right: 8px;
+        right: 6px;
         top: 50%;
         transform: translateY(-50%);
         pointer-events: none;
+        font-size: 10px;
+        opacity: 0.7;
+      }
+
+      #bottom-ui-container {
+        position: fixed;
+        bottom: 35px;
+        left: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        visibility: hidden;
+        opacity: 0;
+        transition: all 0.3s ease-in-out;
+        transform: translateY(10px);
+      }
+
+      #bottom-ui-container.visible {
+        visibility: visible;
+        opacity: 1;
+        transform: translateY(0);
       }
 
       .selector-container {
-        position: fixed;
-        top: 16px;
-        right: 16px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
 
       #bg-description {
-        position: fixed;
-        bottom: 16px;
-        left: 26px;
         display: flex;
         align-items: flex-start;
-        gap: 6px;
+        gap: 4px;
         cursor: pointer;
         text-decoration: none;
         font-size: 14px;
@@ -69,11 +103,35 @@
           0 0 12px rgba(0, 0, 0, 0.5),
           1px 1px 2px rgba(0, 0, 0, 0.6);
         line-height: 1.4;
-        max-width: 400px;
+        max-width: 600px;
       }
 
       .bg-content {
         flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 0;
+      }
+      
+      .content-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+      }
+      
+      .title-part {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-right: 8px;
+      }
+      
+      .date-part {
+        flex-shrink: 0;
+        white-space: nowrap;
       }
 
       .refresh-btn {
@@ -81,50 +139,38 @@
         width: 24px;
         height: 24px;
         border: none;
-        background: none;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
         cursor: pointer;
         color: #fff;
         font-size: 16px;
-        text-shadow:
-          0 0 6px rgba(0, 0, 0, 0.7),
-          0 0 12px rgba(0, 0, 0, 0.5),
-          1px 1px 2px rgba(0, 0, 0, 0.6);
-        transition: transform 0.2s ease;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        transition: all 0.3s ease;
         flex-shrink: 0;
-        margin-top: 0px;
-        opacity: 0.8;
+        opacity: 0.6;
+        padding: 0;
+        margin: 0;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        align-items: center;
+        justify-content: center;
       }
 
       .refresh-btn:hover {
         transform: rotate(180deg);
         opacity: 1;
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
       }
 
       .refresh-btn.show {
-        display: flex;
+        display: flex !important;
         align-items: center;
         justify-content: center;
       }
 
-      .selector-container {
-        visibility: hidden;
-        opacity: 0;
-        transition: all 0.3s ease-in-out;
-        transform: translateY(-10px);
-      }
 
-      .selector-container.visible {
-        visibility: visible;
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      #bg-description {
-        visibility: visible;
-        opacity: 1;
-        transition: all 0.3s ease-in-out;
-        transform: translateY(0);
-      }
 
       @media (prefers-color-scheme: light) {
         body.blank #bg-description,
@@ -134,25 +180,51 @@
           text-shadow: none;
         }
 
+        body.blank #bg-selector {
+          background: rgba(255, 255, 255, 0.1);
+          border-color: rgba(0, 0, 0, 0.2);
+          color: #333;
+        }
+        
+        body.blank #bg-selector:hover {
+          border-color: rgba(0, 0, 0, 0.3);
+        }
+        
+        body.blank .select-wrapper::after {
+          color: #333;
+        }
+
         body.blank .refresh-btn {
           color: #333;
           text-shadow: none;
+          background: rgba(0, 0, 0, 0.05);
+          border-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        body.blank .refresh-btn:hover {
+          background: rgba(0, 0, 0, 0.1);
+          border-color: rgba(0, 0, 0, 0.15);
         }
       }
     </style>
   </head>
   <body>
-    <div class="selector-container">
-      <select id="bg-selector">
-        <option value="bing">黑白艺术</option>
-        <option value="blank">空白页面</option>
-        <option value="random">潮流周刊</option>
-      </select>
+    <div id="bottom-ui-container">
+      <div class="selector-container">
+        <div class="select-wrapper">
+          <select id="bg-selector">
+            <option value="bing">必应壁纸</option>
+            <option value="pexels">黑白艺术</option>
+            <option value="random">潮流周刊</option>
+            <option value="blank">空白页面</option>
+          </select>
+        </div>
+        <button class="refresh-btn" id="refresh-btn" title="刷新内容">⟲</button>
+      </div>
+      <a id="bg-description">
+        <div class="bg-content"></div>
+      </a>
     </div>
-    <a id="bg-description">
-      <div class="bg-content"></div>
-      <button class="refresh-btn" id="refresh-btn" title="刷新内容">⟲</button>
-    </a>
     <script src="newtab.js"></script>
   </body>
 </html>

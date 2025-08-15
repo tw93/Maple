@@ -16,13 +16,15 @@ window.onload = function () {
       title: "新标签页",
       blank: "空白页面",
       random: "潮流周刊",
-      bing: "黑白艺术",
+      bing: "必应壁纸",
+      pexels: "黑白艺术",
     },
     en: {
       title: "New Tab",
       blank: "Blank",
       random: "Image",
       bing: "Bing",
+      pexels: "Art",
     },
   };
 
@@ -35,6 +37,7 @@ window.onload = function () {
   document.querySelector('#bg-selector option[value="blank"]').textContent = mapping.blank;
   document.querySelector('#bg-selector option[value="random"]').textContent = mapping.random;
   document.querySelector('#bg-selector option[value="bing"]').textContent = mapping.bing;
+  document.querySelector('#bg-selector option[value="pexels"]').textContent = mapping.pexels;
 
   // 根据浏览器类型和颜色模式设置背景色
   function setBackgroundColor() {
@@ -53,91 +56,78 @@ window.onload = function () {
       // 清除之前的内容
       bgContent.innerHTML = "";
 
-      // 创建标题容器（包含标题文本和刷新按钮）
-      const titleContainer = document.createElement("div");
-      // 只有随机模式(潮流周刊)才使用粗体
-      titleContainer.style.fontWeight = bgSelector.value === "random" ? "bold" : "normal";
-      titleContainer.style.marginBottom = "4px";
-      titleContainer.style.display = "flex";
-      titleContainer.style.alignItems = "flex-start";
-      titleContainer.style.gap = "6px";
+      // 为潮流周刊创建特殊格式
+      if (bgSelector.value === "random") {
+        // 第一行：期数 - 标题 + 日期 + 刷新按钮
+        const firstRow = document.createElement("div");
+        firstRow.className = "content-row";
+        firstRow.style.fontWeight = "bold";
 
-      // 创建标题文本元素
-      const titleText = document.createElement("span");
+        const titlePart = document.createElement("span");
+        titlePart.className = "title-part";
+        let displayTitle = "";
+        if (data.num) {
+          displayTitle += `第${data.num}期 - `;
+        }
+        displayTitle += data.title;
+        titlePart.textContent = displayTitle;
+        firstRow.appendChild(titlePart);
 
-      // 格式化标题显示：如果有期数则显示为"第xxx期 - 标题"格式，并在数字后添加空格
-      let displayTitle = data.title;
-      if (data.num) {
-        displayTitle = `第 ${data.num} 期 - ${data.title}`;
-      }
+        if (data.date) {
+          const datePart = document.createElement("span");
+          datePart.className = "date-part";
+          datePart.textContent = ` · ${data.date}`;
+          firstRow.appendChild(datePart);
+        }
 
-      // 如果有日期则显示在标题后
-      if (data.date) {
-        displayTitle += ` · ${data.date}`;
-      }
 
-      titleText.textContent = displayTitle;
-      titleContainer.appendChild(titleText);
+        bgContent.appendChild(firstRow);
 
-      // 如果需要刷新按钮，直接添加到标题容器中
-      if (showRefreshBtn) {
-        const inlineRefreshBtn = document.createElement("button");
-        inlineRefreshBtn.textContent = "⟲";
-        inlineRefreshBtn.style.cssText = `
-          border: none;
-          background: none;
-          cursor: pointer;
-          color: inherit;
-          font-size: 18px;
-          text-shadow: inherit;
-          transition: transform 0.2s ease;
-          opacity: 0.8;
-          padding: 0;
-          margin: 0;
-          line-height: 1;
-          margin-top: ${bgSelector.value === "bing" ? "2px" : "0"};
-        `;
-
-        inlineRefreshBtn.onmouseover = () => {
-          inlineRefreshBtn.style.transform = "rotate(180deg)";
-          inlineRefreshBtn.style.opacity = "1";
-        };
-        inlineRefreshBtn.onmouseleave = () => {
-          inlineRefreshBtn.style.transform = "rotate(0deg)";
-          inlineRefreshBtn.style.opacity = "0.8";
-        };
-
-        inlineRefreshBtn.onclick = function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-          if (bgSelector.value === "random") {
-            localStorage.removeItem("bgImageUrl");
-            localStorage.removeItem("bgImageDate");
-            localStorage.removeItem("bgImageInfo");
-            setRandomBackgroundImage();
-          } else if (bgSelector.value === "bing") {
-            localStorage.removeItem("bgBingUrl");
-            localStorage.removeItem("bgBingDate");
-            localStorage.removeItem("bgBingInfo");
-            setBingBackgroundImage();
-          }
-        };
-
-        titleContainer.appendChild(inlineRefreshBtn);
-        refreshBtn.classList.remove("show");
+        // 第二行：描述内容（最多两行）
+        if (data.description) {
+          const descRow = document.createElement("div");
+          descRow.style.fontWeight = "normal";
+          descRow.style.opacity = "0.9";
+          descRow.style.fontSize = "13px";
+          descRow.style.lineHeight = "1.4";
+          descRow.style.maxHeight = "calc(1.4em * 2)";
+          descRow.style.overflow = "hidden";
+          descRow.style.display = "-webkit-box";
+          descRow.style.webkitLineClamp = "2";
+          descRow.style.webkitBoxOrient = "vertical";
+          descRow.textContent = data.description;
+          bgContent.appendChild(descRow);
+        }
       } else {
-        refreshBtn.classList.remove("show");
+        // 其他模式的单行显示
+        const titleContainer = document.createElement("div");
+        titleContainer.className = "content-row";
+        titleContainer.style.fontWeight = "normal";
+
+        // 创建标题部分（可被裁剪）
+        const titlePart = document.createElement("span");
+        titlePart.className = "title-part";
+        titlePart.textContent = data.title;
+        titleContainer.appendChild(titlePart);
+
+        // 创建日期部分（不被裁剪）
+        if (data.date) {
+          const datePart = document.createElement("span");
+          datePart.className = "date-part";
+          datePart.textContent = ` · ${data.date}`;
+          titleContainer.appendChild(datePart);
+        }
+
+
+        bgContent.appendChild(titleContainer);
       }
 
-      bgContent.appendChild(titleContainer);
-
-      // 如果有描述字段，添加描述元素
-      if (data.description) {
-        const descElement = document.createElement("div");
-        descElement.style.fontWeight = "normal";
-        descElement.style.opacity = "0.9";
-        descElement.textContent = data.description;
-        bgContent.appendChild(descElement);
+      // 控制刷新按钮的显示
+      const refreshBtn = document.getElementById("refresh-btn");
+      if (showRefreshBtn) {
+        refreshBtn.style.display = "flex";
+      } else {
+        refreshBtn.style.display = "none";
       }
 
       bgDescription.href = "#";
@@ -166,6 +156,21 @@ window.onload = function () {
       .then((json) => {
         const randomIndex = Math.floor(Math.random() * json.length);
         const randomItem = json[randomIndex];
+        
+        // 添加期数和描述信息（如果API没有提供，则模拟生成）
+        if (!randomItem.num && randomItem.url) {
+          // 从URL中提取期数，例如 "posts/30-标题" 中的 30
+          const match = randomItem.url.match(/posts\/(\d+)-/);
+          if (match) {
+            randomItem.num = match[1];
+          }
+        }
+        
+        // 为潮流周刊添加简单描述
+        if (!randomItem.description) {
+          randomItem.description = "探索有趣的技术与生活方式";
+        }
+        
         body.style.backgroundImage = `url(${randomItem.pic})`;
         convertToLinkElement(randomItem, true);
         localStorage.setItem("bgImageUrl", randomItem.pic);
@@ -180,6 +185,19 @@ window.onload = function () {
           .then((json) => {
             const randomIndex = Math.floor(Math.random() * json.length);
             const randomItem = json[randomIndex];
+            
+            // 添加期数和描述信息
+            if (!randomItem.num && randomItem.url) {
+              const match = randomItem.url.match(/posts\/(\d+)-/);
+              if (match) {
+                randomItem.num = match[1];
+              }
+            }
+            
+            if (!randomItem.description) {
+              randomItem.description = "探索有趣的技术与生活方式";
+            }
+            
             body.style.backgroundImage = `url(${randomItem.pic})`;
             convertToLinkElement(randomItem, true);
             localStorage.setItem("bgImageUrl", randomItem.pic);
@@ -193,9 +211,67 @@ window.onload = function () {
   }
 
   /**
-   * @description 设置黑白艺术摄影背景图片，使用 Pexels API
+   * @description 设置 Bing 壁纸背景图片
    */
   function setBingBackgroundImage() {
+    const apiBaseUrl = "https://bing.biturl.top/?resolution=3840&format=json&index=0";
+    const apiLang = lang === "zh" ? "zh-CN" : "en-US";
+    const apiUrl = apiBaseUrl + "&mkt=" + apiLang;
+
+    fetch(apiUrl)
+      .then((response) => response.json())
+      .then((r) => {
+        const title = r.copyright;
+        const imageUrl = r.url;
+        const today = new Date();
+        const date = today.getFullYear() + "/" + (today.getMonth() + 1) + "/" + today.getDate();
+
+        const Info = {
+          title: title,
+          url: imageUrl,
+          date: date,
+          pic: imageUrl,
+        };
+        convertToLinkElement(Info, false);
+
+        body.style.backgroundImage = `url(${imageUrl})`;
+        body.style.filter = ""; // 清除滤镜
+        
+        localStorage.setItem("bgBingUrl", imageUrl);
+        localStorage.setItem("bgBingDate", new Date().toISOString().slice(0, 10));
+        localStorage.setItem("bgBingInfo", JSON.stringify(Info));
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        // 如果 Bing 失败，使用备选方案
+        useBingFallback();
+      });
+  }
+
+  // Bing 壁纸备选方案
+  function useBingFallback() {
+    const today = new Date();
+    const date = today.getFullYear() + "/" + (today.getMonth() + 1) + "/" + today.getDate();
+    
+    const Info = {
+      title: "必应日常壁纸",
+      url: "https://cn.bing.com",
+      date: date,
+      pic: "",
+    };
+    convertToLinkElement(Info, false);
+    body.style.backgroundImage = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+    body.style.filter = "";
+    
+    localStorage.setItem("bgBingUrl", "");
+    localStorage.setItem("bgBingDate", new Date().toISOString().slice(0, 10));
+    localStorage.setItem("bgBingInfo", JSON.stringify(Info));
+  }
+
+  /**
+   * @description 设置黑白艺术摄影背景图片，使用 Pexels API
+   */
+  function setPexelsBackgroundImage() {
     // 专门搜索本身就是黑白的艺术摄影作品
     const bwKeywords = [
       "black and white photography",
@@ -223,8 +299,8 @@ window.onload = function () {
       .then((data) => {
         if (data.photos && data.photos.length > 0) {
           const randomPhoto = data.photos[Math.floor(Math.random() * data.photos.length)];
-          // 使用最高分辨率的图片
-          const imageUrl = randomPhoto.src.large2x || randomPhoto.src.large || randomPhoto.src.medium;
+          // 使用原始尺寸的图片，获取最高清度
+          const imageUrl = randomPhoto.src.original || randomPhoto.src.large2x || randomPhoto.src.large;
 
           const Info = {
             title: randomPhoto.alt || `黑白艺术摄影 by ${randomPhoto.photographer}`,
@@ -238,23 +314,23 @@ window.onload = function () {
           body.style.backgroundImage = `url(${imageUrl})`;
           body.style.filter = "contrast(1.1)"; // 只是稍微增强对比度
 
-          localStorage.setItem("bgBingUrl", imageUrl);
-          localStorage.setItem("bgBingDate", new Date().toISOString().slice(0, 10));
-          localStorage.setItem("bgBingInfo", JSON.stringify(Info));
+          localStorage.setItem("bgPexelsUrl", imageUrl);
+          localStorage.setItem("bgPexelsDate", new Date().toISOString().slice(0, 10));
+          localStorage.setItem("bgPexelsInfo", JSON.stringify(Info));
         } else {
           // 如果没有数据，使用备选方案
-          useSimpleFallback();
+          usePexelsFallback();
         }
       })
       .catch((error) => {
         console.error("Error fetching Pexels:", error);
         // 如果 Pexels 失败，使用备选方案
-        useSimpleFallback();
+        usePexelsFallback();
       });
   }
 
   // 黑白艺术摄影备选方案，使用 Pexels Curated
-  function useSimpleFallback() {
+  function usePexelsFallback() {
     const page = Math.floor(Math.random() * 10) + 1; // 随机页面
     const apiUrl = `https://api.pexels.com/v1/curated?per_page=30&page=${page}`;
 
@@ -270,7 +346,7 @@ window.onload = function () {
       .then((data) => {
         if (data.photos && data.photos.length > 0) {
           const randomPhoto = data.photos[Math.floor(Math.random() * data.photos.length)];
-          const imageUrl = randomPhoto.src.large2x || randomPhoto.src.large || randomPhoto.src.medium;
+          const imageUrl = randomPhoto.src.original || randomPhoto.src.large2x || randomPhoto.src.large;
 
           const Info = {
             title: randomPhoto.alt || `黑白艺术摄影 by ${randomPhoto.photographer}`,
@@ -283,13 +359,13 @@ window.onload = function () {
           body.style.backgroundImage = `url(${imageUrl})`;
           body.style.filter = "contrast(1.1)"; // 只增强对比度，不强制灰度
 
-          localStorage.setItem("bgBingUrl", imageUrl);
-          localStorage.setItem("bgBingDate", new Date().toISOString().slice(0, 10));
-          localStorage.setItem("bgBingInfo", JSON.stringify(Info));
+          localStorage.setItem("bgPexelsUrl", imageUrl);
+          localStorage.setItem("bgPexelsDate", new Date().toISOString().slice(0, 10));
+          localStorage.setItem("bgPexelsInfo", JSON.stringify(Info));
         }
       })
       .catch((error) => {
-        console.error("Fallback Error:", error);
+        console.error("Pexels Fallback Error:", error);
         // 最后的最后，使用一个静态的黑白样式
         const Info = {
           title: "黑白艺术摄影",
@@ -300,6 +376,10 @@ window.onload = function () {
         convertToLinkElement(Info, true);
         body.style.backgroundImage = "linear-gradient(45deg, #1a1a1a 0%, #4a4a4a 50%, #7a7a7a 100%)";
         body.style.filter = "contrast(1.1)";
+        
+        localStorage.setItem("bgPexelsUrl", "");
+        localStorage.setItem("bgPexelsDate", new Date().toISOString().slice(0, 10));
+        localStorage.setItem("bgPexelsInfo", JSON.stringify(Info));
       });
   }
 
@@ -321,7 +401,7 @@ window.onload = function () {
       body.style.backgroundImage = `url(${imageUrl})`;
       try {
         const parsedInfo = JSON.parse(imageInfo);
-        const showRefreshBtn = type === "random" || type === "bing";
+        const showRefreshBtn = type === "random" || type === "pexels";
         convertToLinkElement(parsedInfo, showRefreshBtn);
       } catch (error) {
         console.log(error);
@@ -331,6 +411,8 @@ window.onload = function () {
         setRandomBackgroundImage();
       } else if (type === "bing") {
         setBingBackgroundImage();
+      } else if (type === "pexels") {
+        setPexelsBackgroundImage();
       }
     }
   }
@@ -339,22 +421,28 @@ window.onload = function () {
   function setBackground() {
     const bgType = bgSelector.value;
     localStorage.setItem("bgType", bgType);
+    const refreshBtn = document.getElementById("refresh-btn");
 
     if (bgType === "blank") {
       body.style.backgroundImage = "";
       body.style.filter = ""; // 清除滤镜
       body.classList.add("blank");
       const bgContent = document.querySelector(".bg-content");
-      const refreshBtn = document.getElementById("refresh-btn");
       bgContent.innerHTML = "";
-      refreshBtn.classList.remove("show");
+      refreshBtn.style.display = "none"; // 空白页面不显示刷新按钮
       setBackgroundColor();
-    } else if (bgType === "random") {
-      body.style.filter = ""; // 清除滤镜
-      handleSetBackground(bgType, "bgImageUrl", "bgImageDate", "bgImageInfo");
-    } else if (bgType === "bing") {
-      // 艺术摄影模式保持滤镜效果
-      handleSetBackground(bgType, "bgBingUrl", "bgBingDate", "bgBingInfo");
+    } else {
+      body.classList.remove("blank");
+      if (bgType === "random") {
+        body.style.filter = ""; // 清除滤镜
+        handleSetBackground(bgType, "bgImageUrl", "bgImageDate", "bgImageInfo");
+      } else if (bgType === "bing") {
+        body.style.filter = ""; // Bing 壁纸不需要滤镜
+        handleSetBackground(bgType, "bgBingUrl", "bgBingDate", "bgBingInfo");
+      } else if (bgType === "pexels") {
+        // 艺术摄影模式保持滤镜效果
+        handleSetBackground(bgType, "bgPexelsUrl", "bgPexelsDate", "bgPexelsInfo");
+      }
     }
   }
 
@@ -378,8 +466,44 @@ window.onload = function () {
     localStorage.removeItem("bgUnsplashDate");
     localStorage.removeItem("bgUnsplashInfo");
   }
+  // 迁移旧的 bing 配置到 pexels（如果用户之前用的是黑白艺术）
+  if (savedBgType === "bing" && localStorage.getItem("bgBingUrl") && localStorage.getItem("bgBingUrl").includes("pexels")) {
+    // 这是旧的黑白艺术配置，迁移到 pexels
+    const oldUrl = localStorage.getItem("bgBingUrl");
+    const oldDate = localStorage.getItem("bgBingDate");
+    const oldInfo = localStorage.getItem("bgBingInfo");
+    if (oldUrl) {
+      localStorage.setItem("bgPexelsUrl", oldUrl);
+      localStorage.setItem("bgPexelsDate", oldDate);
+      localStorage.setItem("bgPexelsInfo", oldInfo);
+      localStorage.removeItem("bgBingUrl");
+      localStorage.removeItem("bgBingDate");
+      localStorage.removeItem("bgBingInfo");
+      savedBgType = "pexels";
+      localStorage.setItem("bgType", savedBgType);
+    }
+  }
   bgSelector.value = savedBgType;
   setBackground();
+
+  // 添加刷新按钮事件监听
+  const refreshBtn = document.getElementById("refresh-btn");
+  refreshBtn.addEventListener("click", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (bgSelector.value === "random") {
+      localStorage.removeItem("bgImageUrl");
+      localStorage.removeItem("bgImageDate");
+      localStorage.removeItem("bgImageInfo");
+      setRandomBackgroundImage();
+    } else if (bgSelector.value === "pexels") {
+      localStorage.removeItem("bgPexelsUrl");
+      localStorage.removeItem("bgPexelsDate");
+      localStorage.removeItem("bgPexelsInfo");
+      setPexelsBackgroundImage();
+    }
+  });
+
 
   // 监听颜色方案变化
   const handleColorSchemeChange = (e) => {
@@ -402,9 +526,9 @@ window.onload = function () {
     if (isUIVisible) return;
 
     clearTimeout(hideTimeout);
-    const selectorContainer = document.querySelector(".selector-container");
+    const bottomContainer = document.getElementById("bottom-ui-container");
 
-    selectorContainer.classList.add("visible");
+    bottomContainer.classList.add("visible");
     isUIVisible = true;
   }
 
@@ -412,9 +536,9 @@ window.onload = function () {
     if (!isUIVisible) return;
 
     clearTimeout(showTimeout);
-    const selectorContainer = document.querySelector(".selector-container");
+    const bottomContainer = document.getElementById("bottom-ui-container");
 
-    selectorContainer.classList.remove("visible");
+    bottomContainer.classList.remove("visible");
     isUIVisible = false;
   }
 
@@ -424,7 +548,11 @@ window.onload = function () {
     const { innerWidth, innerHeight } = window;
 
     // 如果鼠标接近边缘区域，立即显示
-    const nearEdge = clientX < 50 || clientX > innerWidth - 200 || clientY < 50 || clientY > innerHeight - 100;
+    const nearBottomEdge = clientY > innerHeight - 120;
+    const nearLeftEdge = clientX < 50;
+    const nearBottomLeft = clientX < 650 && clientY > innerHeight - 120; // 左下角UI区域
+    
+    const nearEdge = nearBottomEdge || nearLeftEdge || nearBottomLeft;
 
     clearTimeout(showTimeout);
     clearTimeout(hideTimeout);
@@ -432,7 +560,7 @@ window.onload = function () {
     if (nearEdge) {
       showUI();
     } else if (!isUIVisible) {
-      showTimeout = setTimeout(showUI, 800);
+      showTimeout = setTimeout(showUI, 200);
     }
 
     // 如果UI已显示，设置隐藏计时器
