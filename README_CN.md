@@ -24,12 +24,12 @@
 [![枫叶标签页](https://img.shields.io/badge/枫叶标签页-立即安装-blue?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chrome.google.com/webstore/detail/maple-newtab/fobmbldflolfooglijmbibmnhoflbjlb)
 [![枫叶主题](https://img.shields.io/badge/枫叶主题-立即安装-blue?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/cghofkeabdkcdoanmjhkadklfdlelaao)
 
+</div>
+
 **安装说明：**
 
 - 使用 Chrome Web Store 来安装 **枫叶书签**，假如你是火狐用户，请通过 [Firefox Addon](https://addons.mozilla.org/zh-CN/firefox/addon/maple-bookmarks/) 来安装使用，好用很欢迎评价。
 - 假如你不可访问，可以下载 [Maple.zip](https://github.com/tw93/Maple/releases/latest/download/Maple.zip)，解压以后，参考 [Loading an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked) 来使用本地包。
-
-</div>
 
 ---
 

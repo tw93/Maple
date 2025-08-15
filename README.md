@@ -23,12 +23,12 @@
 [![Maple NewTab](https://img.shields.io/badge/Maple%20NewTab-Install-blue?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chrome.google.com/webstore/detail/maple-newtab/fobmbldflolfooglijmbibmnhoflbjlb)
 [![Maple Theme](https://img.shields.io/badge/Maple%20Theme-Install-blue?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/cghofkeabdkcdoanmjhkadklfdlelaao)
 
+</div>
+
 **Installation Notes:**
 
 - Install **Maple Bookmarks** from the Chrome Web Store. If you are a Firefox user, please install and use [Firefox Addon](https://addons.mozilla.org/zh-CN/firefox/addon/maple-bookmarks/). If you find it useful, we'd appreciate your review.
 - If you're unable to access the Chrome Web Store, you can download [Maple.zip](https://github.com/tw93/Maple/releases/latest/download/Maple.zip). After unzipping, refer to [Loading an unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked) to use the local package.
-
-</div>
 
 ---
 
