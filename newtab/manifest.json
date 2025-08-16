@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Maple NewTab",
   "description": "Enhance your new tab experience with a comfortable and refreshing design.",
-  "version": "1.12",
+  "version": "1.13",
   "chrome_url_overrides": {
     "newtab": "newtab.html"
   },

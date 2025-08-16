@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Maple Theme",
   "description": "A super clean pure white theme with minimal contrast",
-  "version": "1.12",
+  "version": "1.13",
   "theme": {
 		"colors": {
 			"frame": [255, 255, 255],
