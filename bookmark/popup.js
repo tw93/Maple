@@ -16,11 +16,17 @@ import { getFavicon } from "./utils/favicon.js";
 // 设置相关常量
 const SETTINGS_KEYS = {
   SEARCH_ENABLED: "MAPLE_SEARCH_ENABLED",
+  TIPS_ENABLED: "MAPLE_TIPS_ENABLED",
 };
 
 // 获取搜索功能开启状态
 function isSearchEnabled() {
   return localStorage.getItem(SETTINGS_KEYS.SEARCH_ENABLED) === "true";
+}
+
+// 获取 tips 功能开启状态
+function isTipsEnabled() {
+  return localStorage.getItem(SETTINGS_KEYS.TIPS_ENABLED) !== "false";
 }
 
 const CLASS_NAMES = {
@@ -160,6 +166,7 @@ function switchSearchBarShowStatus() {
   // 有一个8px的间距，所以减去8
   const containerHeight = container.clientHeight - 8;
   const bookmarksContainer = document.querySelector("#bookmarks");
+
   if (container) {
     container.classList.remove("show");
     if (extraClass) {
@@ -171,6 +178,30 @@ function switchSearchBarShowStatus() {
       bookmarksContainer.style.transform = `translateY(-${containerHeight}px)`;
       hotArea.style.display = "block";
     }
+  }
+
+  // 智能更新窗口高度
+  setTimeout(() => {
+    updatePopupHeight();
+  }, 300); // 等待搜索框动画完成
+}
+
+/**
+ * 智能更新popup高度
+ */
+function updatePopupHeight() {
+  const newHeight = calculateOptimalHeight();
+  const currentHeight = parseInt(document.body.style.height) || 400;
+
+  // 如果高度有显著变化，使用平滑过渡
+  if (Math.abs(newHeight - currentHeight) > 10) {
+    document.body.style.transition = "height 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+    document.body.style.height = `${newHeight}px`;
+
+    // 动画结束后移除过渡效果
+    setTimeout(() => {
+      document.body.style.transition = "";
+    }, 250);
   }
 }
 
@@ -199,6 +230,9 @@ function getActiveBestMatch() {
 }
 
 function showBestMatchTips() {
+  if (!isTipsEnabled()) {
+    return;
+  }
   const curBestMathEle = getActiveBestMatch();
   const tipsCon = curBestMathEle.querySelector("p");
   if (checkOverflow(tipsCon)) {
@@ -389,8 +423,10 @@ window.addEventListener("keydown", function (event) {
 
 // 在DOM ready时立即设置高度
 document.addEventListener("DOMContentLoaded", function () {
-  // 预设初始高度，避免闪烁
-  setBodyHeightFromStorage();
+  // 在内容加载后设置初始高度，与内联script配合
+  setTimeout(() => {
+    setBodyHeightFromStorage();
+  }, 50); // 短延迟确保内联script先执行
 });
 
 window.onload = async function () {
@@ -419,45 +455,103 @@ window.onload = async function () {
     }
   }
 
-  // 计算并设置正确的高度，无动画
+  // 计算并设置正确的高度
   const actualHeight = calculateOptimalHeight();
-  document.body.style.height = `${actualHeight}px`;
-  localStorage.setItem("savedHeight", actualHeight.toString());
+
+  // 只在必要时使用平滑过渡更新高度
+  // 移除与CSS变量的冲突，让动画自然完成后再调整
+  setTimeout(() => {
+    const currentHeight = parseInt(getComputedStyle(document.body).height) || 400;
+
+    if (Math.abs(actualHeight - currentHeight) > 20) {
+      document.body.style.transition = "height 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+      document.body.style.height = `${actualHeight}px`;
+
+      setTimeout(() => {
+        document.body.style.transition = "";
+      }, 250);
+    }
+  }, 200); // 等待入场动画完成
 
   // delay to add transition animation to stop initial animation
   setTimeout(() => {
-    container.style.transition = "all .3s ease";
-    bookmarksContainer.style.transition = "all .3s ease";
+    container.style.transition = "all 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+    bookmarksContainer.style.transition = "all 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
   }, 100); // 增加延迟确保内容完全加载
 };
 
 function setBodyHeightFromStorage() {
   let savedHeight = localStorage.getItem("savedHeight");
+  let savedSearchState = localStorage.getItem("SHOW_SEARCH_BAR");
+  let savedSearchEnabled = localStorage.getItem("MAPLE_SEARCH_ENABLED");
+
   if (savedHeight && savedHeight > 30) {
-    const height = Math.min(Math.max(parseInt(savedHeight), 200), 618);
+    let height = Math.min(Math.max(parseInt(savedHeight), 200), 618);
+
+    // 根据保存的搜索状态智能调整高度
+    if (savedSearchEnabled === "true" && savedSearchState === "true") {
+      // 搜索功能开启且搜索框显示时，使用保存的高度
+      height = Math.min(Math.max(parseInt(savedHeight), 250), 618);
+    } else if (savedSearchEnabled === "true" && savedSearchState !== "true") {
+      // 搜索功能开启但搜索框隐藏时，减少一些高度
+      height = Math.min(Math.max(parseInt(savedHeight) - 60, 200), 618);
+    } else if (savedSearchEnabled !== "true") {
+      // 搜索完全关闭时，进一步减少高度
+      height = Math.min(Math.max(parseInt(savedHeight) - 80, 200), 618);
+    }
+
+    // 直接设置body高度
     document.body.style.height = `${height}px`;
   } else {
-    // 如果没有保存的高度，设置一个合适的初始高度避免闪烁
-    document.body.style.height = "400px";
+    // 如枟没有保存的高度，根据功能状态设置合适的初始高度
+    let initialHeight = 400;
+    if (savedSearchEnabled === "true" && savedSearchState === "true") {
+      initialHeight = 520; // 搜索开启且显示
+    } else if (savedSearchEnabled === "true") {
+      initialHeight = 460; // 搜索开启但隐藏
+    } else {
+      initialHeight = 380; // 搜索完全关闭
+    }
+    document.body.style.height = `${initialHeight}px`;
   }
 }
 
 function calculateOptimalHeight() {
   const bookmarksContainer = document.getElementById("bookmarks");
   const searchWrapper = document.querySelector("#search-wrapper");
+  const settingsBtn = document.querySelector(".settings-btn");
 
   let totalHeight = 20; // 基础padding
 
+  // 计算书签容器高度
   if (bookmarksContainer) {
     totalHeight += bookmarksContainer.scrollHeight;
   }
 
-  if (isSearchEnabled() && !searchIsHide) {
-    totalHeight += searchWrapper ? searchWrapper.scrollHeight : 0;
+  // 计算搜索框高度（只有当搜索功能开启且显示时）
+  if (isSearchEnabled() && !searchIsHide && searchWrapper) {
+    totalHeight += searchWrapper.scrollHeight;
   }
 
-  // 限制最大高度
-  return Math.min(Math.max(totalHeight, 200), 618);
+  // 计算最佳匹配区域高度
+  const bestMatchContainer = document.querySelector("#best-match");
+  if (bestMatchContainer && bestMatchContainer.children.length > 0) {
+    totalHeight += bestMatchContainer.scrollHeight;
+  }
+
+  // 考虑设置按钮的影响
+  if (settingsBtn) {
+    totalHeight += 10; // 设置按钮的额外空间
+  }
+
+  // 限制最大高度并保证最小高度
+  const optimalHeight = Math.min(Math.max(totalHeight, 200), 618);
+
+  // 保存计算结果到本地存储
+  localStorage.setItem("savedHeight", optimalHeight.toString());
+  localStorage.setItem("SHOW_SEARCH_BAR", searchIsHide ? "false" : "true");
+
+  return optimalHeight;
 }
 
 function createBookmarks(bookmarkTreeNodes) {
@@ -540,6 +634,9 @@ function createBookmarkItem(bookmarkNode, parent) {
   bookItem.appendChild(linkTitle);
 
   let mouseleaveHandler = function () {
+    if (!isTipsEnabled()) {
+      return;
+    }
     if (hideTimeout) {
       clearTimeout(hideTimeout);
       hideTimeout = null;
@@ -551,8 +648,8 @@ function createBookmarkItem(bookmarkNode, parent) {
   };
 
   bookItem.addEventListener("mouseover", function () {
-    // 只有在文本溢出的时候才做处理
-    if (checkOverflow(linkTitle)) {
+    // 只有在文本溢出且 tips 功能开启的时候才做处理
+    if (isTipsEnabled() && checkOverflow(linkTitle)) {
       // 如果已经计划了隐藏通知的操作，取消它
       if (hideTimeout) {
         clearTimeout(hideTimeout);
@@ -613,6 +710,11 @@ function createFolderForBookmarks(bookmarkNode, parent, parentTitle = []) {
               }
             }
             event.preventDefault();
+          } else {
+            // 只有在普通点击（非批量打开）时才更新高度
+            setTimeout(() => {
+              updatePopupHeight();
+            }, 100); // 等待展开/收起动画完成
           }
         });
       }

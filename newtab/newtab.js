@@ -17,14 +17,14 @@ window.onload = function () {
       blank: "空白页面",
       random: "潮流周刊",
       bing: "必应壁纸",
-      pexels: "黑白艺术",
+      pexels: "文艺复兴",
     },
     en: {
       title: "New Tab",
       blank: "Blank",
       random: "Image",
       bing: "Bing",
-      pexels: "Art",
+      pexels: "Renaissance",
     },
   };
 
@@ -97,8 +97,26 @@ window.onload = function () {
           descRow.textContent = data.description;
           bgContent.appendChild(descRow);
         }
+      } else if (bgSelector.value === "pexels") {
+        // 文艺复兴模式：只显示标题，支持最多两行显示
+        const titleContainer = document.createElement("div");
+        titleContainer.className = "content-row";
+        titleContainer.style.fontWeight = "normal";
+
+        // 创建标题部分，支持最多两行显示
+        const titlePart = document.createElement("span");
+        titlePart.className = "title-part";
+        titlePart.textContent = data.title;
+        titlePart.style.display = "-webkit-box";
+        titlePart.style.webkitLineClamp = "2";
+        titlePart.style.webkitBoxOrient = "vertical";
+        titlePart.style.overflow = "hidden";
+        titlePart.style.lineHeight = "1.4";
+        titleContainer.appendChild(titlePart);
+
+        bgContent.appendChild(titleContainer);
       } else {
-        // 其他模式的单行显示
+        // 其他模式的单行显示（bing等）
         const titleContainer = document.createElement("div");
         titleContainer.className = "content-row";
         titleContainer.style.fontWeight = "normal";
@@ -152,8 +170,19 @@ window.onload = function () {
     fetch("https://weekly.tw93.fun/posts.json")
       .then((response) => response.json())
       .then((json) => {
-        const randomIndex = Math.floor(Math.random() * json.length);
-        const randomItem = json[randomIndex];
+        // 过滤掉GIF格式的图片
+        const filteredJson = json.filter((item) => {
+          if (!item.pic) return false;
+          const url = item.pic.toLowerCase();
+          return !url.endsWith(".gif") && !url.includes(".gif");
+        });
+
+        if (filteredJson.length === 0) {
+          throw new Error("No non-GIF images available");
+        }
+
+        const randomIndex = Math.floor(Math.random() * filteredJson.length);
+        const randomItem = filteredJson[randomIndex];
 
         // 添加期数和描述信息（如果API没有提供，则模拟生成）
         if (!randomItem.num && randomItem.url) {
@@ -181,8 +210,20 @@ window.onload = function () {
         fetch(chrome.runtime.getURL("/bg.json"))
           .then((response) => response.json())
           .then((json) => {
-            const randomIndex = Math.floor(Math.random() * json.length);
-            const randomItem = json[randomIndex];
+            // 过滤掉GIF格式的图片
+            const filteredJson = json.filter((item) => {
+              if (!item.pic) return false;
+              const url = item.pic.toLowerCase();
+              return !url.endsWith(".gif") && !url.includes(".gif");
+            });
+
+            if (filteredJson.length === 0) {
+              console.error("No non-GIF images available in local bg.json");
+              return;
+            }
+
+            const randomIndex = Math.floor(Math.random() * filteredJson.length);
+            const randomItem = filteredJson[randomIndex];
 
             // 添加期数和描述信息
             if (!randomItem.num && randomItem.url) {
@@ -267,23 +308,44 @@ window.onload = function () {
   }
 
   /**
-   * @description 设置黑白艺术摄影背景图片，使用 Pexels API
+   * @description 设置文艺复兴背景图片，使用 Pexels API
    */
   function setPexelsBackgroundImage() {
-    // 专门搜索本身就是黑白的艺术摄影作品
-    const bwKeywords = [
-      "black and white photography",
-      "monochrome photography",
-      "black white architecture",
-      "monochrome portrait",
-      "black white street photography",
-      "monochrome minimalism",
-      "black white abstract art",
-      "noir photography",
-      "grayscale art",
+    // 专门搜索欧洲文艺复兴时期艺术风格的摄影作品，包括古典建筑、雕塑、油画等
+    const renaissanceKeywords = [
+      "renaissance art",
+      "classical sculpture",
+      "european architecture",
+      "italian renaissance",
+      "baroque art",
+      "classical paintings",
+      "historic buildings",
+      "ancient sculptures",
+      "museum artifacts",
+      "classical art",
+      "european palaces",
+      "historic castles",
+      "classical monuments",
+      "art gallery",
+      "fine art",
+      "classical architecture",
+      "historic architecture",
+      "european cathedrals",
+      "classical statues",
+      "antique art",
+      "historic art",
+      "classical paintings",
+      "european museums",
+      "artistic heritage",
+      "cultural heritage",
+      "historic landmarks",
+      "classical masterpieces",
+      "european art",
+      "renaissance paintings",
+      "classical antiquities",
     ];
-    const randomKeyword = bwKeywords[Math.floor(Math.random() * bwKeywords.length)];
-    const apiUrl = `https://api.pexels.com/v1/search?query=${encodeURIComponent(randomKeyword)}&per_page=30&orientation=landscape&color=black_and_white`;
+    const randomKeyword = renaissanceKeywords[Math.floor(Math.random() * renaissanceKeywords.length)];
+    const apiUrl = `https://api.pexels.com/v1/search?query=${encodeURIComponent(randomKeyword)}&per_page=30&orientation=landscape`;
 
     const today = new Date();
     const date = today.getFullYear() + "/" + (today.getMonth() + 1) + "/" + today.getDate();
@@ -296,19 +358,48 @@ window.onload = function () {
       .then((response) => response.json())
       .then((data) => {
         if (data.photos && data.photos.length > 0) {
-          const randomPhoto = data.photos[Math.floor(Math.random() * data.photos.length)];
+          // 过滤掉包含现代人物和不相关主题的照片
+          const filteredPhotos = data.photos.filter((photo) => {
+            const alt = (photo.alt || "").toLowerCase();
+            return (
+              !alt.includes("people") &&
+              !alt.includes("person") &&
+              !alt.includes("man") &&
+              !alt.includes("woman") &&
+              !alt.includes("boy") &&
+              !alt.includes("girl") &&
+              !alt.includes("human") &&
+              !alt.includes("portrait") &&
+              !alt.includes("face") &&
+              !alt.includes("modern") &&
+              !alt.includes("contemporary") &&
+              !alt.includes("technology") &&
+              !alt.includes("business") &&
+              !alt.includes("office") &&
+              !alt.includes("urban") &&
+              !alt.includes("city") &&
+              !alt.includes("street") &&
+              !alt.includes("car") &&
+              !alt.includes("vehicle")
+            );
+          });
+
+          // 如果过滤后没有照片，使用原始照片列表
+          const photosToUse = filteredPhotos.length > 0 ? filteredPhotos : data.photos;
+          const randomPhoto = photosToUse[Math.floor(Math.random() * photosToUse.length)];
+
           // 使用原始尺寸的图片，获取最高清度
           const imageUrl = randomPhoto.src.original || randomPhoto.src.large2x || randomPhoto.src.large;
 
           const Info = {
-            title: randomPhoto.alt || `黑白艺术摄影 by ${randomPhoto.photographer}`,
+            title: randomPhoto.alt || `文艺复兴艺术 by ${randomPhoto.photographer}`,
             url: randomPhoto.url || "#",
             date: date,
             pic: imageUrl,
           };
           convertToLinkElement(Info, true);
 
-          // 不再使用滤镜，因为图片本身就是黑白的
+          // 不再使用滤镜，使用原图
           body.style.backgroundImage = `url(${imageUrl})`;
           body.style.filter = "contrast(1.1)"; // 只是稍微增强对比度
 
@@ -327,7 +418,7 @@ window.onload = function () {
       });
   }
 
-  // 黑白艺术摄影备选方案，使用 Pexels Curated
+  // 文艺复兴备选方案，使用 Pexels Curated
   function usePexelsFallback() {
     const page = Math.floor(Math.random() * 10) + 1; // 随机页面
     const apiUrl = `https://api.pexels.com/v1/curated?per_page=30&page=${page}`;
@@ -343,11 +434,40 @@ window.onload = function () {
       .then((response) => response.json())
       .then((data) => {
         if (data.photos && data.photos.length > 0) {
-          const randomPhoto = data.photos[Math.floor(Math.random() * data.photos.length)];
+          // 过滤掉包含现代人物和不相关主题的照片
+          const filteredPhotos = data.photos.filter((photo) => {
+            const alt = (photo.alt || "").toLowerCase();
+            return (
+              !alt.includes("people") &&
+              !alt.includes("person") &&
+              !alt.includes("man") &&
+              !alt.includes("woman") &&
+              !alt.includes("boy") &&
+              !alt.includes("girl") &&
+              !alt.includes("human") &&
+              !alt.includes("portrait") &&
+              !alt.includes("face") &&
+              !alt.includes("modern") &&
+              !alt.includes("contemporary") &&
+              !alt.includes("technology") &&
+              !alt.includes("business") &&
+              !alt.includes("office") &&
+              !alt.includes("urban") &&
+              !alt.includes("city") &&
+              !alt.includes("street") &&
+              !alt.includes("car") &&
+              !alt.includes("vehicle")
+            );
+          });
+
+          // 如果过滤后没有照片，使用原始照片列表
+          const photosToUse = filteredPhotos.length > 0 ? filteredPhotos : data.photos;
+          const randomPhoto = photosToUse[Math.floor(Math.random() * photosToUse.length)];
+
           const imageUrl = randomPhoto.src.original || randomPhoto.src.large2x || randomPhoto.src.large;
 
           const Info = {
-            title: randomPhoto.alt || `黑白艺术摄影 by ${randomPhoto.photographer}`,
+            title: randomPhoto.alt || `文艺复兴艺术 by ${randomPhoto.photographer}`,
             url: randomPhoto.url || "#",
             date: date,
             pic: imageUrl,
@@ -364,9 +484,9 @@ window.onload = function () {
       })
       .catch((error) => {
         console.error("Pexels Fallback Error:", error);
-        // 最后的最后，使用一个静态的黑白样式
+        // 最后的最后，使用一个静态的样式
         const Info = {
-          title: "黑白艺术摄影",
+          title: "文艺复兴艺术",
           url: "#",
           date: date,
           pic: "",

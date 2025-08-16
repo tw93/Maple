@@ -221,15 +221,15 @@
   <body>
     <div class="container">
       <div class="header">
-        <button class="back-btn" id="backBtn">← 返回</button>
-        <h1 id="title">设置</h1>
+        <button class="back-btn" id="backBtn">← Back</button>
+        <h1 id="title">Settings</h1>
       </div>
 
       <div class="setting-item">
         <div class="setting-label">
-          <div class="setting-title" id="searchFeatureTitle">启用搜索功能</div>
+          <div class="setting-title" id="searchFeatureTitle">Search Functionality</div>
           <div class="setting-description" id="searchFeatureDesc">
-            开启后可以使用搜索框搜索书签，关闭后将隐藏搜索相关功能
+            Enable search box to quickly find bookmarks. When disabled, all search features will be hidden.
           </div>
         </div>
         <label class="switch">
@@ -238,8 +238,21 @@
         </label>
       </div>
 
+      <div class="setting-item">
+        <div class="setting-label">
+          <div class="setting-title" id="tipsFeatureTitle">Hover Tooltips</div>
+          <div class="setting-description" id="tipsFeatureDesc">
+            Display full bookmark titles when hovering. Turn off to disable all tooltip notifications.
+          </div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="tipsEnabled">
+          <span class="slider"></span>
+        </label>
+      </div>
+
       <div class="footer">
-        <div class="version">Maple Bookmarks v1.10</div>
+        <div class="version" id="versionText">Maple Bookmarks v1.10</div>
       </div>
     </div>
 
