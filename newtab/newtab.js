@@ -255,8 +255,8 @@ window.onload = function () {
         const title = r.copyright;
         const imageUrl = r.url;
         const today = new Date();
-        const month = (today.getMonth() + 1).toString().padStart(2, '0');
-        const day = today.getDate().toString().padStart(2, '0');
+        const month = (today.getMonth() + 1).toString().padStart(2, "0");
+        const day = today.getDate().toString().padStart(2, "0");
         const date = today.getFullYear() + "/" + month + "/" + day;
 
         const Info = {
@@ -284,8 +284,8 @@ window.onload = function () {
   // Bing 壁纸备选方案
   function useBingFallback() {
     const today = new Date();
-    const month = (today.getMonth() + 1).toString().padStart(2, '0');
-    const day = today.getDate().toString().padStart(2, '0');
+    const month = (today.getMonth() + 1).toString().padStart(2, "0");
+    const day = today.getDate().toString().padStart(2, "0");
     const date = today.getFullYear() + "/" + month + "/" + day;
 
     const Info = {
