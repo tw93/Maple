@@ -116,24 +116,16 @@ window.onload = function () {
 
         bgContent.appendChild(titleContainer);
       } else {
-        // 其他模式的单行显示（bing等）
+        // 其他模式的单行显示（bing等），不显示日期
         const titleContainer = document.createElement("div");
         titleContainer.className = "content-row";
         titleContainer.style.fontWeight = "normal";
 
-        // 创建标题部分（可被裁剪）
+        // 创建标题部分
         const titlePart = document.createElement("span");
         titlePart.className = "title-part";
         titlePart.textContent = data.title;
         titleContainer.appendChild(titlePart);
-
-        // 创建日期部分（不被裁剪）
-        if (data.date) {
-          const datePart = document.createElement("span");
-          datePart.className = "date-part";
-          datePart.textContent = ` · ${data.date}`;
-          titleContainer.appendChild(datePart);
-        }
 
         bgContent.appendChild(titleContainer);
       }
@@ -263,7 +255,9 @@ window.onload = function () {
         const title = r.copyright;
         const imageUrl = r.url;
         const today = new Date();
-        const date = today.getFullYear() + "/" + (today.getMonth() + 1) + "/" + today.getDate();
+        const month = (today.getMonth() + 1).toString().padStart(2, '0');
+        const day = today.getDate().toString().padStart(2, '0');
+        const date = today.getFullYear() + "/" + month + "/" + day;
 
         const Info = {
           title: title,
@@ -290,7 +284,9 @@ window.onload = function () {
   // Bing 壁纸备选方案
   function useBingFallback() {
     const today = new Date();
-    const date = today.getFullYear() + "/" + (today.getMonth() + 1) + "/" + today.getDate();
+    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+    const day = today.getDate().toString().padStart(2, '0');
+    const date = today.getFullYear() + "/" + month + "/" + day;
 
     const Info = {
       title: "必应日常壁纸",
@@ -575,7 +571,7 @@ window.onload = function () {
   // 原来的刷新按钮现在已经内联到标题中，不再需要独立的事件监听
 
   // 初始设置背景
-  let savedBgType = localStorage.getItem("bgType") || "bing";
+  let savedBgType = localStorage.getItem("bgType") || "pexels";
   // 如果保存的类型是已删除的 unsplash，则使用默认的 bing 并清理相关数据
   if (savedBgType === "unsplash") {
     savedBgType = "bing";
