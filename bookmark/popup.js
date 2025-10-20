@@ -19,6 +19,8 @@ const SETTINGS_KEYS = {
   TIPS_ENABLED: "MAPLE_TIPS_ENABLED",
 };
 
+const HAS_SEEN_SETTINGS_HINT_KEY = "MAPLE_SETTINGS_HINT_SEEN";
+
 // 获取搜索功能开启状态
 function isSearchEnabled() {
   return localStorage.getItem(SETTINGS_KEYS.SEARCH_ENABLED) === "true";
@@ -45,6 +47,7 @@ let hideArrow = document.querySelector(".search-action");
 let hideArrowIcon = document.querySelector(".search-action i");
 let hotArea = document.querySelector("#hot-area");
 let settingsBtn = document.getElementById("settingsBtn");
+let settingsWrapper = document.querySelector(".settings-wrapper");
 
 let activeBestMatchIndex = 0;
 let hideTimeout = null;
@@ -98,6 +101,15 @@ if (settingsBtn) {
   });
 } else {
   console.error("Settings button not found");
+}
+
+if (settingsWrapper && localStorage.getItem(HAS_SEEN_SETTINGS_HINT_KEY) !== "true") {
+  // 初次打开时短暂展示设置按钮，随后仅在悬停时显示
+  settingsWrapper.classList.add("show-once");
+  localStorage.setItem(HAS_SEEN_SETTINGS_HINT_KEY, "true");
+  setTimeout(() => {
+    settingsWrapper.classList.remove("show-once");
+  }, 1800);
 }
 
 // 更新搜索功能显示状态
@@ -681,15 +693,28 @@ function createFolderForBookmarks(bookmarkNode, parent, parentTitle = []) {
         }
       }
 
-      let folderTitle = createElement("h2", CLASS_NAMES.folderTitle, folderName);
+      let folderTitle = createElement("h2", CLASS_NAMES.folderTitle, "");
+      const folderLabel = document.createElement("span");
+      folderLabel.className = "folder-label";
+      folderLabel.textContent = folderName;
 
-      if (bookmarkNode.title !== "Favorites Bar" && bookmarkNode.title !== "收藏夹栏") {
+      const isCollapsible = bookmarkNode.title !== "Favorites Bar" && bookmarkNode.title !== "收藏夹栏";
+
+      if (isCollapsible) {
+        folderTitle.classList.add("collapsible-folder");
+        folderTitle.appendChild(folderLabel);
+        const arrow = document.createElement("span");
+        arrow.className = "folder-arrow";
+        folderTitle.appendChild(arrow);
         folderTitle.title = keyText;
         folderTitle.style.cursor = "pointer";
 
         // 判断是否在之前被收起来了
         if (localStorage.getItem(bookmarkNode.title) === "collapsed") {
           childContainer.style.display = "none";
+          folderTitle.classList.add("collapsed");
+        } else {
+          folderTitle.classList.add("expanded");
         }
 
         folderTitle.addEventListener("click", function (event) {
@@ -697,9 +722,13 @@ function createFolderForBookmarks(bookmarkNode, parent, parentTitle = []) {
           if (childContainer.style.display === "none") {
             childContainer.style.display = "flex";
             localStorage.setItem(bookmarkNode.title, "expanded");
+            folderTitle.classList.remove("collapsed");
+            folderTitle.classList.add("expanded");
           } else {
             childContainer.style.display = "none";
             localStorage.setItem(bookmarkNode.title, "collapsed");
+            folderTitle.classList.add("collapsed");
+            folderTitle.classList.remove("expanded");
           }
 
           // 如果按住 ctrl 或 meta 键（Mac上的command键）则批量打开书签
@@ -717,6 +746,8 @@ function createFolderForBookmarks(bookmarkNode, parent, parentTitle = []) {
             }, 100); // 等待展开/收起动画完成
           }
         });
+      } else {
+        folderTitle.appendChild(folderLabel);
       }
 
       folder.appendChild(folderTitle);

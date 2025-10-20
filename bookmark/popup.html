@@ -83,6 +83,43 @@
         user-select: none;
       }
 
+      .folderTitle.collapsible-folder {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding-right: 24px;
+      }
+
+      .folderTitle .folder-arrow {
+        position: absolute;
+        top: 4px;
+        right: 20px;
+        transform: translateY(-50%);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 12px;
+        height: 12px;
+        transition: transform 0.2s ease;
+        flex-shrink: 0;
+      }
+
+      .folderTitle .folder-arrow::before {
+        content: "";
+        display: block;
+        width: 7px;
+        height: 7px;
+        border: solid #999;
+        border-width: 0 1.5px 1.5px 0;
+        transform: rotate(-45deg);
+        transition: transform 0.2s ease, border-color 0.2s ease;
+      }
+
+      .folderTitle.collapsible-folder.expanded .folder-arrow::before {
+        transform: rotate(45deg);
+      }
+
       p.message {
         color: #333;
         text-align: center;
@@ -270,15 +307,29 @@
           color: #ccc;
         }
 
-        .settings-btn:hover {
+        .folderTitle .folder-arrow::before {
+          border-color: #f1f1f1;
+        }
+
+        .settings-btn:hover,
+        .settings-wrapper:hover .settings-btn {
           background-color: rgba(255, 255, 255, 0.1);
         }
       }
 
-      .settings-btn {
+      .settings-wrapper {
         position: absolute;
         top: 10px;
         right: 10px;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 200;
+      }
+
+      .settings-btn {
         width: 24px;
         height: 24px;
         border: none;
@@ -291,17 +342,37 @@
         font-size: 16px;
         color: #666;
         transition: all 0.2s ease;
-        z-index: 200;
+        opacity: 0;
+        pointer-events: none;
       }
 
-      .settings-btn:hover {
+      .settings-wrapper.show-once .settings-btn,
+      .settings-wrapper:hover .settings-btn,
+      .settings-btn:focus,
+      .settings-btn:focus-visible {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .settings-btn:hover,
+      .settings-wrapper:hover .settings-btn {
         background-color: rgba(0, 0, 0, 0.05);
         transform: scale(1.1);
+      }
+
+      .folderTitle .folder-label {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
     </style>
   </head>
   <body>
-    <button class="settings-btn" id="settingsBtn" title="">⚙️</button>
+    <div class="settings-wrapper">
+      <button class="settings-btn" id="settingsBtn" title="">⚙️</button>
+    </div>
     <div id="hot-area"></div>
     <div id="notification-container"></div>
     <div id="search-wrapper">

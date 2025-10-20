@@ -48,6 +48,20 @@ window.onload = function () {
     }
   }
 
+  function sanitizeDescription(raw = "") {
+    if (!raw) return "";
+    const temp = document.createElement("div");
+    temp.innerHTML = raw;
+    let text = temp.textContent || temp.innerText || "";
+    text = text.replace(/!\[[^\]]*\]\([^)]+\)/g, "");
+    text = text.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
+    text = text.replace(/`([^`]+)`/g, "$1");
+    text = text.replace(/\*\*([^*]+)\*\*/g, "$1");
+    text = text.replace(/__([^_]+)__/g, "$1");
+    text = text.replace(/[_*~>#]/g, "");
+    return text.replace(/\s+/g, " ").trim();
+  }
+
   function convertToLinkElement(data, showRefreshBtn = false) {
     const bgContent = document.querySelector(".bg-content");
     const refreshBtn = document.getElementById("refresh-btn");
@@ -94,7 +108,7 @@ window.onload = function () {
           descRow.style.display = "-webkit-box";
           descRow.style.webkitLineClamp = "2";
           descRow.style.webkitBoxOrient = "vertical";
-          descRow.textContent = data.description;
+          descRow.textContent = sanitizeDescription(data.description);
           bgContent.appendChild(descRow);
         }
       } else if (bgSelector.value === "pexels") {
