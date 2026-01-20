@@ -8,7 +8,7 @@
         margin: 0;
         padding: 0;
         min-height: 100vh;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         background-color: #f8f9fa;
         display: flex;
         align-items: center;
@@ -233,7 +233,7 @@
           </div>
         </div>
         <label class="switch">
-          <input type="checkbox" id="searchEnabled">
+          <input type="checkbox" id="searchEnabled" />
           <span class="slider"></span>
         </label>
       </div>
@@ -246,7 +246,20 @@
           </div>
         </div>
         <label class="switch">
-          <input type="checkbox" id="tipsEnabled">
+          <input type="checkbox" id="tipsEnabled" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-label">
+          <div class="setting-title" id="openInNewTabTitle">Open in New Tab</div>
+          <div class="setting-description" id="openInNewTabDesc">
+            Open bookmarks in a new tab. Turn off to open in the current tab.
+          </div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="openInNewTab" />
           <span class="slider"></span>
         </label>
       </div>

@@ -17,6 +17,7 @@ import { getFavicon } from "./utils/favicon.js";
 const SETTINGS_KEYS = {
   SEARCH_ENABLED: "MAPLE_SEARCH_ENABLED",
   TIPS_ENABLED: "MAPLE_TIPS_ENABLED",
+  OPEN_IN_NEW_TAB: "MAPLE_OPEN_IN_NEW_TAB",
 };
 
 const HAS_SEEN_SETTINGS_HINT_KEY = "MAPLE_SETTINGS_HINT_SEEN";
@@ -28,7 +29,12 @@ function isSearchEnabled() {
 
 // 获取 tips 功能开启状态
 function isTipsEnabled() {
-  return localStorage.getItem(SETTINGS_KEYS.TIPS_ENABLED) !== "false";
+  return localStorage.getItem(SETTINGS_KEYS.TIPS_ENABLED) === "true";
+}
+
+// 获取是否在新标签页打开
+function isOpenInNewTabEnabled() {
+  return localStorage.getItem(SETTINGS_KEYS.OPEN_IN_NEW_TAB) !== "false";
 }
 
 const CLASS_NAMES = {
@@ -420,7 +426,14 @@ window.addEventListener("keydown", function (event) {
   if (event.key === "Enter") {
     event.preventDefault();
     if (isSearchEnabled() && bestMatches.length !== 0) {
-      chrome.tabs.create({ url: bestMatches[activeBestMatchIndex].url });
+      const url = bestMatches[activeBestMatchIndex].url;
+      const openInNewTab = isOpenInNewTabEnabled();
+
+      if (openInNewTab) {
+        chrome.tabs.create({ url: url });
+      } else {
+        chrome.tabs.update({ url: url });
+      }
     }
   }
 
@@ -626,23 +639,62 @@ function createBookmarkItem(bookmarkNode, parent) {
 
   let bookItem = createElement("a", CLASS_NAMES.bookmark);
   bookItem.href = bookmarkNode.url;
-  bookItem.target = "_blank";
+
+  // 设置打开方式
+  if (isOpenInNewTabEnabled()) {
+    bookItem.target = "_blank";
+  }
+
   bookItem.appendChild(favicon);
 
   bookItem.addEventListener("click", function (event) {
-    if (
+    const isSpecialProtocol =
       bookmarkNode.url.startsWith("chrome://") ||
       bookmarkNode.url.startsWith("edge://") ||
-      bookmarkNode.url.startsWith("file://")
-    ) {
+      bookmarkNode.url.startsWith("file://");
+
+    const openInNewTab = isOpenInNewTabEnabled();
+    const isCtrlOrMeta = event.ctrlKey || event.metaKey;
+
+    if (isSpecialProtocol) {
       event.preventDefault();
       if (typeof browser !== "undefined") {
         // Firefox
-        browser.tabs.create({ url: bookmarkNode.url });
+        if (openInNewTab || isCtrlOrMeta) {
+          browser.tabs.create({ url: bookmarkNode.url });
+        } else {
+          browser.tabs.update({ url: bookmarkNode.url });
+        }
       } else {
         // Chrome
-        chrome.tabs.create({ url: bookmarkNode.url });
+        if (openInNewTab || isCtrlOrMeta) {
+          chrome.tabs.create({ url: bookmarkNode.url });
+        } else {
+          chrome.tabs.update({ url: bookmarkNode.url });
+        }
       }
+    } else {
+      // 普通链接
+      if (!openInNewTab) {
+        // 如果设置为在当前标签页打开
+        event.preventDefault();
+        if (isCtrlOrMeta) {
+          // 如果按下了 Ctrl/Meta 键，强制新标签页打开
+          if (typeof browser !== "undefined") {
+            browser.tabs.create({ url: bookmarkNode.url });
+          } else {
+            chrome.tabs.create({ url: bookmarkNode.url });
+          }
+        } else {
+          // 否则在当前标签页打开
+          if (typeof browser !== "undefined") {
+            browser.tabs.update({ url: bookmarkNode.url });
+          } else {
+            chrome.tabs.update({ url: bookmarkNode.url });
+          }
+        }
+      }
+      // 如果设置为新标签页打开，也就是默认情况，且 target="_blank"，交给浏览器处理
     }
   });
 
