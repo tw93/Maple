@@ -630,7 +630,11 @@ function createBookmarkItem(bookmarkNode, parent) {
   bookItem.appendChild(favicon);
 
   bookItem.addEventListener("click", function (event) {
-    if (bookmarkNode.url.startsWith("chrome://") || bookmarkNode.url.startsWith("edge://")) {
+    if (
+      bookmarkNode.url.startsWith("chrome://") ||
+      bookmarkNode.url.startsWith("edge://") ||
+      bookmarkNode.url.startsWith("file://")
+    ) {
       event.preventDefault();
       if (typeof browser !== "undefined") {
         // Firefox
