@@ -6,8 +6,8 @@
     "bookmark": "zip -r ./dist/Maple.zip ./bookmark",
     "bookmark-firefox": "cp -R ./bookmark ./bookmark-firefox && cp ./bookmark/manifest_firefox.json ./bookmark-firefox/manifest.json && cd ./bookmark-firefox && zip -r ../dist/FirefoxMaple.zip . && cd .. && rm -rf ./bookmark-firefox",
     "newtab": "zip -r ./dist/NewTab.zip ./newtab",
-    "theme":"zip -r ./dist/Theme.zip ./theme",
-    "build": "mkdir -p ./dist && yarn lint && yarn bookmark && yarn bookmark-firefox && yarn newtab && yarn theme",
+    "theme": "zip -r ./dist/Theme.zip ./theme",
+    "build": "mkdir -p ./dist && npm run lint && npm run bookmark && npm run bookmark-firefox && npm run newtab && npm run theme",
     "lint": "eslint . --ext .js --fix"
   },
   "keywords": [
