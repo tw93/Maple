@@ -37,7 +37,7 @@ const texts = {
   keepPanelOpenDesc: isZh
     ? "开启后点击书签会在后台标签页打开，并尽量保持面板不自动关闭"
     : "Keep the panel open after clicking by opening bookmarks in background tabs.",
-  versionText: "Maple Bookmarks v1.16",
+  versionText: "Maple Bookmarks v1.17",
 };
 
 // 应用国际化文本
