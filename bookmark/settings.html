@@ -1,7 +1,8 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Maple Bookmarks Settings</title>
     <style>
       body {
@@ -17,7 +18,9 @@
       }
 
       .container {
-        width: 420px;
+        width: 100%;
+        max-width: 480px;
+        margin: 16px;
         padding: 32px;
         background: #ffffff;
         border-radius: 8px;
@@ -168,9 +171,6 @@
           border: 1px solid #404040;
         }
 
-        .header {
-        }
-
         .header h1 {
           color: #ffffff;
         }
@@ -184,9 +184,6 @@
         .back-btn:hover {
           background: #4a4a4a;
           color: #fff;
-        }
-
-        .setting-item {
         }
 
         .setting-item:hover {
@@ -207,9 +204,6 @@
 
         input:checked + .slider {
           background-color: #0066cc;
-        }
-
-        .footer {
         }
 
         .version {
@@ -264,8 +258,21 @@
         </label>
       </div>
 
+      <div class="setting-item">
+        <div class="setting-label">
+          <div class="setting-title" id="keepPanelOpenTitle">Keep Panel Open</div>
+          <div class="setting-description" id="keepPanelOpenDesc">
+            Keep the panel open after clicking by opening bookmarks in background tabs.
+          </div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="keepPanelOpen" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
       <div class="footer">
-        <div class="version" id="versionText">Maple Bookmarks v1.10</div>
+        <div class="version" id="versionText">Maple Bookmarks v1.16</div>
       </div>
     </div>
 

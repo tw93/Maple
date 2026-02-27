@@ -18,6 +18,15 @@ const SETTINGS_KEYS = {
   SEARCH_ENABLED: "MAPLE_SEARCH_ENABLED",
   TIPS_ENABLED: "MAPLE_TIPS_ENABLED",
   OPEN_IN_NEW_TAB: "MAPLE_OPEN_IN_NEW_TAB",
+  KEEP_PANEL_OPEN: "MAPLE_KEEP_PANEL_OPEN",
+};
+
+const FUSE_OPTIONS = {
+  keys: ["title", "url"],
+  ignoreLocation: false,
+  includeScore: true,
+  threshold: 0.5,
+  shouldSort: true,
 };
 
 const HAS_SEEN_SETTINGS_HINT_KEY = "MAPLE_SETTINGS_HINT_SEEN";
@@ -35,6 +44,27 @@ function isTipsEnabled() {
 // 获取是否在新标签页打开
 function isOpenInNewTabEnabled() {
   return localStorage.getItem(SETTINGS_KEYS.OPEN_IN_NEW_TAB) !== "false";
+}
+
+// 获取点击书签后是否保持面板打开
+function isKeepPanelOpenEnabled() {
+  return localStorage.getItem(SETTINGS_KEYS.KEEP_PANEL_OPEN) === "true";
+}
+
+function createTab(url, active = true) {
+  if (typeof browser !== "undefined") {
+    browser.tabs.create({ url, active });
+  } else {
+    chrome.tabs.create({ url, active });
+  }
+}
+
+function updateCurrentTab(url) {
+  if (typeof browser !== "undefined") {
+    browser.tabs.update({ url });
+  } else {
+    chrome.tabs.update({ url });
+  }
 }
 
 const CLASS_NAMES = {
@@ -57,6 +87,9 @@ let settingsWrapper = document.querySelector(".settings-wrapper");
 
 let activeBestMatchIndex = 0;
 let hideTimeout = null;
+let searchIndex = [];
+let searchFuse = null;
+let searchFolders = [];
 // 基于设置来决定搜索是否默认隐藏，如果搜索功能关闭，则强制隐藏
 let searchIsHide;
 if (isSearchEnabled()) {
@@ -139,33 +172,107 @@ function updateSearchFeatureVisibility() {
   }
 }
 
-/**
- * @description 使用 Fuse 进行模糊匹配，返回最佳匹配项或false
- * @param searchTerm {string} 查询的字符串
- * @param data {{ title: string, url: string, favicon: string }[]} 要匹配的 对象数组，包含 title 和 url 属性
- * @returns {{ title: string, url: string, favicon: string }[]|null} 返回最佳匹配项的 对象数组 或 null
- */
-function FuseStrMatch(searchTerm, data) {
-  const options = {
-    keys: ["title", "url"],
-    ignoreLocation: false, // 全搜索
-    includeScore: true, // 包含相似度评分
-    threshold: 0.5, // 相似度阈值
-    shouldSort: true, // 是否排序
-  };
-  const fuse = new Fuse(data, options);
-  const results = fuse.search(searchTerm);
-  const cache = new Map();
-  const noRepeatResult = results.reduce((acc, bookmark) => {
-    if (cache.has(bookmark.item.url)) {
-      return acc;
-    } else {
-      cache.set(bookmark.item.url, true);
-      return [...acc, bookmark];
-    }
-  }, []);
+function buildSearchIndex() {
+  const bookmarkElements = Array.from(document.querySelectorAll("#bookmarks .bookmark"));
+  searchFolders = Array.from(document.querySelectorAll("#bookmarks .folder"));
+  searchIndex = bookmarkElements.map((bookmarkElement, index) => {
+    const title = bookmarkElement.textContent || "";
+    const url = bookmarkElement.href || "";
+    const favicon = bookmarkElement.querySelector(".favicon")?.src || "";
 
-  return results.length > 0 ? noRepeatResult.slice(0, 3).map(({ item }) => item) : null;
+    return {
+      id: index,
+      title,
+      titleLower: title.toLowerCase(),
+      url,
+      urlLower: url.toLowerCase(),
+      favicon,
+      element: bookmarkElement,
+      folder: bookmarkElement.closest(`.${CLASS_NAMES.folder}`),
+    };
+  });
+
+  const fuseData = searchIndex.map(({ id, title, url, favicon }) => ({ id, title, url, favicon }));
+  searchFuse = new Fuse(fuseData, FUSE_OPTIONS);
+}
+
+function getFuseResults(searchTerm) {
+  if (!searchFuse || !searchTerm) {
+    return [];
+  }
+  return searchFuse.search(searchTerm);
+}
+
+function getBestMatches(searchTerm) {
+  const results = getFuseResults(searchTerm);
+  if (results.length === 0) {
+    return null;
+  }
+
+  const uniqueMatches = [];
+  const cache = new Set();
+  for (const { item } of results) {
+    if (cache.has(item.url)) {
+      continue;
+    }
+    cache.add(item.url);
+    uniqueMatches.push({
+      title: item.title,
+      url: item.url,
+      favicon: item.favicon,
+    });
+    if (uniqueMatches.length === 3) {
+      break;
+    }
+  }
+
+  return uniqueMatches.length > 0 ? uniqueMatches : null;
+}
+
+function applySearchFilter(searchTerm) {
+  if (!searchIndex.length) {
+    return;
+  }
+
+  const matchedIds = new Set();
+
+  if (!searchTerm) {
+    searchIndex.forEach(({ id }) => matchedIds.add(id));
+  } else {
+    searchIndex.forEach(({ id, titleLower, urlLower }) => {
+      if (titleLower.includes(searchTerm) || urlLower.includes(searchTerm)) {
+        matchedIds.add(id);
+      }
+    });
+
+    getFuseResults(searchTerm).forEach(({ item }) => matchedIds.add(item.id));
+  }
+
+  const folderVisibility = new Map(searchFolders.map((folder) => [folder, false]));
+  searchIndex.forEach((bookmark) => {
+    const shouldShow = matchedIds.has(bookmark.id);
+    const displayValue = shouldShow ? "flex" : "none";
+    if (bookmark.element.style.display !== displayValue) {
+      bookmark.element.style.display = displayValue;
+    }
+
+    if (shouldShow && bookmark.folder) {
+      let currentFolder = bookmark.folder;
+      while (currentFolder) {
+        folderVisibility.set(currentFolder, true);
+        currentFolder = currentFolder.parentElement?.closest(`.${CLASS_NAMES.folder}`);
+      }
+    }
+  });
+
+  folderVisibility.forEach((isVisible, folder) => {
+    const folderDisplay = isVisible ? "block" : "none";
+    if (folder.style.display !== folderDisplay) {
+      folder.style.display = folderDisplay;
+    }
+  });
+
+  updateHeader(getBestMatches(searchTerm));
 }
 
 /**
@@ -252,8 +359,11 @@ function showBestMatchTips() {
     return;
   }
   const curBestMathEle = getActiveBestMatch();
+  if (!curBestMathEle || !bestMatches[activeBestMatchIndex]) {
+    return;
+  }
   const tipsCon = curBestMathEle.querySelector("p");
-  if (checkOverflow(tipsCon)) {
+  if (tipsCon && checkOverflow(tipsCon)) {
     Notification.show(bestMatches[activeBestMatchIndex].title, 1500);
   }
 }
@@ -279,7 +389,7 @@ function updateHeader(headerFuzeMatch, init = false) {
   const childContainer = createElement("div", CLASS_NAMES.childContainer);
   const title = createElement("h2", "", init ? LastBestMatch : BestMatch);
   title.title = BestMatchTitle;
-  headerFuzeMatch.map((matchedBookmark) => {
+  headerFuzeMatch.forEach((matchedBookmark) => {
     createBookmarkItem(matchedBookmark, childContainer);
   });
   bestMatchFolder.appendChild(title);
@@ -313,49 +423,8 @@ if (isSearchEnabled()) {
   searchInput.addEventListener(
     "input",
     debounce(function () {
-      let searchTerm = searchInput.value.toLowerCase();
-      let folders = document.getElementsByClassName(CLASS_NAMES.folder);
-
-      const headerData = [];
-
-      for (let folder of folders) {
-        let bookmarks = folder.getElementsByClassName(CLASS_NAMES.bookmark);
-        let hasVisibleBookmark = false;
-
-        for (let bookmark of bookmarks) {
-          // push 查询数据
-          headerData.push({
-            title: bookmark.textContent,
-            url: bookmark.href,
-            favicon: bookmark.querySelector(".favicon")?.src,
-          });
-
-          let title = bookmark.textContent.toLowerCase();
-          let url = bookmark.href.toLowerCase();
-
-          // 当直接匹配失败时，使用模糊匹配
-          if (
-            title.includes(searchTerm) ||
-            url.includes(searchTerm) ||
-            FuseStrMatch(searchTerm, [
-              {
-                title: title,
-                url: url,
-                favicon: "",
-              },
-            ])
-          ) {
-            bookmark.style.display = "flex";
-            hasVisibleBookmark = true;
-          } else {
-            bookmark.style.display = "none";
-          }
-        }
-
-        folder.style.display = hasVisibleBookmark ? "block" : "none";
-      }
-
-      updateHeader(FuseStrMatch(searchTerm, headerData));
+      const searchTerm = searchInput.value.toLowerCase();
+      applySearchFilter(searchTerm);
     }, 30)
   );
 
@@ -397,17 +466,7 @@ window.addEventListener("keydown", function (event) {
     // 只在搜索功能开启时才处理清空搜索
     if (isSearchEnabled()) {
       searchInput.value = "";
-
-      let bookmarks = document.getElementsByClassName(CLASS_NAMES.bookmark);
-      let folders = document.getElementsByClassName(CLASS_NAMES.folder);
-
-      for (let bookmark of bookmarks) {
-        bookmark.style.display = "flex";
-      }
-
-      for (let folder of folders) {
-        folder.style.display = "block";
-      }
+      applySearchFilter("");
     }
   }
 
@@ -428,11 +487,14 @@ window.addEventListener("keydown", function (event) {
     if (isSearchEnabled() && bestMatches.length !== 0) {
       const url = bestMatches[activeBestMatchIndex].url;
       const openInNewTab = isOpenInNewTabEnabled();
+      const keepPanelOpen = isKeepPanelOpenEnabled();
 
-      if (openInNewTab) {
-        chrome.tabs.create({ url: url });
+      if (keepPanelOpen) {
+        createTab(url, false);
+      } else if (openInNewTab) {
+        createTab(url);
       } else {
-        chrome.tabs.update({ url: url });
+        updateCurrentTab(url);
       }
     }
   }
@@ -455,12 +517,14 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 window.onload = async function () {
-  const bookmarkTreeNodes = await chrome.bookmarks.getTree();
+  const bookmarkTreeNodes =
+    typeof browser !== "undefined" ? await browser.bookmarks.getTree() : await chrome.bookmarks.getTree();
   folderCount = countFolders(bookmarkTreeNodes[0].children);
   const container = document.querySelector("#search-wrapper");
   const bookmarksContainer = document.querySelector("#bookmarks");
 
   createBookmarks(bookmarkTreeNodes);
+  buildSearchIndex();
 
   // 首先更新搜索功能的显示状态
   updateSearchFeatureVisibility();
@@ -474,7 +538,7 @@ window.onload = async function () {
       hotArea.style.display = "block";
     } else {
       container.classList.add("show");
-      bookmarksContainer.style.transform = `translateY(-8)`;
+      bookmarksContainer.style.transform = `translateY(-8px)`;
       searchInput.focus();
       hotArea.style.display = "none";
     }
@@ -654,24 +718,21 @@ function createBookmarkItem(bookmarkNode, parent) {
       bookmarkNode.url.startsWith("file://");
 
     const openInNewTab = isOpenInNewTabEnabled();
+    const keepPanelOpen = isKeepPanelOpenEnabled();
     const isCtrlOrMeta = event.ctrlKey || event.metaKey;
+
+    if (keepPanelOpen) {
+      event.preventDefault();
+      createTab(bookmarkNode.url, false);
+      return;
+    }
 
     if (isSpecialProtocol) {
       event.preventDefault();
-      if (typeof browser !== "undefined") {
-        // Firefox
-        if (openInNewTab || isCtrlOrMeta) {
-          browser.tabs.create({ url: bookmarkNode.url });
-        } else {
-          browser.tabs.update({ url: bookmarkNode.url });
-        }
+      if (openInNewTab || isCtrlOrMeta) {
+        createTab(bookmarkNode.url);
       } else {
-        // Chrome
-        if (openInNewTab || isCtrlOrMeta) {
-          chrome.tabs.create({ url: bookmarkNode.url });
-        } else {
-          chrome.tabs.update({ url: bookmarkNode.url });
-        }
+        updateCurrentTab(bookmarkNode.url);
       }
     } else {
       // 普通链接
@@ -680,18 +741,10 @@ function createBookmarkItem(bookmarkNode, parent) {
         event.preventDefault();
         if (isCtrlOrMeta) {
           // 如果按下了 Ctrl/Meta 键，强制新标签页打开
-          if (typeof browser !== "undefined") {
-            browser.tabs.create({ url: bookmarkNode.url });
-          } else {
-            chrome.tabs.create({ url: bookmarkNode.url });
-          }
+          createTab(bookmarkNode.url);
         } else {
           // 否则在当前标签页打开
-          if (typeof browser !== "undefined") {
-            browser.tabs.update({ url: bookmarkNode.url });
-          } else {
-            chrome.tabs.update({ url: bookmarkNode.url });
-          }
+          updateCurrentTab(bookmarkNode.url);
         }
       }
       // 如果设置为新标签页打开，也就是默认情况，且 target="_blank"，交给浏览器处理
@@ -757,6 +810,13 @@ function createFolderForBookmarks(bookmarkNode, parent, parentTitle = []) {
       const isCollapsible = bookmarkNode.title !== "Favorites Bar" && bookmarkNode.title !== "收藏夹栏";
 
       if (isCollapsible) {
+        const folderStateKey = getFolderStateKey(bookmarkNode, title);
+        const legacyFolderState = localStorage.getItem(bookmarkNode.title);
+        const folderState = localStorage.getItem(folderStateKey) || legacyFolderState;
+        if (!localStorage.getItem(folderStateKey) && legacyFolderState) {
+          localStorage.setItem(folderStateKey, legacyFolderState);
+        }
+
         folderTitle.classList.add("collapsible-folder");
         folderTitle.appendChild(folderLabel);
         const arrow = document.createElement("span");
@@ -766,7 +826,7 @@ function createFolderForBookmarks(bookmarkNode, parent, parentTitle = []) {
         folderTitle.style.cursor = "pointer";
 
         // 判断是否在之前被收起来了
-        if (localStorage.getItem(bookmarkNode.title) === "collapsed") {
+        if (folderState === "collapsed") {
           childContainer.style.display = "none";
           folderTitle.classList.add("collapsed");
         } else {
@@ -774,33 +834,35 @@ function createFolderForBookmarks(bookmarkNode, parent, parentTitle = []) {
         }
 
         folderTitle.addEventListener("click", function (event) {
+          // 如果按住 ctrl 或 meta 键（Mac上的command键）则批量打开书签
+          if (event.ctrlKey || event.metaKey) {
+            const keepPanelOpen = isKeepPanelOpenEnabled();
+            for (let childNode of bookmarkNode.children) {
+              if (childNode.url) {
+                createTab(childNode.url, !keepPanelOpen);
+              }
+            }
+            event.preventDefault();
+            return;
+          }
+
           // 为展开/收起添加事件
           if (childContainer.style.display === "none") {
             childContainer.style.display = "flex";
-            localStorage.setItem(bookmarkNode.title, "expanded");
+            localStorage.setItem(folderStateKey, "expanded");
             folderTitle.classList.remove("collapsed");
             folderTitle.classList.add("expanded");
           } else {
             childContainer.style.display = "none";
-            localStorage.setItem(bookmarkNode.title, "collapsed");
+            localStorage.setItem(folderStateKey, "collapsed");
             folderTitle.classList.add("collapsed");
             folderTitle.classList.remove("expanded");
           }
 
-          // 如果按住 ctrl 或 meta 键（Mac上的command键）则批量打开书签
-          if (event.ctrlKey || event.metaKey) {
-            for (let childNode of bookmarkNode.children) {
-              if (childNode.url) {
-                chrome.tabs.create({ url: childNode.url });
-              }
-            }
-            event.preventDefault();
-          } else {
-            // 只有在普通点击（非批量打开）时才更新高度
-            setTimeout(() => {
-              updatePopupHeight();
-            }, 100); // 等待展开/收起动画完成
-          }
+          // 只有在普通点击（非批量打开）时才更新高度
+          setTimeout(() => {
+            updatePopupHeight();
+          }, 100); // 等待展开/收起动画完成
         });
       } else {
         folderTitle.appendChild(folderLabel);
@@ -828,13 +890,33 @@ function countFolders(bookmarkNodes) {
   return count;
 }
 
+function getFolderStateKey(bookmarkNode, titlePath) {
+  if (bookmarkNode.id) {
+    return `MAPLE_FOLDER_STATE_${bookmarkNode.id}`;
+  }
+  const normalizedPath = (titlePath || []).filter(Boolean).join("/");
+  return `MAPLE_FOLDER_STATE_${normalizedPath}`;
+}
+
 function getTitleFromUrl(url) {
-  if (url.startsWith("chrome://") || url.startsWith("edge://") || url.startsWith("about:")) {
-    return url.split("//")[1].split("/")[0].charAt(0).toUpperCase() + url.split("//")[1].split("/")[0].slice(1);
+  if (url.startsWith("about:")) {
+    const aboutPage = url.slice("about:".length).split(/[/?#]/)[0] || "about";
+    return aboutPage.charAt(0).toUpperCase() + aboutPage.slice(1);
   }
 
-  let host = new URL(url).host;
-  let parts = host.startsWith("www.") ? host.split(".")[1] : host.split(".")[0];
+  if (url.startsWith("chrome://") || url.startsWith("edge://")) {
+    const internalPage = url.split("://")[1]?.split("/")[0];
+    if (internalPage) {
+      return internalPage.charAt(0).toUpperCase() + internalPage.slice(1);
+    }
+  }
 
-  return parts.charAt(0).toUpperCase() + parts.slice(1);
+  try {
+    let host = new URL(url).host;
+    let parts = host.startsWith("www.") ? host.split(".")[1] : host.split(".")[0];
+
+    return parts.charAt(0).toUpperCase() + parts.slice(1);
+  } catch (error) {
+    return url;
+  }
 }

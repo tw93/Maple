@@ -3,12 +3,14 @@ const SETTINGS_KEYS = {
   SEARCH_ENABLED: "MAPLE_SEARCH_ENABLED",
   TIPS_ENABLED: "MAPLE_TIPS_ENABLED",
   OPEN_IN_NEW_TAB: "MAPLE_OPEN_IN_NEW_TAB",
+  KEEP_PANEL_OPEN: "MAPLE_KEEP_PANEL_OPEN",
 };
 
 // 获取DOM元素
 const searchEnabledCheckbox = document.getElementById("searchEnabled");
 const tipsEnabledCheckbox = document.getElementById("tipsEnabled");
 const openInNewTabCheckbox = document.getElementById("openInNewTab");
+const keepPanelOpenCheckbox = document.getElementById("keepPanelOpen");
 const backBtn = document.getElementById("backBtn");
 
 // 国际化支持
@@ -31,6 +33,10 @@ const texts = {
   openInNewTabDesc: isZh
     ? "开启后点击书签将在新标签页打开，关闭后在当前标签页打开"
     : "Open bookmarks in a new tab. Turn off to open in the current tab.",
+  keepPanelOpenTitle: isZh ? "点击后保持面板" : "Keep Panel Open",
+  keepPanelOpenDesc: isZh
+    ? "开启后点击书签会在后台标签页打开，并尽量保持面板不自动关闭"
+    : "Keep the panel open after clicking by opening bookmarks in background tabs.",
   versionText: "Maple Bookmarks v1.16",
 };
 
@@ -44,6 +50,8 @@ function applyI18n() {
   document.getElementById("tipsFeatureDesc").textContent = texts.tipsFeatureDesc;
   document.getElementById("openInNewTabTitle").textContent = texts.openInNewTabTitle;
   document.getElementById("openInNewTabDesc").textContent = texts.openInNewTabDesc;
+  document.getElementById("keepPanelOpenTitle").textContent = texts.keepPanelOpenTitle;
+  document.getElementById("keepPanelOpenDesc").textContent = texts.keepPanelOpenDesc;
   document.getElementById("versionText").textContent = texts.versionText;
 }
 
@@ -60,14 +68,17 @@ function loadSettings() {
   const searchEnabled = localStorage.getItem(SETTINGS_KEYS.SEARCH_ENABLED) === "true";
   searchEnabledCheckbox.checked = searchEnabled;
 
-  // 默认 tips 功能是关闭的 (Issue request)
-  // 如果是 'true' 则是开启，其他情况（包括 null）都是关闭
+  // 默认 tips 功能是关闭的
   const tipsEnabled = localStorage.getItem(SETTINGS_KEYS.TIPS_ENABLED) === "true";
   tipsEnabledCheckbox.checked = tipsEnabled;
 
   // 默认在新标签页打开
   const openInNewTab = localStorage.getItem(SETTINGS_KEYS.OPEN_IN_NEW_TAB) !== "false";
   openInNewTabCheckbox.checked = openInNewTab;
+
+  // 默认点击后自动关闭
+  const keepPanelOpen = localStorage.getItem(SETTINGS_KEYS.KEEP_PANEL_OPEN) === "true";
+  keepPanelOpenCheckbox.checked = keepPanelOpen;
 }
 
 // 保存设置
@@ -75,20 +86,7 @@ function saveSettings() {
   localStorage.setItem(SETTINGS_KEYS.SEARCH_ENABLED, searchEnabledCheckbox.checked.toString());
   localStorage.setItem(SETTINGS_KEYS.TIPS_ENABLED, tipsEnabledCheckbox.checked.toString());
   localStorage.setItem(SETTINGS_KEYS.OPEN_IN_NEW_TAB, openInNewTabCheckbox.checked.toString());
-
-  // 发送消息给popup页面，通知设置已更改
-  if (typeof chrome !== "undefined" && chrome.runtime) {
-    chrome.runtime
-      .sendMessage({
-        action: "settingsChanged",
-        searchEnabled: searchEnabledCheckbox.checked,
-        tipsEnabled: tipsEnabledCheckbox.checked,
-        openInNewTab: openInNewTabCheckbox.checked,
-      })
-      .catch(() => {
-        // 忽略错误，可能popup没有打开
-      });
-  }
+  localStorage.setItem(SETTINGS_KEYS.KEEP_PANEL_OPEN, keepPanelOpenCheckbox.checked.toString());
 }
 
 // 返回到主页面
@@ -96,20 +94,12 @@ function goBack() {
   window.close();
 }
 
-// 初始化设置
-function initializeSettings() {
-  applyI18n();
-  loadSettings();
-}
+// 初始化
+document.addEventListener("DOMContentLoaded", loadSettings);
 
 // 事件监听器
 searchEnabledCheckbox.addEventListener("change", saveSettings);
 tipsEnabledCheckbox.addEventListener("change", saveSettings);
 openInNewTabCheckbox.addEventListener("change", saveSettings);
+keepPanelOpenCheckbox.addEventListener("change", saveSettings);
 backBtn.addEventListener("click", goBack);
-
-// 初始化
-document.addEventListener("DOMContentLoaded", initializeSettings);
-
-// 为了兼容直接打开设置页面的情况
-window.addEventListener("load", initializeSettings);
