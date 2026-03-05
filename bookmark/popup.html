@@ -1,38 +1,32 @@
 <!doctype html>
-<html>
+<html style="width: 408px; min-width: 408px; max-width: 408px; height: 520px; min-height: 520px; max-height: 520px;">
   <head>
     <meta charset="UTF-8" />
     <title>Maple Bookmarks</title>
     <script src="height-init.js"></script>
     <style>
+      html {
+        width: 408px;
+        min-width: 408px;
+        max-width: 408px;
+        height: 520px;
+        min-height: 520px;
+        max-height: 520px;
+      }
+
       body {
         margin: 0;
         padding: 8px 0 12px 12px;
         width: 408px;
-        height: var(--popup-height, 400px); /* 使用动态计算的高度变量 */
-        min-height: 200px;
-        max-height: 618px;
+        min-width: 408px;
+        max-width: 408px;
+        height: 520px;
+        min-height: 520px;
+        max-height: 520px;
         box-sizing: border-box;
-        /* 模仿Chrome原生popup的顺滑效果 */
-        opacity: 0;
-        transform: scale(0.98) translateY(-4px);
-        animation: popupFadeIn 0.18s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-        /* 添加轻微的深度效果 */
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        border-radius: 6px;
+        overflow-x: hidden;
+        overflow-y: auto;
         background-color: #ffffff;
-      }
-
-      /* Chrome风格的顺滑弹窗动画 */
-      @keyframes popupFadeIn {
-        0% {
-          opacity: 0;
-          transform: scale(0.98) translateY(-4px);
-        }
-        100% {
-          opacity: 1;
-          transform: scale(1) translateY(0);
-        }
       }
 
       #hot-area {
@@ -128,6 +122,55 @@
         line-height: 1.8;
       }
 
+      .loading-state {
+        width: 100%;
+        padding-right: 12px;
+        box-sizing: border-box;
+      }
+
+      body.popup-loading #search-wrapper,
+      body.popup-loading #hot-area,
+      body.popup-loading #notification-container,
+      body.popup-loading .settings-wrapper {
+        visibility: hidden;
+      }
+
+      .loading-title {
+        width: 170px;
+        height: 16px;
+        border-radius: 8px;
+        background: linear-gradient(90deg, #efefef 25%, #e4e4e4 37%, #efefef 63%);
+        background-size: 400% 100%;
+        margin: 10px 0 14px 2px;
+        animation: mapleSkeleton 1.2s ease-in-out infinite;
+      }
+
+      .loading-grid {
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      .loading-card {
+        width: 120px;
+        height: 42px;
+        box-sizing: border-box;
+        border-radius: 5px;
+        background: linear-gradient(90deg, #f4f4f4 25%, #ececec 37%, #f4f4f4 63%);
+        background-size: 400% 100%;
+        margin-bottom: 12px;
+        margin-right: 12px;
+        animation: mapleSkeleton 1.2s ease-in-out infinite;
+      }
+
+      @keyframes mapleSkeleton {
+        0% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0 50%;
+        }
+      }
+
       .childContainer {
         display: flex;
         flex-wrap: wrap;
@@ -139,6 +182,10 @@
         position: relative;
         margin-top: -30px;
         transform: translateY(-105%);
+        transition: none;
+      }
+
+      body.popup-interactive #search-wrapper {
         transition: all 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       }
 
@@ -173,8 +220,12 @@
         display: inline-block;
         padding: 4px;
         transform: rotate(45deg);
-        transition: all 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        transition: none;
         cursor: pointer;
+      }
+
+      body.popup-interactive #search-wrapper .arrow {
+        transition: all 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       }
 
       #search-wrapper .arrow::after {
@@ -237,6 +288,10 @@
         background-color: transparent;
       }
 
+      #bookmarks {
+        min-height: 420px;
+      }
+
       #searchInput {
         width: 100%;
         padding: 10px 12px;
@@ -259,7 +314,6 @@
         body {
           background-color: #2a2a2a;
           color: #f1f1f1;
-          box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
         }
 
         #notification-container {
@@ -369,7 +423,10 @@
       }
     </style>
   </head>
-  <body>
+  <body
+    class="popup-loading"
+    style="width: 408px; min-width: 408px; max-width: 408px; height: 520px; min-height: 520px; max-height: 520px;"
+  >
     <div class="settings-wrapper">
       <button class="settings-btn" id="settingsBtn" title="">⚙️</button>
     </div>
@@ -384,7 +441,22 @@
         <i class="arrow"></i>
       </div>
     </div>
-    <div id="bookmarks"></div>
+    <div id="bookmarks">
+      <div class="loading-state" data-loading="true" aria-label="Loading bookmarks">
+        <div class="loading-title"></div>
+        <div class="loading-grid">
+          <div class="loading-card"></div>
+          <div class="loading-card"></div>
+          <div class="loading-card"></div>
+          <div class="loading-card"></div>
+          <div class="loading-card"></div>
+          <div class="loading-card"></div>
+          <div class="loading-card"></div>
+          <div class="loading-card"></div>
+          <div class="loading-card"></div>
+        </div>
+      </div>
+    </div>
     <script type="module" src="popup.js"></script>
   </body>
 </html>

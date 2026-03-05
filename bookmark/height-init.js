@@ -1,26 +1,30 @@
-// 扩展弹窗专用的高度初始化脚本（非模块，立即执行）
+// 弹窗首帧尺寸初始化（非模块，立即执行）
 (function () {
-  const h = localStorage.getItem("savedHeight");
-  const s = localStorage.getItem("SHOW_SEARCH_BAR");
-  const e = localStorage.getItem("MAPLE_SEARCH_ENABLED");
-  let ih = 400;
+  var width = "408px";
+  var height = "520px";
 
-  if (h && h > 30) {
-    ih = Math.min(Math.max(parseInt(h), 200), 618);
-    if (e === "true" && s === "true") ih = Math.min(Math.max(parseInt(h), 250), 618);
-    else if (e === "true" && s !== "true") ih = Math.min(Math.max(parseInt(h) - 60, 200), 618);
-    else if (e !== "true") ih = Math.min(Math.max(parseInt(h) - 80, 200), 618);
-  } else {
-    if (e === "true" && s === "true") ih = 520;
-    else if (e === "true") ih = 460;
-    else ih = 380;
+  function applySize(el) {
+    if (!el) return;
+    el.style.width = width;
+    el.style.minWidth = width;
+    el.style.maxWidth = width;
+    el.style.height = height;
+    el.style.minHeight = height;
+    el.style.maxHeight = height;
   }
 
-  // 立即设置CSS变量
-  document.documentElement.style.setProperty("--popup-height", ih + "px");
+  applySize(document.documentElement);
 
-  // 如果body已存在，也直接设置高度作为双重保险
-  if (document.body) {
-    document.body.style.height = ih + "px";
+  function applyBodySize() {
+    if (!document.body) return;
+    applySize(document.body);
+    document.body.style.overflowX = "hidden";
+    document.body.style.overflowY = "auto";
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", applyBodySize, { once: true });
+  } else {
+    applyBodySize();
   }
 })();

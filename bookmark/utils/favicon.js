@@ -11,10 +11,9 @@ export function getFavicon(url) {
   let faviconUrl;
 
   if (isFirefox) {
-    faviconUrl = `https://www.google.com/s2/favicons?domain_url=${encodeURIComponent(url)}&sz=128`;
+    faviconUrl = `https://www.google.com/s2/favicons?domain_url=${encodeURIComponent(url)}&sz=32`;
   } else {
-    // requesting a larger size from chrome favicon service
-    faviconUrl = `${chrome.runtime.getURL("/_favicon?")}pageUrl=${encodeURIComponent(url)}&size=128`;
+    faviconUrl = `${chrome.runtime.getURL("/_favicon?")}pageUrl=${encodeURIComponent(url)}&size=32`;
   }
 
   // 缓存结果
