@@ -3,3 +3,8 @@
 /node_modules/
 /dist/
 /theme/*.pak
+
+# AI Assistant files
+AGENTS.md
+CLAUDE.md
+journal/
