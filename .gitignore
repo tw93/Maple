@@ -8,3 +8,4 @@
 AGENTS.md
 CLAUDE.md
 journal/
+.claude/settings.local.json
