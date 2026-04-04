@@ -73,7 +73,12 @@ Since the default new theme of Chrome is not very appealing to me, I prefer a si
 
 ## Support
 
+<details>
+<summary>Supporters</summary>
+
 <a href="https://miaoyan.app/cats.html?name=Maple"><img src="https://miaoyan.app/assets/sponsors.svg" width="1000px" /></a>
+
+</details>
 
 1. I have two cats, if you think Maple delights your life, you can feed them <a href="https://miaoyan.app/cats.html?name=Maple" target="_blank">some canned food 🥩</a>.
 2. If you like Maple, you can star it on GitHub. Also, welcome to recommend Maple to your friends.
