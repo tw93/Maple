@@ -74,7 +74,7 @@
 
 ## 支持
 
-<a href="https://miaoyan.app/cats.html?name=Maple"><img src="https://miaoyan.app/assets/sponsors.svg" width="1000px" /></a>
+<a href="https://miaoyan.app/cats.html?name=Maple"><img src="https://cdn.jsdelivr.net/gh/tw93/MiaoYan@main/assets/sponsors.svg" width="1000px" /></a>
 
 1. 我有两只猫，假如让你生活更美好，可以给猫 <a href="https://miaoyan.app/cats.html?name=Maple" target="_blank">喂罐头 🥩</a>。
 2. 如果你喜欢枫叶书签，可以在 Github Star 它，更欢迎推荐给你志同道合的朋友。
