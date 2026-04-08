@@ -73,13 +73,8 @@ Since the default new theme of Chrome is not very appealing to me, I prefer a si
 
 ## Support
 
-1. I have two cats, if you think Maple delights your life, you can feed them <a href="https://miaoyan.app/cats.html?name=Maple" target="_blank">some canned food 🥩</a>.
+- If Maple helped you, [share it](https://twitter.com/intent/tweet?url=https://github.com/tw93/Maple&text=Maple%20Bookmarks%20-%20Hide%20the%20bookmark%20bar%2C%20surf%20the%20web%20smoothly.) with friends. A star is always welcome.
+- Have ideas or found bugs? Open an issue or PR. Feel free to contribute your best AI model to solve it.
+- I have two cats, TangYuan and Coke. If you think Maple delights your life, you can feed them <a href="https://miaoyan.app/cats.html?name=Maple" target="_blank">canned food 🥩</a>.
 
-<details>
-<summary>🥤 Supporters</summary>
-
-<a href="https://miaoyan.app/cats.html?name=Maple"><img src="https://miaoyan.app/assets/sponsors.svg" width="1000" loading="lazy" /></a>
-
-</details>
-2. If you like Maple, you can star it on GitHub. Also, welcome to recommend Maple to your friends.
-3. You can follow my [Twitter](https://twitter.com/HiTw93) to get the latest news or join our [Telegram](https://t.me/+GclQS9ZnxyI2ODQ1) chat group.
+<a href="https://miaoyan.app/cats.html?name=Maple"><img src="https://cdn.jsdelivr.net/gh/tw93/MiaoYan@main/assets/sponsors.svg" width="1000" loading="lazy" /></a>
