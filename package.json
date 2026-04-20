@@ -19,7 +19,7 @@
   "author": "Tw93",
   "license": "MIT",
   "devDependencies": {
-    "eslint": "^10.0.2",
+    "eslint": "^10.2.1",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.29.0",
     "eslint-plugin-prettier": "^5.0.1",
