@@ -112,6 +112,26 @@ if (isSearchEnabled()) {
 }
 
 let bestMatches = [];
+
+function shouldFocusSearchInput() {
+  return searchInput && isSearchEnabled() && !searchIsHide;
+}
+
+function focusSearchInput() {
+  if (!shouldFocusSearchInput()) {
+    return;
+  }
+
+  searchInput.focus({ preventScroll: true });
+  searchInput.select();
+}
+
+function scheduleSearchInputFocus() {
+  focusSearchInput();
+  requestAnimationFrame(focusSearchInput);
+  setTimeout(focusSearchInput, 60);
+}
+
 // 延迟恢复 header 元素，避免阻塞初始渲染
 setTimeout(() => {
   if (isSearchEnabled()) {
@@ -259,7 +279,7 @@ function switchSearchBarShowStatus() {
     if (extraClass) {
       container.classList.add(extraClass);
       bookmarksContainer.style.transform = `translateY(0)`;
-      searchInput.focus();
+      scheduleSearchInputFocus();
       hotArea.style.display = "none";
     } else {
       bookmarksContainer.style.transform = `translateY(-${containerHeight}px)`;
@@ -422,7 +442,7 @@ if (isSearchEnabled()) {
   hideArrow.addEventListener("click", function () {
     switchSearchBarShowStatus();
     if (!searchIsHide) {
-      searchInput.focus();
+      scheduleSearchInputFocus();
     }
   });
 
@@ -521,7 +541,7 @@ function applySearchLayout(container, bookmarksContainer) {
   } else {
     container.classList.add("show");
     bookmarksContainer.style.transform = `translateY(-8px)`;
-    searchInput.focus();
+    scheduleSearchInputFocus();
     hotArea.style.display = "none";
   }
 }
@@ -565,6 +585,7 @@ async function initializePopup() {
     document.body.classList.remove("popup-loading");
     requestAnimationFrame(() => {
       document.body.classList.add("popup-interactive");
+      scheduleSearchInputFocus();
     });
   }
 }
@@ -572,6 +593,7 @@ async function initializePopup() {
 // 在DOM ready时立即设置高度并初始化
 document.addEventListener("DOMContentLoaded", function () {
   setBodyHeightFromStorage();
+  scheduleSearchInputFocus();
   initializePopup();
 });
 
