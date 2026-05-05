@@ -75,6 +75,6 @@ Since the default new theme of Chrome is not very appealing to me, I prefer a si
 
 - If Maple helped you, [share it](https://twitter.com/intent/tweet?url=https://github.com/tw93/Maple&text=Maple%20Bookmarks%20-%20Hide%20the%20bookmark%20bar%2C%20surf%20the%20web%20smoothly.) with friends or give it a star.
 - Got ideas or bugs? Open an issue or PR, feel free to contribute your best AI model.
-- I have two cats, TangYuan and Coke. If you think Maple delights your life, you can feed them <a href="https://miaoyan.app/cats.html?name=Maple" target="_blank">canned food 🥩</a>.
+- I have two cats, TangYuan and Coke. If you think Maple delights your life, you can feed them <a href="https://cats.tw93.fun?name=Maple" target="_blank">canned food 🥩</a>.
 
-<a href="https://miaoyan.app/cats.html?name=Maple"><img src="https://cdn.jsdelivr.net/gh/tw93/MiaoYan@main/assets/sponsors.svg" width="1000" loading="lazy" /></a>
+<a href="https://cats.tw93.fun?name=Maple"><img src="https://cdn.jsdelivr.net/gh/tw93/sponsors@main/assets/sponsors.svg" width="1000" loading="lazy" /></a>
