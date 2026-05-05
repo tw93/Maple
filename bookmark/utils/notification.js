@@ -7,8 +7,11 @@ export const Notification = {
    */
   show(message, hideTime = 0) {
     const container = document.querySelector("#notification-container");
-    container.style.transform = `translateX(-105%)`;
+    if (!container) return;
     container.textContent = message;
+    // Force the off-screen position to render before animating in
+    container.style.transform = `translateX(-105%)`;
+    container.offsetWidth; // force reflow to flush the transform
     container.style.transform = `translateX(0)`;
     if (hideTime > 0) {
       if (this.timer) {
@@ -26,6 +29,7 @@ export const Notification = {
    */
   hide() {
     const container = document.querySelector("#notification-container");
+    if (!container) return;
     container.style.transform = `translateX(-105%)`;
   },
 };

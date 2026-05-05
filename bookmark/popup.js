@@ -410,6 +410,7 @@ function switchSearchBarShowStatus() {
  */
 function updatePopupHeight() {
   const newHeight = calculateOptimalHeight();
+  localStorage.setItem("savedHeight", newHeight.toString());
   const currentHeight = parseInt(document.body.style.height) || 400;
 
   // 如果高度有显著变化，使用平滑过渡
@@ -501,15 +502,7 @@ function updateHeader(headerFuzeMatch, init = false) {
  * @returns
  */
 function checkOverflow(el) {
-  const curOverflow = el.style.overflow;
-
-  if (!curOverflow || curOverflow === "visible") el.style.overflow = "hidden";
-
-  const isOverflowing = el.clientWidth < el.scrollWidth || el.clientHeight < el.scrollHeight;
-
-  el.style.overflow = curOverflow;
-
-  return isOverflowing;
+  return el.scrollWidth > el.clientWidth;
 }
 
 searchInput.addEventListener(
@@ -661,8 +654,11 @@ async function initializePopup({ force = false } = {}) {
     }, 100);
 
     isPopupInitialized = true;
-  } catch {
+    document.body.classList.remove("popup-loading");
+    document.body.classList.add("popup-interactive");
+  } catch (error) {
     console.error("Failed to initialize popup:", error);
+    document.body.classList.remove("popup-loading");
     showInitializationError();
   } finally {
     isPopupInitializing = false;
@@ -737,6 +733,7 @@ function applySearchWrapperState(container, bookmarksContainer) {
 }
 
 function updateBodyHeight(actualHeight) {
+  localStorage.setItem("savedHeight", actualHeight.toString());
   setTimeout(() => {
     const currentHeight = parseInt(getComputedStyle(document.body).height, 10) || 400;
 
@@ -801,13 +798,7 @@ function calculateOptimalHeight() {
   }
 
   // 限制最大高度并保证最小高度
-  const optimalHeight = Math.min(Math.max(totalHeight, 200), 618);
-
-  // 保存计算结果到本地存储
-  localStorage.setItem("savedHeight", optimalHeight.toString());
-  localStorage.setItem("SHOW_SEARCH_BAR", searchIsHide ? "false" : "true");
-
-  return optimalHeight;
+  return Math.min(Math.max(totalHeight, 200), 618);
 }
 
 function createBookmarks(bookmarkTreeNodes) {
