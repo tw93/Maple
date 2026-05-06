@@ -37,7 +37,7 @@ const texts = {
   keepPanelOpenDesc: isZh
     ? "开启后点击书签会在后台标签页打开，并尽量保持面板不自动关闭"
     : "Keep the panel open after clicking by opening bookmarks in background tabs.",
-  versionText: "Maple Bookmarks v1.18",
+  versionText: "Maple Bookmarks v1.17",
 };
 
 // 应用国际化文本
@@ -89,8 +89,46 @@ function saveSettings() {
   localStorage.setItem(SETTINGS_KEYS.KEEP_PANEL_OPEN, keepPanelOpenCheckbox.checked.toString());
 }
 
+async function closeCurrentExtensionTab() {
+  if (typeof browser !== "undefined" && browser.tabs?.getCurrent && browser.tabs?.remove) {
+    const currentTab = await browser.tabs.getCurrent();
+    if (currentTab?.id) {
+      await browser.tabs.remove(currentTab.id);
+      return true;
+    }
+  }
+
+  if (typeof chrome !== "undefined" && chrome.tabs?.getCurrent && chrome.tabs?.remove) {
+    return new Promise((resolve) => {
+      chrome.tabs.getCurrent((currentTab) => {
+        if (currentTab?.id) {
+          chrome.tabs.remove(currentTab.id, () => resolve(true));
+          return;
+        }
+        resolve(false);
+      });
+    });
+  }
+
+  return false;
+}
+
 // 返回到主页面
-function goBack() {
+async function goBack() {
+  if (window.history.length > 1) {
+    window.history.back();
+    return;
+  }
+
+  try {
+    const closedTab = await closeCurrentExtensionTab();
+    if (closedTab) {
+      return;
+    }
+  } catch (error) {
+    console.error("Failed to close settings tab:", error);
+  }
+
   window.close();
 }
 

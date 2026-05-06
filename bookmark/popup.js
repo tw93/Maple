@@ -21,29 +21,19 @@ const SETTINGS_KEYS = {
   KEEP_PANEL_OPEN: "MAPLE_KEEP_PANEL_OPEN",
 };
 
+const FUSE_OPTIONS = {
+  keys: ["title", "url"],
+  ignoreLocation: false,
+  includeScore: true,
+  threshold: 0.5,
+  shouldSort: true,
+};
+
 const HAS_SEEN_SETTINGS_HINT_KEY = "MAPLE_SETTINGS_HINT_SEEN";
-const FIXED_POPUP_WIDTH = 408;
-const FIXED_POPUP_HEIGHT = 520;
 
-function applyFixedPopupSize() {
-  document.documentElement.style.width = `${FIXED_POPUP_WIDTH}px`;
-  document.documentElement.style.minWidth = `${FIXED_POPUP_WIDTH}px`;
-  document.documentElement.style.maxWidth = `${FIXED_POPUP_WIDTH}px`;
-  document.documentElement.style.height = `${FIXED_POPUP_HEIGHT}px`;
-  document.documentElement.style.minHeight = `${FIXED_POPUP_HEIGHT}px`;
-  document.documentElement.style.maxHeight = `${FIXED_POPUP_HEIGHT}px`;
-
-  if (document.body) {
-    document.body.style.width = `${FIXED_POPUP_WIDTH}px`;
-    document.body.style.minWidth = `${FIXED_POPUP_WIDTH}px`;
-    document.body.style.maxWidth = `${FIXED_POPUP_WIDTH}px`;
-    document.body.style.height = `${FIXED_POPUP_HEIGHT}px`;
-    document.body.style.minHeight = `${FIXED_POPUP_HEIGHT}px`;
-    document.body.style.maxHeight = `${FIXED_POPUP_HEIGHT}px`;
-  }
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
 }
-
-applyFixedPopupSize();
 
 // 获取搜索功能开启状态
 function isSearchEnabled() {
@@ -65,20 +55,114 @@ function isKeepPanelOpenEnabled() {
   return localStorage.getItem(SETTINGS_KEYS.KEEP_PANEL_OPEN) === "true";
 }
 
+function getSearchHiddenState() {
+  if (!isSearchEnabled()) {
+    return true;
+  }
+  return localStorage.getItem("SHOW_SEARCH_BAR") !== "true";
+}
+
+function getPersistedHeader() {
+  const persistedHeader = localStorage.getItem("persistedHeader");
+  if (!persistedHeader) {
+    return null;
+  }
+
+  try {
+    const parsedHeader = JSON.parse(persistedHeader);
+    if (!Array.isArray(parsedHeader) || parsedHeader.length === 0) {
+      return null;
+    }
+    return parsedHeader;
+  } catch {
+    return null;
+  }
+}
+
+function clearBestMatches({ clearPersisted = false } = {}) {
+  const bestMatchContainer = document.querySelector("#best-match");
+  if (bestMatchContainer) {
+    bestMatchContainer.innerHTML = "";
+  }
+  bestMatches = [];
+  activeBestMatchIndex = 0;
+
+  if (clearPersisted) {
+    localStorage.removeItem("persistedHeader");
+  }
+}
+
+function restorePersistedHeader() {
+  const persistedHeader = getPersistedHeader();
+  if (persistedHeader) {
+    updateHeader(persistedHeader, true);
+  } else {
+    clearBestMatches();
+  }
+}
+
 function createTab(url, active = true) {
   if (typeof browser !== "undefined") {
-    browser.tabs.create({ url, active });
-  } else {
-    chrome.tabs.create({ url, active });
+    return browser.tabs.create({ url, active });
   }
+
+  if (typeof chrome !== "undefined" && chrome.tabs?.create) {
+    return new Promise((resolve, reject) => {
+      chrome.tabs.create({ url, active }, (tab) => {
+        const runtimeError = chrome.runtime?.lastError;
+        if (runtimeError) {
+          reject(new Error(runtimeError.message));
+          return;
+        }
+        resolve(tab);
+      });
+    });
+  }
+
+  return Promise.resolve(window.open(url, "_blank"));
 }
 
 function updateCurrentTab(url) {
   if (typeof browser !== "undefined") {
-    browser.tabs.update({ url });
-  } else {
-    chrome.tabs.update({ url });
+    return browser.tabs.update({ url });
   }
+
+  if (typeof chrome !== "undefined" && chrome.tabs?.update) {
+    return new Promise((resolve, reject) => {
+      chrome.tabs.update({ url }, (tab) => {
+        const runtimeError = chrome.runtime?.lastError;
+        if (runtimeError) {
+          reject(new Error(runtimeError.message));
+          return;
+        }
+        resolve(tab);
+      });
+    });
+  }
+
+  window.location.href = url;
+  return Promise.resolve();
+}
+
+function getBookmarkTree() {
+  if (typeof browser !== "undefined") {
+    return browser.bookmarks.getTree();
+  }
+
+  if (typeof chrome !== "undefined" && chrome.bookmarks?.getTree) {
+    return new Promise((resolve, reject) => {
+      chrome.bookmarks.getTree((tree) => {
+        const runtimeError = chrome.runtime?.lastError;
+        if (runtimeError) {
+          reject(new Error(runtimeError.message));
+          return;
+        }
+        resolve(tree);
+      });
+    });
+  }
+
+  return Promise.reject(new Error("Bookmarks API is unavailable"));
 }
 
 const CLASS_NAMES = {
@@ -101,17 +185,14 @@ let settingsWrapper = document.querySelector(".settings-wrapper");
 
 let activeBestMatchIndex = 0;
 let hideTimeout = null;
-let hasBoundHotAreaEvents = false;
-// 基于设置来决定搜索是否默认隐藏，如果搜索功能关闭，则强制隐藏
-let searchIsHide;
-if (isSearchEnabled()) {
-  searchIsHide = !(localStorage.getItem("SHOW_SEARCH_BAR") === "true");
-} else {
-  // 搜索功能关闭时，强制隐藏搜索框
-  searchIsHide = true;
-}
-
+let searchIndex = [];
+let searchFuse = null;
+let searchFolders = [];
 let bestMatches = [];
+let searchIsHide = getSearchHiddenState();
+let isPopupInitialized = false;
+let isPopupInitializing = false;
+let hasBoundHotAreaHover = false;
 
 function shouldFocusSearchInput() {
   return searchInput && isSearchEnabled() && !searchIsHide;
@@ -132,20 +213,28 @@ function scheduleSearchInputFocus() {
   setTimeout(focusSearchInput, 60);
 }
 
-// 延迟恢复 header 元素，避免阻塞初始渲染
-setTimeout(() => {
-  if (isSearchEnabled()) {
-    const persistedHeader = localStorage.getItem("persistedHeader");
-    if (persistedHeader) {
-      try {
-        updateHeader(JSON.parse(persistedHeader), true);
-        updateActiveBestMatch(activeBestMatchIndex);
-      } catch {
-        // 忽略解析错误
-      }
-    }
+async function openOptionsPage() {
+  if (typeof browser !== "undefined" && browser.runtime?.openOptionsPage) {
+    await browser.runtime.openOptionsPage();
+    return;
   }
-}, 0);
+
+  if (typeof chrome !== "undefined" && typeof chrome.runtime?.openOptionsPage === "function") {
+    await new Promise((resolve, reject) => {
+      chrome.runtime.openOptionsPage(() => {
+        const runtimeError = chrome.runtime?.lastError;
+        if (runtimeError) {
+          reject(new Error(runtimeError.message));
+          return;
+        }
+        resolve();
+      });
+    });
+    return;
+  }
+
+  window.open("settings.html", "_blank");
+}
 
 // 设置按钮事件监听
 if (settingsBtn) {
@@ -157,18 +246,10 @@ if (settingsBtn) {
   settingsBtn.addEventListener("click", function (e) {
     e.preventDefault();
     e.stopPropagation();
-    try {
-      if (typeof chrome !== "undefined" && chrome.runtime) {
-        chrome.runtime.openOptionsPage();
-      } else {
-        // 兼容Firefox
-        window.open("settings.html", "_blank");
-      }
-    } catch (error) {
+    openOptionsPage().catch((error) => {
       console.error("Failed to open settings page:", error);
-      // 备用方案：直接打开设置页面
       window.open("settings.html", "_blank");
-    }
+    });
   });
 } else {
   console.error("Settings button not found");
@@ -192,69 +273,119 @@ function updateSearchFeatureVisibility() {
     // 搜索功能关闭时，完全隐藏搜索相关元素
     searchWrapper.style.display = "none";
     hotArea.style.display = "none";
-    // 清空最佳匹配
-    const bestMatchContainer = document.querySelector("#best-match");
-    if (bestMatchContainer) {
-      bestMatchContainer.innerHTML = "";
-    }
+    clearBestMatches();
   } else {
     // 搜索功能开启时，恢复正常显示
-    searchWrapper.style.display = "block";
+    searchWrapper.style.display = "";
     hotArea.style.display = searchIsHide ? "block" : "none";
   }
 }
 
-function showLoadingState() {
-  const bookmarksContainer = document.getElementById("bookmarks");
-  if (!bookmarksContainer) {
-    return;
-  }
-  if (bookmarksContainer.children.length > 0) {
-    return;
-  }
-  const loadingState = createElement("div", "loading-state", "");
-  loadingState.dataset.loading = "true";
-  loadingState.setAttribute("aria-label", navigator.language.startsWith("zh") ? "书签加载中" : "Loading bookmarks");
+function buildSearchIndex() {
+  const bookmarkElements = Array.from(document.querySelectorAll("#bookmarks .bookmark"));
+  searchFolders = Array.from(document.querySelectorAll("#bookmarks .folder"));
+  searchIndex = bookmarkElements.map((bookmarkElement, index) => {
+    const title = bookmarkElement.textContent || "";
+    const url = bookmarkElement.href || "";
+    const favicon = bookmarkElement.querySelector(".favicon")?.src || "";
 
-  const loadingTitle = createElement("div", "loading-title", "");
-  const loadingGrid = createElement("div", "loading-grid", "");
+    return {
+      id: index,
+      title,
+      titleLower: title.toLowerCase(),
+      url,
+      urlLower: url.toLowerCase(),
+      favicon,
+      element: bookmarkElement,
+      folder: bookmarkElement.closest(`.${CLASS_NAMES.folder}`),
+    };
+  });
 
-  for (let i = 0; i < 9; i++) {
-    loadingGrid.appendChild(createElement("div", "loading-card", ""));
-  }
-
-  loadingState.appendChild(loadingTitle);
-  loadingState.appendChild(loadingGrid);
-  bookmarksContainer.appendChild(loadingState);
+  const fuseData = searchIndex.map(({ id, title, url, favicon }) => ({ id, title, url, favicon }));
+  searchFuse = new Fuse(fuseData, FUSE_OPTIONS);
 }
 
-/**
- * @description 使用 Fuse 进行模糊匹配，返回最佳匹配项或false
- * @param searchTerm {string} 查询的字符串
- * @param data {{ title: string, url: string, favicon: string }[]} 要匹配的 对象数组，包含 title 和 url 属性
- * @returns {{ title: string, url: string, favicon: string }[]|null} 返回最佳匹配项的 对象数组 或 null
- */
-function FuseStrMatch(searchTerm, data) {
-  const options = {
-    keys: ["title", "url"],
-    ignoreLocation: false, // 全搜索
-    includeScore: true, // 包含相似度评分
-    threshold: 0.5, // 相似度阈值
-    shouldSort: true, // 是否排序
-  };
-  const fuse = new Fuse(data, options);
-  const results = fuse.search(searchTerm);
-  const cache = new Map();
-  const noRepeatResult = results.reduce((acc, bookmark) => {
-    if (cache.has(bookmark.item.url)) {
-      return acc;
-    } else {
-      cache.set(bookmark.item.url, true);
-      return [...acc, bookmark];
-    }
-  }, []);
+function getFuseResults(searchTerm) {
+  if (!searchFuse || !searchTerm) {
+    return [];
+  }
+  return searchFuse.search(searchTerm);
+}
 
-  return results.length > 0 ? noRepeatResult.slice(0, 3).map(({ item }) => item) : null;
+function getBestMatches(searchTerm) {
+  const results = getFuseResults(searchTerm);
+  if (results.length === 0) {
+    return null;
+  }
+
+  const uniqueMatches = [];
+  const cache = new Set();
+  for (const { item } of results) {
+    if (cache.has(item.url)) {
+      continue;
+    }
+    cache.add(item.url);
+    uniqueMatches.push({
+      title: item.title,
+      url: item.url,
+      favicon: item.favicon,
+    });
+    if (uniqueMatches.length === 3) {
+      break;
+    }
+  }
+
+  return uniqueMatches.length > 0 ? uniqueMatches : null;
+}
+
+function applySearchFilter(searchTerm) {
+  if (!searchIndex.length) {
+    return;
+  }
+
+  const matchedIds = new Set();
+
+  if (!searchTerm) {
+    searchIndex.forEach(({ id }) => matchedIds.add(id));
+  } else {
+    searchIndex.forEach(({ id, titleLower, urlLower }) => {
+      if (titleLower.includes(searchTerm) || urlLower.includes(searchTerm)) {
+        matchedIds.add(id);
+      }
+    });
+
+    getFuseResults(searchTerm).forEach(({ item }) => matchedIds.add(item.id));
+  }
+
+  const folderVisibility = new Map(searchFolders.map((folder) => [folder, false]));
+  searchIndex.forEach((bookmark) => {
+    const shouldShow = matchedIds.has(bookmark.id);
+    const displayValue = shouldShow ? "flex" : "none";
+    if (bookmark.element.style.display !== displayValue) {
+      bookmark.element.style.display = displayValue;
+    }
+
+    if (shouldShow && bookmark.folder) {
+      let currentFolder = bookmark.folder;
+      while (currentFolder) {
+        folderVisibility.set(currentFolder, true);
+        currentFolder = currentFolder.parentElement?.closest(`.${CLASS_NAMES.folder}`);
+      }
+    }
+  });
+
+  folderVisibility.forEach((isVisible, folder) => {
+    const folderDisplay = isVisible ? "block" : "none";
+    if (folder.style.display !== folderDisplay) {
+      folder.style.display = folderDisplay;
+    }
+  });
+
+  if (!searchTerm) {
+    restorePersistedHeader();
+  } else {
+    updateHeader(getBestMatches(searchTerm));
+  }
 }
 
 /**
@@ -297,7 +428,19 @@ function switchSearchBarShowStatus() {
  * 智能更新popup高度
  */
 function updatePopupHeight() {
-  applyFixedPopupSize();
+  const newHeight = calculateOptimalHeight();
+  const currentHeight = parseInt(document.body.style.height) || 400;
+
+  // 如果高度有显著变化，使用平滑过渡
+  if (Math.abs(newHeight - currentHeight) > 10) {
+    document.body.style.transition = "height 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+    document.body.style.height = `${newHeight}px`;
+
+    // 动画结束后移除过渡效果
+    setTimeout(() => {
+      document.body.style.transition = "";
+    }, 250);
+  }
 }
 
 /**
@@ -344,17 +487,15 @@ function showBestMatchTips() {
  * @param init {boolean} 是否是初始化
  */
 function updateHeader(headerFuzeMatch, init = false) {
-  if (!headerFuzeMatch) {
+  if (!headerFuzeMatch || headerFuzeMatch.length === 0) {
+    clearBestMatches();
     return;
   }
   // 兼容旧版本，上一个版本 headerFuzeMatch 为单个对象
   if (!Array.isArray(headerFuzeMatch)) {
-    headerFuzeMatch = Array.from(headerFuzeMatch);
+    headerFuzeMatch = [headerFuzeMatch];
   }
-  const matchedBookmark = document.querySelector("#best-match .folder");
-  if (matchedBookmark) {
-    matchedBookmark.parentElement.removeChild(matchedBookmark);
-  }
+  clearBestMatches();
   const bestMatchFolder = createElement("div", CLASS_NAMES.folder);
   const childContainer = createElement("div", CLASS_NAMES.childContainer);
   const title = createElement("h2", "", init ? LastBestMatch : BestMatch);
@@ -366,7 +507,9 @@ function updateHeader(headerFuzeMatch, init = false) {
   bestMatchFolder.appendChild(childContainer);
   bestMatches = headerFuzeMatch;
 
-  localStorage.setItem("persistedHeader", JSON.stringify(headerFuzeMatch));
+  if (!init) {
+    localStorage.setItem("persistedHeader", JSON.stringify(headerFuzeMatch));
+  }
   document.querySelector("#best-match").appendChild(bestMatchFolder);
   updateActiveBestMatch(0);
 }
@@ -388,73 +531,38 @@ function checkOverflow(el) {
   return isOverflowing;
 }
 
-// 只在搜索功能开启时才添加搜索相关的事件监听器
-if (isSearchEnabled()) {
-  searchInput.addEventListener(
-    "input",
-    debounce(function () {
-      let searchTerm = searchInput.value.toLowerCase();
-      let folders = document.getElementsByClassName(CLASS_NAMES.folder);
-
-      const headerData = [];
-
-      for (let folder of folders) {
-        let bookmarks = folder.getElementsByClassName(CLASS_NAMES.bookmark);
-        let hasVisibleBookmark = false;
-
-        for (let bookmark of bookmarks) {
-          // push 查询数据
-          headerData.push({
-            title: bookmark.textContent,
-            url: bookmark.href,
-            favicon: bookmark.querySelector(".favicon")?.src,
-          });
-
-          let title = bookmark.textContent.toLowerCase();
-          let url = bookmark.href.toLowerCase();
-
-          // 当直接匹配失败时，使用模糊匹配
-          if (
-            title.includes(searchTerm) ||
-            url.includes(searchTerm) ||
-            FuseStrMatch(searchTerm, [
-              {
-                title: title,
-                url: url,
-                favicon: "",
-              },
-            ])
-          ) {
-            bookmark.style.display = "flex";
-            hasVisibleBookmark = true;
-          } else {
-            bookmark.style.display = "none";
-          }
-        }
-
-        folder.style.display = hasVisibleBookmark ? "block" : "none";
-      }
-
-      updateHeader(FuseStrMatch(searchTerm, headerData));
-    }, 30)
-  );
-
-  hideArrow.addEventListener("click", function () {
-    switchSearchBarShowStatus();
-    if (!searchIsHide) {
-      scheduleSearchInputFocus();
+searchInput.addEventListener(
+  "input",
+  debounce(function () {
+    if (!isSearchEnabled()) {
+      return;
     }
-  });
+    const searchTerm = searchInput.value.toLowerCase();
+    applySearchFilter(searchTerm);
+  }, 30)
+);
 
-  hideArrowIcon.addEventListener("mouseover", function () {
-    const tips = searchIsHide ? ShowSearchWrapper : HideSearchWrapper;
-    Notification.show(tips);
-  });
+hideArrow.addEventListener("click", function () {
+  if (!isSearchEnabled()) {
+    return;
+  }
+  switchSearchBarShowStatus();
+  if (!searchIsHide) {
+    scheduleSearchInputFocus();
+  }
+});
 
-  hideArrowIcon.addEventListener("mouseleave", function () {
-    Notification.hide();
-  });
-}
+hideArrowIcon.addEventListener("mouseover", function () {
+  if (!isSearchEnabled()) {
+    return;
+  }
+  const tips = searchIsHide ? ShowSearchWrapper : HideSearchWrapper;
+  Notification.show(tips);
+});
+
+hideArrowIcon.addEventListener("mouseleave", function () {
+  Notification.hide();
+});
 
 // fix under mask click
 document.addEventListener("click", function (e) {
@@ -464,8 +572,13 @@ document.addEventListener("click", function (e) {
       e.target.id === "hot-area"
   );
   if (underMaskEle) {
-    const clickEvent = new CustomEvent("click", {
-      detail: {},
+    const clickEvent = new MouseEvent("click", {
+      bubbles: true,
+      cancelable: true,
+      clientX: e.clientX,
+      clientY: e.clientY,
+      ctrlKey: e.ctrlKey,
+      metaKey: e.metaKey,
     });
     underMaskEle.dispatchEvent(clickEvent);
   }
@@ -477,17 +590,7 @@ window.addEventListener("keydown", function (event) {
     // 只在搜索功能开启时才处理清空搜索
     if (isSearchEnabled()) {
       searchInput.value = "";
-
-      let bookmarks = document.getElementsByClassName(CLASS_NAMES.bookmark);
-      let folders = document.getElementsByClassName(CLASS_NAMES.folder);
-
-      for (let bookmark of bookmarks) {
-        bookmark.style.display = "flex";
-      }
-
-      for (let folder of folders) {
-        folder.style.display = "block";
-      }
+      applySearchFilter("");
     }
   }
 
@@ -529,81 +632,206 @@ window.addEventListener("keydown", function (event) {
   }
 });
 
-function applySearchLayout(container, bookmarksContainer) {
-  if (!container || !bookmarksContainer || !isSearchEnabled()) {
-    return;
-  }
-  if (searchIsHide) {
-    // -8 是因为有 8px 的 margin
-    const searchBarContainerHeight = container.clientHeight - 8;
-    bookmarksContainer.style.transform = `translateY(-${searchBarContainerHeight}px)`;
-    hotArea.style.display = "block";
-  } else {
-    container.classList.add("show");
-    bookmarksContainer.style.transform = `translateY(-8px)`;
-    scheduleSearchInputFocus();
-    hotArea.style.display = "none";
-  }
-}
-
-function finishPopupLayout(container, bookmarksContainer) {
-  void container;
-  void bookmarksContainer;
-  applyFixedPopupSize();
-}
-
-function renderBookmarkTree(bookmarkTreeNodes) {
-  if (!bookmarkTreeNodes || !bookmarkTreeNodes.length) {
-    return;
-  }
-  folderCount = countFolders(bookmarkTreeNodes[0].children || []);
-  const container = document.querySelector("#search-wrapper");
-  const bookmarksContainer = document.querySelector("#bookmarks");
-
-  createBookmarks(bookmarkTreeNodes);
-  updateSearchFeatureVisibility();
-  applySearchLayout(container, bookmarksContainer);
-  finishPopupLayout(container, bookmarksContainer);
-}
-
-async function fetchBookmarkTree() {
-  if (typeof browser !== "undefined") {
-    return await browser.bookmarks.getTree();
-  }
-  return await chrome.bookmarks.getTree();
-}
-
-async function initializePopup() {
-  showLoadingState();
-
-  try {
-    const bookmarkTreeNodes = await fetchBookmarkTree();
-    renderBookmarkTree(bookmarkTreeNodes);
-  } catch (error) {
-    console.error("Failed to load bookmark tree:", error);
-  } finally {
-    document.body.classList.remove("popup-loading");
-    requestAnimationFrame(() => {
-      document.body.classList.add("popup-interactive");
-      scheduleSearchInputFocus();
-    });
-  }
-}
-
-// 在DOM ready时立即设置高度并初始化
 document.addEventListener("DOMContentLoaded", function () {
   setBodyHeightFromStorage();
   scheduleSearchInputFocus();
   initializePopup();
 });
 
+window.addEventListener("pageshow", function () {
+  if (isPopupInitialized) {
+    initializePopup({ force: true });
+  }
+});
+
+async function initializePopup({ force = false } = {}) {
+  if (isPopupInitializing || (isPopupInitialized && !force)) {
+    return;
+  }
+
+  isPopupInitializing = true;
+  resetPopupState();
+
+  try {
+    const bookmarkTreeNodes = await getBookmarkTree();
+    folderCount = countFolders(bookmarkTreeNodes?.[0]?.children || []);
+    const container = document.querySelector("#search-wrapper");
+    const bookmarksContainer = document.querySelector("#bookmarks");
+
+    createBookmarks(bookmarkTreeNodes);
+    buildSearchIndex();
+
+    updateSearchFeatureVisibility();
+    applySearchWrapperState(container, bookmarksContainer);
+
+    if (isSearchEnabled()) {
+      restorePersistedHeader();
+    }
+
+    const actualHeight = calculateOptimalHeight();
+    updateBodyHeight(actualHeight);
+
+    setTimeout(() => {
+      if (container) {
+        container.style.transition = "all 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+      }
+      if (bookmarksContainer) {
+        bookmarksContainer.style.transition = "all 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+      }
+    }, 100);
+
+    isPopupInitialized = true;
+  } catch (error) {
+    console.error("Failed to initialize popup:", error);
+    showInitializationError();
+  } finally {
+    isPopupInitializing = false;
+  }
+}
+
+function resetPopupState() {
+  searchIsHide = getSearchHiddenState();
+  folderCount = 0;
+  activeBestMatchIndex = 0;
+  searchIndex = [];
+  searchFuse = null;
+  searchFolders = [];
+
+  if (hideTimeout) {
+    clearTimeout(hideTimeout);
+    hideTimeout = null;
+  }
+
+  const searchWrapper = document.querySelector("#search-wrapper");
+  const bookmarksContainer = document.querySelector("#bookmarks");
+  const hotArea = document.querySelector("#hot-area");
+
+  clearBestMatches();
+
+  if (bookmarksContainer) {
+    bookmarksContainer.innerHTML = "";
+    bookmarksContainer.style.transform = "";
+    bookmarksContainer.style.transition = "";
+  }
+
+  if (searchWrapper) {
+    searchWrapper.classList.remove("show");
+    searchWrapper.style.display = "";
+    searchWrapper.style.transition = "";
+    searchWrapper.style.marginTop = "-30px";
+  }
+
+  if (searchInput) {
+    searchInput.value = "";
+  }
+
+  if (hotArea) {
+    hotArea.style.display = "none";
+  }
+}
+
+function applySearchWrapperState(container, bookmarksContainer) {
+  if (!container || !bookmarksContainer) {
+    return;
+  }
+
+  if (!isSearchEnabled()) {
+    container.classList.remove("show");
+    bookmarksContainer.style.transform = "";
+    hotArea.style.display = "none";
+    return;
+  }
+
+  if (searchIsHide) {
+    const searchBarContainerHeight = Math.max(container.clientHeight - 8, 0);
+    container.classList.remove("show");
+    bookmarksContainer.style.transform = `translateY(-${searchBarContainerHeight}px)`;
+    hotArea.style.display = "block";
+    return;
+  }
+
+  container.classList.add("show");
+  bookmarksContainer.style.transform = "translateY(-8px)";
+  hotArea.style.display = "none";
+  scheduleSearchInputFocus();
+}
+
+function updateBodyHeight(actualHeight) {
+  setTimeout(() => {
+    const currentHeight = parseInt(getComputedStyle(document.body).height, 10) || 400;
+
+    if (Math.abs(actualHeight - currentHeight) > 20) {
+      document.body.style.transition = "height 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+      document.body.style.height = `${actualHeight}px`;
+
+      setTimeout(() => {
+        document.body.style.transition = "";
+      }, 250);
+    } else {
+      document.body.style.height = `${actualHeight}px`;
+    }
+  }, 200);
+}
+
 function setBodyHeightFromStorage() {
-  applyFixedPopupSize();
+  let savedHeight = localStorage.getItem("savedHeight");
+  let savedSearchEnabled = localStorage.getItem("MAPLE_SEARCH_ENABLED");
+  const parsedSavedHeight = Number.parseInt(savedHeight, 10);
+
+  if (Number.isFinite(parsedSavedHeight) && parsedSavedHeight > 30) {
+    const height = clamp(parsedSavedHeight, 200, 618);
+    document.body.style.height = `${height}px`;
+  } else {
+    let initialHeight = 400;
+    if (savedSearchEnabled === "true") {
+      initialHeight = 460;
+    } else {
+      initialHeight = 380;
+    }
+    document.body.style.height = `${initialHeight}px`;
+  }
+}
+
+function calculateOptimalHeight() {
+  const bookmarksContainer = document.getElementById("bookmarks");
+  const searchWrapper = document.querySelector("#search-wrapper");
+  const settingsBtn = document.querySelector(".settings-btn");
+
+  let totalHeight = 20; // 基础padding
+
+  // 计算书签容器高度
+  if (bookmarksContainer) {
+    totalHeight += bookmarksContainer.scrollHeight;
+  }
+
+  // 计算搜索框高度（只有当搜索功能开启且显示时）
+  if (isSearchEnabled() && !searchIsHide && searchWrapper) {
+    totalHeight += searchWrapper.scrollHeight;
+  }
+
+  // 计算最佳匹配区域高度
+  const bestMatchContainer = document.querySelector("#best-match");
+  if (bestMatchContainer && bestMatchContainer.children.length > 0 && searchIsHide) {
+    totalHeight += bestMatchContainer.scrollHeight;
+  }
+
+  // 考虑设置按钮的影响
+  if (settingsBtn) {
+    totalHeight += 10; // 设置按钮的额外空间
+  }
+
+  // 限制最大高度并保证最小高度
+  const optimalHeight = Math.min(Math.max(totalHeight, 200), 618);
+
+  // 保存计算结果到本地存储
+  localStorage.setItem("savedHeight", optimalHeight.toString());
+  localStorage.setItem("SHOW_SEARCH_BAR", searchIsHide ? "false" : "true");
+
+  return optimalHeight;
 }
 
 function createBookmarks(bookmarkTreeNodes) {
   const bookmarksContainer = document.getElementById("bookmarks");
-  bookmarksContainer.innerHTML = "";
 
   if (folderCount === 0) {
     showEmptyBookmarkMessage();
@@ -615,7 +843,7 @@ function createBookmarks(bookmarkTreeNodes) {
 
 function bindSwitchModeToFirstFolder() {
   // 只在搜索功能开启时才绑定hover效果
-  if (!isSearchEnabled() || hasBoundHotAreaEvents) {
+  if (!isSearchEnabled() || hasBoundHotAreaHover) {
     return;
   }
 
@@ -631,7 +859,18 @@ function bindSwitchModeToFirstFolder() {
     arrow.style.opacity = 0;
     searchWrapper.style.marginTop = "-30px";
   });
-  hasBoundHotAreaEvents = true;
+  hasBoundHotAreaHover = true;
+}
+
+function showInitializationError() {
+  const bookmarksContainer = document.getElementById("bookmarks");
+  if (!bookmarksContainer) {
+    return;
+  }
+
+  bookmarksContainer.innerHTML = "";
+  const message = navigator.language.startsWith("zh") ? "书签加载失败，请重新打开扩展" : "Failed to load bookmarks. Try reopening the extension.";
+  bookmarksContainer.appendChild(createElement("p", "message", message));
 }
 
 function showEmptyBookmarkMessage() {
