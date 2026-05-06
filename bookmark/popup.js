@@ -194,6 +194,25 @@ let isPopupInitialized = false;
 let isPopupInitializing = false;
 let hasBoundHotAreaHover = false;
 
+function shouldFocusSearchInput() {
+  return searchInput && isSearchEnabled() && !searchIsHide;
+}
+
+function focusSearchInput() {
+  if (!shouldFocusSearchInput()) {
+    return;
+  }
+
+  searchInput.focus({ preventScroll: true });
+  searchInput.select();
+}
+
+function scheduleSearchInputFocus() {
+  focusSearchInput();
+  requestAnimationFrame(focusSearchInput);
+  setTimeout(focusSearchInput, 60);
+}
+
 async function openOptionsPage() {
   if (typeof browser !== "undefined" && browser.runtime?.openOptionsPage) {
     await browser.runtime.openOptionsPage();
@@ -391,7 +410,7 @@ function switchSearchBarShowStatus() {
     if (extraClass) {
       container.classList.add(extraClass);
       bookmarksContainer.style.transform = `translateY(0)`;
-      searchInput.focus();
+      scheduleSearchInputFocus();
       hotArea.style.display = "none";
     } else {
       bookmarksContainer.style.transform = `translateY(-${containerHeight}px)`;
@@ -529,7 +548,7 @@ hideArrow.addEventListener("click", function () {
   }
   switchSearchBarShowStatus();
   if (!searchIsHide) {
-    searchInput.focus();
+    scheduleSearchInputFocus();
   }
 });
 
@@ -615,6 +634,7 @@ window.addEventListener("keydown", function (event) {
 
 document.addEventListener("DOMContentLoaded", function () {
   setBodyHeightFromStorage();
+  scheduleSearchInputFocus();
   initializePopup();
 });
 
@@ -661,7 +681,7 @@ async function initializePopup({ force = false } = {}) {
     }, 100);
 
     isPopupInitialized = true;
-  } catch {
+  } catch (error) {
     console.error("Failed to initialize popup:", error);
     showInitializationError();
   } finally {
@@ -733,7 +753,7 @@ function applySearchWrapperState(container, bookmarksContainer) {
   container.classList.add("show");
   bookmarksContainer.style.transform = "translateY(-8px)";
   hotArea.style.display = "none";
-  searchInput.focus();
+  scheduleSearchInputFocus();
 }
 
 function updateBodyHeight(actualHeight) {

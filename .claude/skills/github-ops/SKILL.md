@@ -1,28 +1,31 @@
 ---
 name: github-ops
-description: Use this skill for GitHub issue, PR, and release operations for Maple browser extension via gh CLI.
+description: Use this skill for GitHub issue, PR, and release operations for tw93.github.io blog via gh CLI.
 ---
 
 # GitHub Operations Skill
 
-Use this skill when working with GitHub issues, PRs, and releases for Maple.
+Use this skill when working with GitHub issues, PRs, and content publishing for tw93.github.io.
 
 ## Golden Rule
 
 **ALWAYS use `gh` CLI** for GitHub operations.
 
-## Release Workflow
+## Content Publishing Workflow
 
 ```bash
-# Build all extensions
-npm run build
+# Local preview
+npm run dev
 
-# Output in dist/
-# - Maple.zip (Chrome)
-# - FirefoxMaple.zip (Firefox)
-# - NewTab.zip
-# - Theme.zip
+# Build
+npm run build
 ```
+
+## Post Structure
+
+- Posts: `_posts/` (Chinese), `_posts_en/` (English)
+- PPT: Use `layout: ppt`, past date to hide
+- Images: Use CDN for auto WebP optimization
 
 ## Issue Handling
 
@@ -38,11 +41,11 @@ gh issue list --state open
 
 ## Safety Rules
 
-1. **NEVER** break extension manifest format
+1. **NEVER** delete existing posts
 2. **NEVER** comment on issues without explicit request
-3. **ALWAYS** test in Chrome after changes
+3. **ALWAYS** test locally with `npm run dev`
 4. **ALWAYS** prepare responses for user review first
 
 ## Issue Language
 
-Draft replies in the same language as the issue author.
+Draft replies in the same language as the issue author (Chinese or English).
