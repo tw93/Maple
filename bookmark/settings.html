@@ -10,8 +10,7 @@
         padding: 0;
         min-height: 100vh;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        -webkit-font-smoothing: antialiased;
-        background-color: #F5F1EC;
+        background-color: #f8f9fa;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -23,23 +22,11 @@
         max-width: 480px;
         margin: 16px;
         padding: 32px;
-        background: #FFFEFA;
-        border-radius: 14px;
-        box-shadow: 0 2px 12px rgba(120, 80, 40, 0.06), 0 0 0 1px rgba(166, 124, 82, 0.08);
-        border: none;
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e5e5e5;
         box-sizing: border-box;
-        animation: settingsEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
-      }
-
-      @keyframes settingsEnter {
-        from {
-          opacity: 0;
-          transform: translateY(12px) scale(0.98);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0) scale(1);
-        }
       }
 
       .header {
@@ -53,36 +40,30 @@
       .header h1 {
         margin: 0;
         font-size: 20px;
-        font-weight: 700;
-        color: #2C2418;
+        font-weight: 600;
+        color: #333;
         flex: 1;
         text-align: center;
-        letter-spacing: -0.01em;
       }
 
       .back-btn {
-        background: rgba(166, 124, 82, 0.06);
-        border: 1px solid rgba(166, 124, 82, 0.1);
+        background: #f5f5f5;
+        border: 1px solid #d5d5d5;
         font-size: 14px;
         font-weight: 500;
         cursor: pointer;
         padding: 8px 12px;
-        border-radius: 8px;
-        color: #8B7355;
-        transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        border-radius: 6px;
+        color: #666;
+        transition: all 0.2s ease;
         position: absolute;
         left: 0;
         top: 0;
       }
 
       .back-btn:hover {
-        background: rgba(166, 124, 82, 0.1);
-        color: #6B5740;
-      }
-
-      .back-btn:active {
-        transform: scale(0.96);
-        transition-duration: 0.08s;
+        background: #e5e5e5;
+        color: #333;
       }
 
       .setting-item {
@@ -90,24 +71,7 @@
         align-items: center;
         justify-content: space-between;
         padding: 24px 0;
-        transition: background-color 0.25s ease, padding 0.25s ease, margin 0.25s ease;
-        animation: settingItemEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
-      }
-
-      .setting-item:nth-child(1) { animation-delay: 0.08s; }
-      .setting-item:nth-child(2) { animation-delay: 0.14s; }
-      .setting-item:nth-child(3) { animation-delay: 0.2s; }
-      .setting-item:nth-child(4) { animation-delay: 0.26s; }
-
-      @keyframes settingItemEnter {
-        from {
-          opacity: 0;
-          transform: translateY(6px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
+        transition: all 0.3s ease;
       }
 
       .setting-item:last-child {
@@ -115,10 +79,10 @@
       }
 
       .setting-item:hover {
-        background: rgba(166, 124, 82, 0.04);
+        background: #f9f9f9;
         margin: 0 -16px;
         padding: 24px 16px;
-        border-radius: 10px;
+        border-radius: 6px;
       }
 
       .setting-label {
@@ -129,14 +93,14 @@
 
       .setting-title {
         font-size: 16px;
-        font-weight: 600;
-        color: #2C2418;
+        font-weight: 500;
+        color: #333;
         margin-bottom: 6px;
       }
 
       .setting-description {
         font-size: 14px;
-        color: #8B7B6B;
+        color: #666;
         line-height: 1.5;
       }
 
@@ -145,7 +109,6 @@
         display: inline-block;
         width: 48px;
         height: 24px;
-        flex-shrink: 0;
       }
 
       .switch input {
@@ -161,8 +124,8 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: #D5CCBF;
-        transition: background-color 0.3s ease;
+        background-color: #ccc;
+        transition: 0.3s;
         border-radius: 24px;
       }
 
@@ -174,13 +137,12 @@
         left: 3px;
         bottom: 3px;
         background-color: white;
-        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: 0.3s;
         border-radius: 50%;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       }
 
       input:checked + .slider {
-        background-color: #B8885C;
+        background-color: #007bff;
       }
 
       input:checked + .slider:before {
@@ -191,63 +153,61 @@
         margin-top: 40px;
         padding-top: 20px;
         text-align: center;
-        animation: settingItemEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.34s both;
       }
 
       .version {
         font-size: 12px;
-        color: #B8A089;
-        font-weight: 500;
-        letter-spacing: 0.02em;
+        color: #999;
+        font-weight: 400;
       }
 
       @media (prefers-color-scheme: dark) {
         body {
-          background-color: #141210;
+          background-color: #1a1a1a;
         }
 
         .container {
-          background: #1E1C1A;
-          box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(196, 149, 106, 0.06);
+          background: #2a2a2a;
+          border: 1px solid #404040;
         }
 
         .header h1 {
-          color: #DDD6CC;
+          color: #ffffff;
         }
 
         .back-btn {
-          background: rgba(196, 149, 106, 0.08);
-          border: 1px solid rgba(196, 149, 106, 0.1);
-          color: #A8956E;
+          background: #404040;
+          border: 1px solid #555;
+          color: #ccc;
         }
 
         .back-btn:hover {
-          background: rgba(196, 149, 106, 0.14);
-          color: #C4A87A;
+          background: #4a4a4a;
+          color: #fff;
         }
 
         .setting-item:hover {
-          background: rgba(196, 149, 106, 0.05);
+          background: #333;
         }
 
         .setting-title {
-          color: #DDD6CC;
+          color: #ffffff;
         }
 
         .setting-description {
-          color: #7A7068;
+          color: #ccc;
         }
 
         .slider {
-          background-color: #3D3730;
+          background-color: #555;
         }
 
         input:checked + .slider {
-          background-color: #9A7250;
+          background-color: #0066cc;
         }
 
         .version {
-          color: #5C5549;
+          color: #999;
         }
       }
     </style>
