@@ -563,18 +563,42 @@ function updateHeader(headerFuzeMatch, init = false) {
   }
   const bestMatchFolder = createElement("div", CLASS_NAMES.folder);
   const childContainer = createElement("div", CLASS_NAMES.childContainer);
+
+  // Header row: title + clear button
+  const headerRow = createElement("div", "best-match-header");
   const title = createElement("h2", "", init ? LastBestMatch : BestMatch);
   title.title = BestMatchTitle;
+  headerRow.appendChild(title);
+
+  const clearBtn = createElement("button", "best-match-clear", "×");
+  clearBtn.type = "button";
+  clearBtn.setAttribute("aria-label", isZhUI ? "清除匹配" : "Clear matches");
+  clearBtn.title = isZhUI ? "清除匹配" : "Clear matches";
+  clearBtn.addEventListener("click", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    clearBestMatches();
+  });
+  headerRow.appendChild(clearBtn);
+
   headerFuzeMatch.forEach((matchedBookmark) => {
     createBookmarkItem(matchedBookmark, childContainer);
   });
-  bestMatchFolder.appendChild(title);
+  bestMatchFolder.appendChild(headerRow);
   bestMatchFolder.appendChild(childContainer);
   bestMatches = headerFuzeMatch;
 
   localStorage.setItem("persistedHeader", JSON.stringify(headerFuzeMatch));
   document.querySelector("#best-match").appendChild(bestMatchFolder);
   updateActiveBestMatch(0);
+}
+
+function clearBestMatches() {
+  localStorage.removeItem("persistedHeader");
+  const bestMatchContainer = document.querySelector("#best-match");
+  if (bestMatchContainer) bestMatchContainer.innerHTML = "";
+  bestMatches = [];
+  activeBestMatchIndex = 0;
 }
 
 /**
