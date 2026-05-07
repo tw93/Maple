@@ -6,7 +6,12 @@ const SETTINGS_KEYS = {
   KEEP_PANEL_OPEN: "MAPLE_KEEP_PANEL_OPEN",
 };
 
+const DISPLAY_MODE_KEY = "MAPLE_DISPLAY_MODE";
+const MODE_POPUP = "popup";
+const MODE_SIDEBAR = "sidebar";
+
 // 获取DOM元素
+const sidebarModeCheckbox = document.getElementById("sidebarMode");
 const searchEnabledCheckbox = document.getElementById("searchEnabled");
 const tipsEnabledCheckbox = document.getElementById("tipsEnabled");
 const openInNewTabCheckbox = document.getElementById("openInNewTab");
@@ -21,6 +26,10 @@ const isZh = browserLanguage === "zh";
 const texts = {
   title: isZh ? "设置" : "Settings",
   backBtn: isZh ? "← 返回" : "← Back",
+  displayModeTitle: isZh ? "显示模式（侧边栏）" : "Display Mode (Sidebar)",
+  displayModeDesc: isZh
+    ? "开启后点击图标打开侧边栏，关闭后打开弹窗。两者不会同时显示。"
+    : "When on, clicking the icon opens the sidebar; when off, it opens the popup. They are never shown at the same time.",
   searchFeatureTitle: isZh ? "启用搜索功能" : "Search Functionality",
   searchFeatureDesc: isZh
     ? "开启后可以使用搜索框搜索书签，关闭后将隐藏搜索相关功能"
@@ -37,13 +46,15 @@ const texts = {
   keepPanelOpenDesc: isZh
     ? "开启后点击书签会在后台标签页打开，并尽量保持面板不自动关闭"
     : "Keep the panel open after clicking by opening bookmarks in background tabs.",
-  versionText: "Maple Bookmarks v1.17",
+  versionText: "Maple Bookmarks v2.0",
 };
 
 // 应用国际化文本
 function applyI18n() {
   document.getElementById("title").textContent = texts.title;
   document.getElementById("backBtn").textContent = texts.backBtn;
+  document.getElementById("displayModeTitle").textContent = texts.displayModeTitle;
+  document.getElementById("displayModeDesc").textContent = texts.displayModeDesc;
   document.getElementById("searchFeatureTitle").textContent = texts.searchFeatureTitle;
   document.getElementById("searchFeatureDesc").textContent = texts.searchFeatureDesc;
   document.getElementById("tipsFeatureTitle").textContent = texts.tipsFeatureTitle;
@@ -79,6 +90,13 @@ function loadSettings() {
   // 默认点击后自动关闭
   const keepPanelOpen = localStorage.getItem(SETTINGS_KEYS.KEEP_PANEL_OPEN) === "true";
   keepPanelOpenCheckbox.checked = keepPanelOpen;
+
+  // 显示模式：默认 popup
+  if (typeof chrome !== "undefined" && chrome.storage?.local) {
+    chrome.storage.local.get(DISPLAY_MODE_KEY, (result) => {
+      sidebarModeCheckbox.checked = result?.[DISPLAY_MODE_KEY] === MODE_SIDEBAR;
+    });
+  }
 }
 
 // 保存设置
@@ -89,46 +107,22 @@ function saveSettings() {
   localStorage.setItem(SETTINGS_KEYS.KEEP_PANEL_OPEN, keepPanelOpenCheckbox.checked.toString());
 }
 
-async function closeCurrentExtensionTab() {
-  if (typeof browser !== "undefined" && browser.tabs?.getCurrent && browser.tabs?.remove) {
-    const currentTab = await browser.tabs.getCurrent();
-    if (currentTab?.id) {
-      await browser.tabs.remove(currentTab.id);
-      return true;
-    }
-  }
-
-  if (typeof chrome !== "undefined" && chrome.tabs?.getCurrent && chrome.tabs?.remove) {
-    return new Promise((resolve) => {
-      chrome.tabs.getCurrent((currentTab) => {
-        if (currentTab?.id) {
-          chrome.tabs.remove(currentTab.id, () => resolve(true));
-          return;
-        }
-        resolve(false);
-      });
+// 通过 service worker 更新显示模式，确保 popup 与 sidebar 互斥
+function saveDisplayMode() {
+  const nextMode = sidebarModeCheckbox.checked ? MODE_SIDEBAR : MODE_POPUP;
+  try {
+    chrome.runtime.sendMessage({
+      type: "MAPLE_SET_MODE",
+      mode: nextMode,
+      openImmediately: false,
     });
+  } catch (error) {
+    console.error("Failed to update display mode:", error);
   }
-
-  return false;
 }
 
 // 返回到主页面
-async function goBack() {
-  if (window.history.length > 1) {
-    window.history.back();
-    return;
-  }
-
-  try {
-    const closedTab = await closeCurrentExtensionTab();
-    if (closedTab) {
-      return;
-    }
-  } catch (error) {
-    console.error("Failed to close settings tab:", error);
-  }
-
+function goBack() {
   window.close();
 }
 
@@ -136,6 +130,7 @@ async function goBack() {
 document.addEventListener("DOMContentLoaded", loadSettings);
 
 // 事件监听器
+sidebarModeCheckbox.addEventListener("change", saveDisplayMode);
 searchEnabledCheckbox.addEventListener("change", saveSettings);
 tipsEnabledCheckbox.addEventListener("change", saveSettings);
 openInNewTabCheckbox.addEventListener("change", saveSettings);
