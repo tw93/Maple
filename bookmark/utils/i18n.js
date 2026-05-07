@@ -1,7 +1,10 @@
 const browserLanguage = navigator.language.startsWith("zh") ? "zh" : "en";
 const isZh = browserLanguage === "zh";
 
-document.getElementById("searchInput").placeholder = isZh ? "搜索书签..." : "Search bookmarks...";
+const searchInputEl = document.getElementById("searchInput");
+if (searchInputEl) {
+  searchInputEl.placeholder = isZh ? "搜索书签..." : "Search bookmarks...";
+}
 
 const isMac = navigator.platform.indexOf("Mac") !== -1;
 
@@ -17,15 +20,4 @@ const BestMatch = isZh ? "最佳匹配" : "Best Matches";
 
 const EmptyBookmarkMessage = isZh ? "🍁 没有找到书签" : "🍁 No bookmarks found in your browser";
 
-const ShowSearchWrapper = isZh ? "显示搜索框，试试 Ctrl + S" : "Show search box (Try Ctrl + S)";
-const HideSearchWrapper = isZh ? "隐藏搜索框，试试 Ctrl + S" : "Hide search box (Try Ctrl + S)";
-
-export {
-  keyText,
-  BestMatchTitle,
-  LastBestMatch,
-  BestMatch,
-  EmptyBookmarkMessage,
-  ShowSearchWrapper,
-  HideSearchWrapper,
-};
+export { keyText, BestMatchTitle, LastBestMatch, BestMatch, EmptyBookmarkMessage };

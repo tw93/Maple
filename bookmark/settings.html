@@ -221,6 +221,19 @@
 
       <div class="setting-item">
         <div class="setting-label">
+          <div class="setting-title" id="displayModeTitle">Display Mode</div>
+          <div class="setting-description" id="displayModeDesc">
+            Choose how Maple opens. Popup and sidebar modes are mutually exclusive - only one will be active at a time.
+          </div>
+        </div>
+        <label class="switch" title="Off: popup · On: sidebar">
+          <input type="checkbox" id="sidebarMode" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-label">
           <div class="setting-title" id="searchFeatureTitle">Search Functionality</div>
           <div class="setting-description" id="searchFeatureDesc">
             Enable search box to quickly find bookmarks. When disabled, all search features will be hidden.
@@ -272,7 +285,7 @@
       </div>
 
       <div class="footer">
-        <div class="version" id="versionText">Maple Bookmarks v1.17</div>
+        <div class="version" id="versionText">Maple Bookmarks v2.0</div>
       </div>
     </div>
 
