@@ -60,7 +60,7 @@
 
 由于 Chrome 的默认新主题不是很好看，我比较喜欢简单纯净的效果，就顺便开发了一个 [Maple Theme](https://chromewebstore.google.com/detail/cghofkeabdkcdoanmjhkadklfdlelaao)，没有其他乱七八糟的颜色，让你的浏览器看着很干净。
 
-<img src="https://cdn.fliggy.com/upic/acV6PC.png" width="100%" />
+<img src="https://raw.githubusercontent.com/tw93/Maple/main/white-theme.png" width="100%" />
 
 ## 实践
 

@@ -59,7 +59,7 @@ The bookmarks bar can occupy the browsing window and affect concentration, so I 
 
 Since the default new theme of Chrome is not very appealing to me, I prefer a simple and clean effect, so I developed a [Maple Theme](https://chromewebstore.google.com/detail/cghofkeabdkcdoanmjhkadklfdlelaao) on the side. It doesn't include any other messy colors, making your browser look very clean.
 
-<img src="https://cdn.fliggy.com/upic/acV6PC.png" width="100%" />
+<img src="https://raw.githubusercontent.com/tw93/Maple/main/white-theme.png" width="100%" />
 
 ## Practice
 
