@@ -20,7 +20,7 @@
   "license": "MIT",
   "devDependencies": {
     "eslint": "^10.4.1",
-    "globals": "^17.6.0",
+    "globals": "^17.12.0",
     "prettier": "^3.8.3"
   }
 }
