@@ -26,8 +26,9 @@
       "id": "tw93@qq.com"
     }
   },
-  "optional_host_permissions": ["*://*/*"],
-  "permissions": ["bookmarks", "favicon", "storage"],
+  "optional_host_permissions": ["<all_urls>"],
+  "optional_permissions": ["tabs"],
+  "permissions": ["activeTab", "bookmarks", "favicon", "storage"],
   "options_page": "settings.html",
   "icons": {
     "16": "logo.png",

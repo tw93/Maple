@@ -48,11 +48,20 @@ window.onload = function () {
     }
   }
 
+  // Links in the background info come from remote JSON; open only http(s) addresses
+  function isWebUrl(url) {
+    try {
+      return ["http:", "https:"].includes(new URL(url).protocol);
+    } catch {
+      return false;
+    }
+  }
+
   function sanitizeDescription(raw = "") {
     if (!raw) return "";
-    const temp = document.createElement("div");
-    temp.innerHTML = raw;
-    let text = temp.textContent || temp.innerText || "";
+    // DOMParser builds an inert document: unlike innerHTML on a live element,
+    // tags in the remote text (for example <img src>) do not load anything
+    let text = new DOMParser().parseFromString(raw, "text/html").body.textContent || "";
     text = text.replace(/!\[[^\]]*\]\([^)]+\)/g, "");
     text = text.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
     text = text.replace(/`([^`]+)`/g, "$1");
@@ -160,7 +169,7 @@ window.onload = function () {
         if (e.target.tagName === "BUTTON") {
           return;
         }
-        if (data.url) {
+        if (isWebUrl(data.url)) {
           chrome.tabs.create({ url: data.url });
         }
       };

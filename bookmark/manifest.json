@@ -18,10 +18,18 @@
         "default": "Ctrl+E",
         "mac": "Command+E"
       }
+    },
+    "toggle-sidebar": {
+      "suggested_key": {
+        "default": "Alt+Shift+B",
+        "mac": "Command+B"
+      },
+      "description": "Open or close the sidebar"
     }
   },
-  "optional_host_permissions": ["*://*/*"],
-  "permissions": ["bookmarks", "favicon", "sidePanel", "storage"],
+  "optional_host_permissions": ["<all_urls>"],
+  "optional_permissions": ["tabs"],
+  "permissions": ["activeTab", "bookmarks", "favicon", "sidePanel", "storage"],
   "options_page": "settings.html",
   "icons": {
     "16": "logo.png",

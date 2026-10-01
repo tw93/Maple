@@ -66,10 +66,21 @@ Since the default new theme of Chrome is not very appealing to me, I prefer a si
 1. First, organize your bookmarks. You can adjust the order of frequently used ones and delete those not often used to make it tidier.
 2. Use `Command+Shift+B`(Mac)、`Ctrl+Shift+B`(Windows) or right-click on the bookmarks bar to hide it.
 3. Click on the extension icon and pin `Maple Bookmarks` to the toolbar.
-4. Try using `Command + E`(Mac)、`Ctrl+B`(Windows / Firefox) to quickly access your bookmarks.
+4. Try using `Command + E`(Mac)、`Ctrl + E`(Windows / Firefox) to quickly access your bookmarks.
 5. Clicking on the folder name can collapse and expand it, making it more comfortable for users with many bookmarks to use.
 6. If you have an extensive collection of bookmarks, you can conveniently search through them using keywords. The search feature supports Chinese, English, and domain names. By default, the search function is not activated. To enable it, use the `Ctrl + S` shortcut or click the small arrow located at the top of the interface to switch to search mode.
 7. Each search will prioritize and display the top three most relevant results. You can easily navigate between these top results using the `←` and `→` keys on your keyboard. To swiftly access the highlighted bookmark, simply press the Enter key.
+8. Press `Command + B`(Mac)、`Alt + Shift + B`(Windows) to open or close the sidebar. Extension shortcuts come before page shortcuts, so on Mac this shortcut replaces Bold in web editors such as Google Docs. If you need Bold there, or your browser already uses the shortcut, change it on the extension shortcuts page.
+9. Drag a card to change its order or to move it to another folder. If you drop a card on a collapsed folder title, the card goes to the end of that folder.
+10. Click `+` at the top to save the current page. The new card shows at the top of the list. Then drag it into a folder.
+11. Move the pointer over the `ⓘ` icon of a card to read its note. Click the icon to write a note or to delete the bookmark. After a delete, you can click Undo.
+12. Cards show only the site name, for example `youtube`. To show full page titles, turn off Short Names in the settings.
+13. Click the folder icon in the bottom bar to create a category. Type a name and press Enter. The new category shows at the end of the list, ready for cards.
+14. Each category shows an icon that fits its name (a plane for Travel, a music note for Music, and so on), and a line under its name. The line shows a description, or how many sites the category has. Drag a category to change the order. To rename a category, write a description, or delete the category, click the pencil on its row. After a delete, you can click Undo.
+15. Click the arrows icon in the bottom bar to collapse or expand all folders. You can also hold `Option`(Mac)、`Alt`(Windows) and click a folder title.
+16. The bottom bar also has the switch between popup and sidebar, and the settings.
+17. With one or two categories open, the other categories blur, so you can focus on the open ones. With three or more open, nothing blurs.
+18. To see a site when you move the pointer over its card, turn on Page Previews in the settings. The browser asks once for access to all sites, because the extension needs it for screenshots and share images. When you open a bookmarked site, the extension takes a small screenshot of it. Until then, the card shows the site's share image (the picture for link previews). The extension downloads it once without cookies, for the cards on screen, before you hover them. The previews stay on this device. A line under the setting shows the number of saved previews and the last screenshot error. Turn the setting off to delete the previews.
 
 ## Support
 

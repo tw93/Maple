@@ -17,6 +17,9 @@
   --maple-shadow-lg: 0 8px 24px rgba(60, 40, 30, 0.12);
   --maple-radius: 10px;
   --maple-radius-sm: 6px;
+  --maple-input-border: rgba(0, 0, 0, 0.12);
+  --maple-danger: #d93a2b;
+  --maple-icon-box: #f4efe9;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -34,6 +37,9 @@
     --maple-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
     --maple-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
     --maple-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
+    --maple-input-border: rgba(255, 255, 255, 0.12);
+    --maple-danger: #ff7a6b;
+    --maple-icon-box: #36312b;
   }
 }
 
@@ -61,11 +67,13 @@ body::-webkit-scrollbar {
 /* Modern floating tooltip — bottom center, fades in with subtle slide */
 #notification-container {
   position: fixed;
-  bottom: 18px;
+  /* Above the bottom menu (40px) */
+  bottom: 52px;
   left: 50%;
   transform: translate(-50%, 16px);
   opacity: 0;
-  z-index: 250;
+  /* Above the settings overlay, so mode-switch notices stay visible there */
+  z-index: 350;
   pointer-events: none;
   max-width: calc(100% - 28px);
   padding: 9px 16px;
@@ -90,11 +98,52 @@ body::-webkit-scrollbar {
   transform: translate(-50%, 0);
 }
 
+#notification-container.has-action {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 6px 6px 16px;
+}
+
+#notification-container.has-action.show {
+  pointer-events: auto;
+}
+
+.toast-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.toast-action {
+  flex-shrink: 0;
+  border: none;
+  border-radius: 999px;
+  padding: 4px 11px;
+  background: rgba(255, 255, 255, 0.14);
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.toast-action:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
 @media (prefers-color-scheme: dark) {
   #notification-container {
     background: rgba(245, 240, 232, 0.94);
     color: #1c1a17;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  }
+
+  .toast-action {
+    background: rgba(0, 0, 0, 0.08);
+  }
+
+  .toast-action:hover {
+    background: rgba(0, 0, 0, 0.14);
   }
 }
 
@@ -198,7 +247,8 @@ p.message {
 body.popup-loading #search-wrapper,
 body.popup-loading #hot-area,
 body.popup-loading #notification-container,
-body.popup-loading .settings-wrapper {
+body.popup-loading .settings-wrapper,
+body.popup-loading .bottom-bar {
   visibility: hidden;
 }
 
@@ -212,20 +262,22 @@ body.popup-loading .settings-wrapper {
   animation: mapleSkeleton 1.4s ease-in-out infinite;
 }
 
-.loading-grid {
-  display: flex;
-  flex-wrap: wrap;
+/* Cards fill the full width in equal columns (min 120px), so the layout stays
+   centered at any panel width. The fixed popup gets exactly 3 x 120px. */
+.loading-grid,
+.childContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  column-gap: 10px;
 }
 
 .loading-card {
-  width: 120px;
   height: 44px;
   box-sizing: border-box;
   border-radius: var(--maple-radius);
   background: linear-gradient(90deg, var(--maple-card) 25%, var(--maple-card-hover) 37%, var(--maple-card) 63%);
   background-size: 400% 100%;
   margin-bottom: 10px;
-  margin-right: 10px;
   animation: mapleSkeleton 1.4s ease-in-out infinite;
   box-shadow: var(--maple-shadow-sm);
 }
@@ -239,10 +291,9 @@ body.popup-loading .settings-wrapper {
   }
 }
 
-.childContainer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
+/* Nested folders take a full row of the parent grid */
+.childContainer > .folder {
+  grid-column: 1 / -1;
 }
 
 #search-wrapper {
@@ -310,14 +361,13 @@ body.popup-loading .settings-wrapper {
 }
 
 .childContainer > .bookmark {
-  width: 120px;
+  min-width: 0;
   height: 44px;
   box-sizing: border-box;
   border-radius: var(--maple-radius);
   background-color: var(--maple-card);
-  padding: 6px 12px;
+  padding: 6px 4px 6px 10px;
   margin-bottom: 10px;
-  margin-right: 10px;
   text-align: center;
   display: flex;
   align-items: center;
@@ -325,6 +375,9 @@ body.popup-loading .settings-wrapper {
   box-shadow: var(--maple-shadow-sm);
   border: 1px solid var(--maple-border);
   transition: all 0.18s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  /* Dragging a card must not select its text */
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .childContainer > .bookmark:hover {
@@ -335,13 +388,416 @@ body.popup-loading .settings-wrapper {
 }
 
 .bookmark p {
+  flex: 1;
+  min-width: 0;
   font-size: 13px;
   font-weight: 500;
   color: var(--maple-text);
-  margin-left: 9px;
+  margin: 0 0 0 8px;
+  text-align: left;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+}
+
+/* Info icon: hover shows the note, click opens the note editor */
+.bookmark-info {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 22px;
+  border-radius: var(--maple-radius-sm);
+  color: var(--maple-text-muted);
+  opacity: 0;
+  cursor: pointer;
+  transition:
+    opacity 0.15s ease,
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.bookmark-info svg {
+  width: 14px;
+  height: 14px;
+}
+
+.bookmark:hover .bookmark-info,
+.bookmark:focus-visible .bookmark-info {
+  opacity: 1;
+}
+
+.bookmark-info:hover {
+  color: var(--maple-accent);
+  background-color: var(--maple-accent-soft);
+}
+
+/* A card with a note keeps its icon visible */
+.bookmark-info.has-note {
+  opacity: 1;
+  color: var(--maple-accent);
+}
+
+/* Drag and drop */
+.childContainer > .bookmark.is-dragging {
+  opacity: 0.35;
+  transform: none;
+  box-shadow: none;
+}
+
+/* A category being dragged by its title */
+.folder.is-dragging {
+  opacity: 0.35;
+}
+
+.folderTitle.is-drop-target {
+  background: var(--maple-accent-soft);
+  color: var(--maple-accent);
+}
+
+/* A card that was just added or restored */
+.childContainer > .bookmark.is-new {
+  animation: mapleFlash 1.2s ease;
+}
+
+@keyframes mapleFlash {
+  0%,
+  100% {
+    box-shadow: var(--maple-shadow-sm);
+  }
+  25%,
+  60% {
+    box-shadow:
+      0 0 0 2px var(--maple-accent),
+      var(--maple-shadow-md);
+  }
+}
+
+/* A folder without cards: a drop zone with a hint */
+.childContainer[data-empty-hint]:empty::before {
+  content: attr(data-empty-hint);
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  border: 1px dashed var(--maple-input-border);
+  border-radius: var(--maple-radius);
+  color: var(--maple-text-muted);
+  font-size: 12px;
+}
+
+/* ======= Category rows: icon, name, and one line of description ======= */
+.folderTitle.collapsible-folder.category-row {
+  gap: 10px;
+  min-height: 44px;
+  box-sizing: border-box;
+  margin: 0 0 6px;
+  padding: 6px 56px 6px 7px;
+  border-radius: 11px;
+  background: var(--maple-card);
+  border: 1px solid var(--maple-border);
+  box-shadow: var(--maple-shadow-sm);
+  color: var(--maple-text);
+  font-size: 13px;
+  line-height: 1.2;
+  letter-spacing: 0;
+  text-transform: none;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    filter 0.25s ease,
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+/* Focus: with one or two categories open, the closed rows blur like frosted glass */
+#bookmarks.is-focus .category-row.collapsed {
+  filter: blur(1.6px) saturate(0.7);
+  opacity: 0.45;
+  transform: scale(0.985);
+}
+
+/* They stay usable: sharp on hover, while editing, dragging or searching,
+   and inside an open category */
+#bookmarks.is-focus .category-row.collapsed:hover,
+#bookmarks.is-focus .category-row.collapsed.is-editing,
+#bookmarks.is-focus .category-row.collapsed.is-drop-target,
+#bookmarks.is-focus .category-row.expanded + .childContainer .category-row.collapsed,
+body.is-dragging-card #bookmarks.is-focus .category-row.collapsed,
+body.is-dragging-folder #bookmarks.is-focus .category-row.collapsed,
+body.is-searching #bookmarks.is-focus .category-row.collapsed {
+  filter: none;
+  opacity: 1;
+  transform: none;
+}
+
+.folderTitle.collapsible-folder.category-row:hover {
+  background: var(--maple-card-hover);
+  color: var(--maple-text);
+}
+
+/* Space between an open category's cards and the next row */
+.category-row.expanded + .childContainer {
+  margin-bottom: 6px;
+}
+
+.category-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--maple-icon-box);
+  color: var(--maple-text-secondary);
+  transition: color 0.15s ease;
+}
+
+.category-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.category-row:hover .category-icon {
+  color: var(--maple-text);
+}
+
+.category-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.category-row .folder-label {
+  flex: none;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--maple-text);
+}
+
+.category-subtitle {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--maple-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.category-row .folder-arrow {
+  right: 13px;
+}
+
+.folderTitle.category-row.is-drop-target {
+  border-color: var(--maple-accent);
+  background: var(--maple-accent-soft);
+}
+
+.folderTitle.category-row.is-new {
+  animation: mapleFlash 1.2s ease;
+}
+
+/* Edit mode of a category row: name and description fields */
+.folderTitle.category-row.is-editing {
+  padding-right: 8px;
+}
+
+.category-edit {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.category-edit .folder-rename-input {
+  flex: none;
+  width: 100%;
+  height: 24px;
+  font-size: 12.5px;
+}
+
+.category-desc-input {
+  display: block;
+  width: 100%;
+  height: 22px;
+  box-sizing: border-box;
+  padding: 0 8px;
+  border: 1px solid var(--maple-input-border);
+  border-radius: var(--maple-radius-sm);
+  background: var(--maple-card);
+  color: var(--maple-text-secondary);
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  outline: none;
+}
+
+.category-desc-input::placeholder {
+  color: var(--maple-text-muted);
+}
+
+.category-desc-input:focus {
+  border-color: var(--maple-accent);
+  box-shadow: 0 0 0 3px var(--maple-accent-soft);
+  color: var(--maple-text);
+}
+
+/* Pencil on a category title: rename or delete */
+.folderTitle.has-edit {
+  padding-right: 52px;
+}
+
+.folder-edit {
+  position: absolute;
+  top: 50%;
+  right: 32px;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--maple-radius-sm);
+  color: var(--maple-text-muted);
+  opacity: 0;
+  transition:
+    opacity 0.15s ease,
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.folder-edit svg {
+  width: 13px;
+  height: 13px;
+}
+
+.folderTitle:hover .folder-edit {
+  opacity: 1;
+}
+
+.folder-edit:hover {
+  color: var(--maple-accent);
+  background: var(--maple-accent-soft);
+}
+
+/* Edit mode: the name is a text field, with a delete button next to it */
+.folderTitle.is-editing {
+  padding-right: 4px;
+  cursor: default;
+}
+
+.folderTitle.is-editing .folder-arrow,
+.folderTitle.is-editing .folder-edit {
+  display: none;
+}
+
+.folder-rename-input {
+  flex: 1;
+  min-width: 0;
+  height: 26px;
+  box-sizing: border-box;
+  padding: 0 8px;
+  border: 1px solid var(--maple-accent);
+  border-radius: var(--maple-radius-sm);
+  background: var(--maple-card);
+  color: var(--maple-text);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  text-transform: none;
+  caret-color: var(--maple-accent);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--maple-accent-soft);
+}
+
+.folder-delete-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  border-radius: var(--maple-radius-sm);
+  background: transparent;
+  color: var(--maple-text-secondary);
+  cursor: pointer;
+}
+
+.folder-delete-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.folder-delete-btn:hover,
+.folder-delete-btn:focus-visible {
+  color: var(--maple-danger);
+  background: color-mix(in srgb, var(--maple-danger) 12%, transparent);
+  outline: none;
+}
+
+/* A category that was just created or restored */
+.folderTitle.is-new {
+  animation: mapleTitleFlash 1.2s ease;
+}
+
+@keyframes mapleTitleFlash {
+  0%,
+  100% {
+    background: transparent;
+  }
+  25%,
+  60% {
+    background: var(--maple-accent-soft);
+    color: var(--maple-accent);
+  }
+}
+
+/* Name field for a new category, at the end of the list */
+.new-category {
+  margin: 12px 0 8px;
+}
+
+.new-category-input {
+  display: block;
+  width: 100%;
+  height: 32px;
+  box-sizing: border-box;
+  padding: 0 10px;
+  border: 1px solid var(--maple-accent);
+  border-radius: var(--maple-radius-sm);
+  background: var(--maple-card);
+  color: var(--maple-text);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  caret-color: var(--maple-accent);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--maple-accent-soft);
+}
+
+.new-category-input::placeholder {
+  color: var(--maple-text-muted);
+  font-weight: 500;
+}
+
+/* Search also shows matches inside collapsed folders */
+body.is-searching .childContainer {
+  display: grid !important;
 }
 
 .favicon {
@@ -383,22 +839,65 @@ body.popup-loading .settings-wrapper {
   border-bottom: 1px solid var(--maple-border);
 }
 
+/* Toolbar: fixed on top while the list scrolls (body padding-top keeps room for it).
+   Not sticky: a sticky box stays inside body, and body is only one screen tall. */
 .settings-wrapper {
-  position: absolute;
-  top: 8px;
-  right: 12px;
-  height: 28px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  z-index: 200;
+  justify-content: flex-end;
+  gap: 2px;
+  height: 40px;
+  padding: 0 10px;
+  background: var(--maple-bg);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s ease;
 }
 
+.settings-wrapper.is-scrolled {
+  border-bottom-color: var(--maple-border);
+}
+
+/* Bottom menu: new category on the left, mode and settings on the right.
+   Fixed like the toolbar; body padding-bottom keeps room for it. */
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  padding: 0 10px;
+  background: var(--maple-bg);
+  border-top: 1px solid transparent;
+  transition: border-color 0.15s ease;
+}
+
+/* More of the list is below the menu */
+.bottom-bar.has-more {
+  border-top-color: var(--maple-border);
+}
+
+.bottom-bar-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.collapse-btn,
+.folder-btn,
+.add-btn,
 .settings-btn,
 .mode-btn {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border: none;
   border-radius: var(--maple-radius-sm);
   background-color: transparent;
@@ -406,28 +905,37 @@ body.popup-loading .settings-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
   color: var(--maple-text-secondary);
-  transition: all 0.18s ease;
-  opacity: 0.7;
-  pointer-events: auto;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    opacity 0.15s ease;
+  opacity: 0.75;
   padding: 0;
 }
 
-.settings-btn {
-  font-size: 16px;
+.collapse-btn svg,
+.folder-btn svg,
+.add-btn svg,
+.settings-btn svg,
+.mode-btn svg {
+  display: block;
 }
 
+.collapse-btn:hover,
+.folder-btn:hover,
+.add-btn:hover,
 .settings-btn:hover,
 .mode-btn:hover,
-.settings-btn:focus,
+.collapse-btn:focus-visible,
+.folder-btn:focus-visible,
+.add-btn:focus-visible,
 .settings-btn:focus-visible,
-.mode-btn:focus,
 .mode-btn:focus-visible {
   opacity: 1;
   background-color: var(--maple-accent-soft);
   color: var(--maple-accent);
-  transform: scale(1.08);
+  outline: none;
 }
 
 /* ======= Settings Overlay (popup + sidebar) ======= */
@@ -539,6 +1047,17 @@ body.popup-loading .settings-wrapper {
   line-height: 1.45;
 }
 
+.setting-status {
+  margin-top: 4px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--maple-text-muted);
+}
+
+.setting-status:empty {
+  display: none;
+}
+
 .maple-switch {
   position: relative;
   display: inline-block;
@@ -595,4 +1114,282 @@ body.popup-loading .settings-wrapper {
   font-size: 11px;
   color: var(--maple-text-muted);
   flex-shrink: 0;
+}
+
+/* ======= Note tooltip (hover on a card's info icon): the note only ======= */
+.note-tooltip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 320;
+  box-sizing: border-box;
+  max-width: min(260px, calc(100vw - 16px));
+  padding: 8px 11px;
+  border-radius: 10px;
+  background: rgba(28, 24, 20, 0.96);
+  color: #f5f1ec;
+  font-size: 12.5px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 12;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.28),
+    0 2px 6px rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-2px);
+  transition:
+    opacity 0.12s ease,
+    transform 0.12s ease,
+    visibility 0.12s;
+}
+
+.note-tooltip.show {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .note-tooltip {
+    background: rgba(245, 240, 232, 0.97);
+    color: #1c1a17;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* ======= Site preview (hover on a card): a saved screenshot of the site ======= */
+.site-preview {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 310;
+  width: min(300px, calc(100vw - 16px));
+  box-sizing: border-box;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--maple-card);
+  border: 1px solid var(--maple-border);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.32),
+    0 2px 8px rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px) scale(0.98);
+  transition:
+    opacity 0.14s ease,
+    transform 0.14s ease,
+    visibility 0.14s;
+}
+
+.site-preview.show {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+.site-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ======= Note editor (click on a card's info icon) ======= */
+.note-editor {
+  position: fixed;
+  inset: 0;
+  z-index: 330;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.note-editor[hidden] {
+  display: none;
+}
+
+.note-editor-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 16, 12, 0.32);
+  opacity: 0;
+  transition: opacity 0.16s ease;
+}
+
+.note-editor-card {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 360px;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--maple-card);
+  border: 1px solid var(--maple-border);
+  box-shadow: var(--maple-shadow-lg);
+  opacity: 0;
+  transform: translateY(6px) scale(0.98);
+  transition:
+    opacity 0.16s ease,
+    transform 0.16s ease;
+}
+
+.note-editor.open .note-editor-backdrop {
+  opacity: 1;
+}
+
+.note-editor.open .note-editor-card {
+  opacity: 1;
+  transform: none;
+}
+
+.note-editor-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.note-editor-head .favicon {
+  margin-left: 0;
+}
+
+.note-editor-heading {
+  flex: 1;
+  min-width: 0;
+}
+
+.note-editor-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--maple-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.note-editor-title {
+  margin-top: 2px;
+  font-size: 11.5px;
+  color: var(--maple-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.note-editor-close {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: var(--maple-radius-sm);
+  background: transparent;
+  color: var(--maple-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.note-editor-close:hover,
+.note-editor-close:focus-visible {
+  background: var(--maple-accent-soft);
+  color: var(--maple-accent);
+  outline: none;
+}
+
+.note-editor-text {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 112px;
+  max-height: 260px;
+  padding: 10px 12px;
+  resize: vertical;
+  border-radius: 10px;
+  border: 1px solid var(--maple-input-border);
+  background: var(--maple-bg);
+  color: var(--maple-text);
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.5;
+  caret-color: var(--maple-accent);
+  outline: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.note-editor-text::placeholder {
+  color: var(--maple-text-muted);
+}
+
+.note-editor-text:focus {
+  border-color: var(--maple-accent);
+  box-shadow: 0 0 0 3px var(--maple-accent-soft);
+}
+
+.note-editor-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.note-editor-status {
+  flex: 1;
+  text-align: right;
+  font-size: 11.5px;
+  color: var(--maple-text-muted);
+}
+
+.note-editor-delete {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--maple-text-secondary);
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.note-editor-delete svg {
+  width: 14px;
+  height: 14px;
+}
+
+.note-editor-delete:hover,
+.note-editor-delete:focus-visible {
+  color: var(--maple-danger);
+  background: color-mix(in srgb, var(--maple-danger) 12%, transparent);
+  outline: none;
+}
+
+.note-editor-done {
+  padding: 7px 14px;
+  border: none;
+  border-radius: 8px;
+  background: var(--maple-accent);
+  color: #fff;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.note-editor-done:hover,
+.note-editor-done:focus-visible {
+  filter: brightness(1.06);
+  outline: none;
 }

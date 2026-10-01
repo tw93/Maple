@@ -6,7 +6,6 @@
   "chrome_url_overrides": {
     "newtab": "newtab.html"
   },
-  "optional_host_permissions": ["*://*/*"],
   "host_permissions": [
     "https://weekly.tw93.fun/*",
     "https://api.pexels.com/*"

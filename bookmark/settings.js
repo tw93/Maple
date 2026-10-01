@@ -4,6 +4,7 @@ const SETTINGS_KEYS = {
   TIPS_ENABLED: "MAPLE_TIPS_ENABLED",
   OPEN_IN_NEW_TAB: "MAPLE_OPEN_IN_NEW_TAB",
   KEEP_PANEL_OPEN: "MAPLE_KEEP_PANEL_OPEN",
+  SHORT_NAMES: "MAPLE_SHORT_NAMES",
 };
 
 const DISPLAY_MODE_KEY = "MAPLE_DISPLAY_MODE";
@@ -13,6 +14,7 @@ const MODE_SIDEBAR = "sidebar";
 // 获取DOM元素
 const sidebarModeCheckbox = document.getElementById("sidebarMode");
 const searchEnabledCheckbox = document.getElementById("searchEnabled");
+const shortNamesCheckbox = document.getElementById("shortNames");
 const tipsEnabledCheckbox = document.getElementById("tipsEnabled");
 const openInNewTabCheckbox = document.getElementById("openInNewTab");
 const keepPanelOpenCheckbox = document.getElementById("keepPanelOpen");
@@ -34,6 +36,10 @@ const texts = {
   searchFeatureDesc: isZh
     ? "开启后可以使用搜索框搜索书签，关闭后将隐藏搜索相关功能"
     : "Enable search box to quickly find bookmarks. When disabled, all search features will be hidden.",
+  shortNamesTitle: isZh ? "简短名称" : "Short Names",
+  shortNamesDesc: isZh
+    ? "只显示网站名称（如 youtube），不显示完整网页标题"
+    : "Show only the site name, like youtube, instead of the full page title.",
   tipsFeatureTitle: isZh ? "显示悬停提示" : "Hover Tooltips",
   tipsFeatureDesc: isZh
     ? "鼠标悬停在书签上时显示完整标题，关闭后将不显示悬停提示"
@@ -57,6 +63,8 @@ function applyI18n() {
   document.getElementById("displayModeDesc").textContent = texts.displayModeDesc;
   document.getElementById("searchFeatureTitle").textContent = texts.searchFeatureTitle;
   document.getElementById("searchFeatureDesc").textContent = texts.searchFeatureDesc;
+  document.getElementById("shortNamesTitle").textContent = texts.shortNamesTitle;
+  document.getElementById("shortNamesDesc").textContent = texts.shortNamesDesc;
   document.getElementById("tipsFeatureTitle").textContent = texts.tipsFeatureTitle;
   document.getElementById("tipsFeatureDesc").textContent = texts.tipsFeatureDesc;
   document.getElementById("openInNewTabTitle").textContent = texts.openInNewTabTitle;
@@ -78,6 +86,9 @@ function loadSettings() {
   // 默认搜索功能是关闭的
   const searchEnabled = localStorage.getItem(SETTINGS_KEYS.SEARCH_ENABLED) === "true";
   searchEnabledCheckbox.checked = searchEnabled;
+
+  // Short names are on by default
+  shortNamesCheckbox.checked = localStorage.getItem(SETTINGS_KEYS.SHORT_NAMES) !== "false";
 
   // 默认 tips 功能是关闭的
   const tipsEnabled = localStorage.getItem(SETTINGS_KEYS.TIPS_ENABLED) === "true";
@@ -102,6 +113,7 @@ function loadSettings() {
 // 保存设置
 function saveSettings() {
   localStorage.setItem(SETTINGS_KEYS.SEARCH_ENABLED, searchEnabledCheckbox.checked.toString());
+  localStorage.setItem(SETTINGS_KEYS.SHORT_NAMES, shortNamesCheckbox.checked.toString());
   localStorage.setItem(SETTINGS_KEYS.TIPS_ENABLED, tipsEnabledCheckbox.checked.toString());
   localStorage.setItem(SETTINGS_KEYS.OPEN_IN_NEW_TAB, openInNewTabCheckbox.checked.toString());
   localStorage.setItem(SETTINGS_KEYS.KEEP_PANEL_OPEN, keepPanelOpenCheckbox.checked.toString());
@@ -114,7 +126,6 @@ function saveDisplayMode() {
     chrome.runtime.sendMessage({
       type: "MAPLE_SET_MODE",
       mode: nextMode,
-      openImmediately: false,
     });
   } catch (error) {
     console.error("Failed to update display mode:", error);
@@ -132,6 +143,7 @@ document.addEventListener("DOMContentLoaded", loadSettings);
 // 事件监听器
 sidebarModeCheckbox.addEventListener("change", saveDisplayMode);
 searchEnabledCheckbox.addEventListener("change", saveSettings);
+shortNamesCheckbox.addEventListener("change", saveSettings);
 tipsEnabledCheckbox.addEventListener("change", saveSettings);
 openInNewTabCheckbox.addEventListener("change", saveSettings);
 keepPanelOpenCheckbox.addEventListener("change", saveSettings);

@@ -17,7 +17,7 @@
 
       body {
         margin: 0;
-        padding: 44px 0 12px 14px;
+        padding: 44px 14px 52px;
         width: 408px;
         min-width: 408px;
         max-width: 408px;
@@ -29,12 +29,9 @@
         overflow-y: auto;
       }
 
-      #header {
-        width: 384px;
-      }
-
+      #header,
       .search-action {
-        width: 384px;
+        width: 100%;
       }
 
       #bookmarks {
@@ -47,8 +44,7 @@
     style="width: 408px; min-width: 408px; max-width: 408px; height: 520px; min-height: 520px; max-height: 520px;"
   >
     <div class="settings-wrapper">
-      <button class="mode-btn" id="modeBtn" title="">🪟</button>
-      <button class="settings-btn" id="settingsBtn" title="">⚙️</button>
+      <button class="add-btn" id="addBtn" type="button"></button>
     </div>
     <div id="hot-area"></div>
     <div id="notification-container"></div>
@@ -77,6 +73,16 @@
         </div>
       </div>
     </div>
+    <div class="bottom-bar">
+      <div class="bottom-bar-group">
+        <button class="folder-btn" id="newFolderBtn" type="button"></button>
+        <button class="collapse-btn" id="collapseBtn" type="button"></button>
+      </div>
+      <div class="bottom-bar-group">
+        <button class="mode-btn" id="modeBtn" type="button"></button>
+        <button class="settings-btn" id="settingsBtn" type="button"></button>
+      </div>
+    </div>
     <div id="settings-overlay" class="settings-overlay" hidden>
       <div class="settings-overlay-header">
         <button class="settings-overlay-back" id="settingsOverlayBack" aria-label="Back">←</button>
@@ -96,6 +102,21 @@
             <div class="setting-desc" data-setting-key="search-desc">Show search box to quickly find bookmarks.</div>
           </div>
           <label class="maple-switch"><input type="checkbox" id="overlaySearchEnabled" /><span class="maple-switch-slider"></span></label>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name" data-setting-key="short-title">Short Names</div>
+            <div class="setting-desc" data-setting-key="short-desc">Show only the site name, like youtube, instead of the full page title.</div>
+          </div>
+          <label class="maple-switch"><input type="checkbox" id="overlayShortNames" /><span class="maple-switch-slider"></span></label>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name" data-setting-key="previews-title">Page Previews</div>
+            <div class="setting-desc" data-setting-key="previews-desc">Hover a card to see the site. Opening a bookmarked site saves a small screenshot on this device. Until then, the card shows the site's share image, downloaded once without cookies.</div>
+            <div class="setting-status" id="previewsStatus" aria-live="polite"></div>
+          </div>
+          <label class="maple-switch"><input type="checkbox" id="overlayPreviews" /><span class="maple-switch-slider"></span></label>
         </div>
         <div class="setting-row">
           <div class="setting-info">
