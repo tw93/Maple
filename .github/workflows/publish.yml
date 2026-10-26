@@ -15,7 +15,7 @@ jobs:
       # Each action is pinned to a full commit SHA, because a tag can be moved to
       # other code. The SHAs are the commits that the old tags point to, so the
       # actions run the same code as before. Dependabot updates the pins.
-      - uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3.7.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
           # No later step pushes, so the token does not stay in .git/config
