@@ -12,26 +12,36 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      # Each action is pinned to a full commit SHA, because a tag can be moved to
+      # other code. The SHAs are the commits that the old tags point to, so the
+      # actions run the same code as before. Dependabot updates the pins.
+      - uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3.7.0
         with:
           submodules: recursive
+          # No later step pushes, so the token does not stay in .git/config
+          persist-credentials: false
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3.9.1
         with:
           node-version: 20
 
       - name: Run install
-        uses: borales/actions-yarn@v4
+        uses: borales/actions-yarn@97ba8bebfe5b549bb7999261698a52a81fd62f1b # v4.2.0
         with:
-          cmd: install # will run `yarn install` command
+          # Exact versions from yarn.lock, and no install scripts from dependencies
+          cmd: install --frozen-lockfile --ignore-scripts
 
       - name: Build
-        uses: borales/actions-yarn@v4
+        uses: borales/actions-yarn@97ba8bebfe5b549bb7999261698a52a81fd62f1b # v4.2.0
         with:
           cmd: build
 
+      # The build runs `eslint . --fix`. The release must contain the tagged code as it is.
+      - name: Check that the build did not change tracked files
+        run: git diff --exit-code
+
       - name: Create Release and Upload Release Asset
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v1 (v0.1.15)
         with:
           name: Auto Release
           tag_name: ${{ github.ref }}
