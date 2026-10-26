@@ -41,7 +41,7 @@ jobs:
         run: git diff --exit-code
 
       - name: Create Release and Upload Release Asset
-        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v1 (v0.1.15)
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           name: Auto Release
           tag_name: ${{ github.ref }}
