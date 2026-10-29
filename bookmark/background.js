@@ -15,6 +15,42 @@ async function getStoredMode() {
   }
 }
 
+// 侧栏模式下点图标和按 ⌘E 都由这里开关侧栏：ego lite 的 _execute_action 快捷键不会按 openPanelOnActionClick 打开侧栏
+// 能跟踪开关状态的浏览器才接管，旧版 Chrome 仍交给 openPanelOnActionClick
+const CAN_TOGGLE_PANEL = !!(chrome.sidePanel?.open && chrome.sidePanel?.close && chrome.sidePanel?.onOpened);
+const OPEN_PANELS_KEY = "MAPLE_OPEN_PANELS";
+// 收起后紧跟着的那次事件（按键自动重复，或面板里自己处理了快捷键）不能再把它打开，ego lite 实测在收起后 340ms 内
+const REOPEN_GUARD_MS = 600;
+
+// sidePanel.open 只能在用户操作的同一轮里同步调用，开关状态放在内存里
+const openPanels = new Set();
+const lastClosedAt = new Map();
+chrome.storage.session
+  ?.get(OPEN_PANELS_KEY)
+  .then((stored) => (stored?.[OPEN_PANELS_KEY] || []).forEach((id) => openPanels.add(id)))
+  .catch(() => {});
+
+function saveOpenPanels() {
+  chrome.storage.session?.set({ [OPEN_PANELS_KEY]: [...openPanels] }).catch(() => {});
+}
+
+chrome.sidePanel?.onOpened?.addListener(({ windowId }) => {
+  openPanels.add(windowId);
+  saveOpenPanels();
+});
+
+chrome.sidePanel?.onClosed?.addListener(({ windowId }) => {
+  openPanels.delete(windowId);
+  lastClosedAt.set(windowId, Date.now());
+  saveOpenPanels();
+});
+
+function toggleSidePanel(windowId) {
+  if (openPanels.has(windowId)) return chrome.sidePanel.close({ windowId });
+  if (Date.now() - (lastClosedAt.get(windowId) || 0) < REOPEN_GUARD_MS) return;
+  return chrome.sidePanel.open({ windowId });
+}
+
 async function applyMode(mode) {
   const isSidebar = mode === MODE_SIDEBAR;
 
@@ -26,16 +62,24 @@ async function applyMode(mode) {
 
   if (chrome.sidePanel?.setPanelBehavior) {
     try {
-      await chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: isSidebar });
+      await chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: isSidebar && !CAN_TOGGLE_PANEL });
     } catch (e) {
       console.warn("Failed to set side panel behavior:", e);
     }
   }
 }
 
-// Firefox 不支持 chrome.sidePanel，使用 sidebarAction 兜底：popup 关闭时点击 action 打开侧边栏。
-chrome.action.onClicked.addListener(async () => {
-  if (chrome.sidePanel) return; // Chromium 已通过 setPanelBehavior 处理
+// 弹窗清空后点击图标或按快捷键会走到这里；Firefox 不支持 chrome.sidePanel，使用 sidebarAction 兜底
+chrome.action.onClicked.addListener(async (tab) => {
+  if (chrome.sidePanel) {
+    if (!CAN_TOGGLE_PANEL || tab?.windowId === undefined) return; // 旧版 Chrome 已通过 setPanelBehavior 处理
+    try {
+      await toggleSidePanel(tab.windowId);
+    } catch (e) {
+      console.warn("Failed to toggle side panel:", e);
+    }
+    return;
+  }
   const sidebarApi = globalThis.browser?.sidebarAction;
   if (sidebarApi?.open) {
     try {
