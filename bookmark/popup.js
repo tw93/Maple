@@ -987,7 +987,9 @@ function renderBookmarkTree(bookmarkTreeNodes) {
 }
 
 // 右上角的两个按钮和最上面一行内容并排，这一行让出按钮的宽度，顶部不再单独空出一行
+// 搜索框例外：它铺满整行，按钮放进框内右侧，两边留同样的空让文字保持居中
 const CORNER_GAP = 8;
+const CORNER_INSET = 6;
 function alignCorner() {
   const corner = document.querySelector(".settings-wrapper");
   if (!corner) return;
@@ -995,6 +997,7 @@ function alignCorner() {
     el.style.removeProperty(el.dataset.cornerInset);
     delete el.dataset.cornerInset;
   });
+  corner.style.removeProperty("right");
   document.querySelectorAll("[data-corner-row]").forEach((el) => delete el.dataset.cornerRow);
   const bar = document.getElementById("dedupe-bar");
   const input = document.getElementById("searchInput");
@@ -1008,12 +1011,17 @@ function alignCorner() {
   row.dataset.cornerRow = "";
   const cornerBox = corner.getBoundingClientRect();
   const rowBox = row.getBoundingClientRect();
-  const overlap = rowBox.right - (cornerBox.left - CORNER_GAP);
-  if (overlap > 0) {
-    const prop = row === input ? "width" : "margin-right";
-    const margin = parseFloat(getComputedStyle(row).marginRight) || 0;
-    row.style.setProperty(prop, row === input ? `${rowBox.width - overlap}px` : `${margin + overlap}px`);
-    row.dataset.cornerInset = prop;
+  if (row === input) {
+    corner.style.right = `${document.documentElement.clientWidth - rowBox.right + CORNER_INSET}px`;
+    row.style.setProperty("padding-inline", `${CORNER_INSET + cornerBox.width + CORNER_GAP}px`);
+    row.dataset.cornerInset = "padding-inline";
+  } else {
+    const overlap = rowBox.right - (cornerBox.left - CORNER_GAP);
+    if (overlap > 0) {
+      const margin = parseFloat(getComputedStyle(row).marginRight) || 0;
+      row.style.setProperty("margin-right", `${margin + overlap}px`);
+      row.dataset.cornerInset = "margin-right";
+    }
   }
   const top = rowBox.top + document.body.scrollTop + (rowBox.height - cornerBox.height) / 2;
   corner.style.top = `${Math.round(top)}px`;
