@@ -53,7 +53,7 @@ const texts = {
   dedupeTabsDesc: isZh
     ? "打开已经开着的网页时直接切过去，已有的重复标签页也会自动关掉，只认网址完全相同的，固定和分组里的不动，开启时需授权读取标签页。"
     : "Opening a page that is already open switches to that tab instead of adding another, and existing duplicates close automatically. Only exact URL matches count, and pinned or grouped tabs are left alone. Asks to read your tabs when turned on.",
-  versionText: "Maple Bookmarks v2.1",
+  versionText: "Maple Bookmarks v2.2",
 };
 
 // 应用国际化文本
