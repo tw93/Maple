@@ -51,8 +51,8 @@ const texts = {
     : "Keep the panel open after clicking by opening bookmarks in background tabs.",
   dedupeTabsTitle: isZh ? "合并重复标签页" : "Merge Duplicate Tabs",
   dedupeTabsDesc: isZh
-    ? "网址完全相同的标签页可在面板顶部一键合并，正在看的、固定的和分组里的会保留，开启时需授权读取标签页。"
-    : "Merge tabs with the exact same URL from the top of the panel. Tabs you are viewing, pinned or grouped stay open. Asks to read your tabs when turned on.",
+    ? "打开已经开着的网页时直接切过去，已有的重复标签页也会自动关掉，只认网址完全相同的，固定和分组里的不动，开启时需授权读取标签页。"
+    : "Opening a page that is already open switches to that tab instead of adding another, and existing duplicates close automatically. Only exact URL matches count, and pinned or grouped tabs are left alone. Asks to read your tabs when turned on.",
   versionText: "Maple Bookmarks v2.1",
 };
 

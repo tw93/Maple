@@ -8,9 +8,9 @@ function isCandidate(tab) {
   if (!tab.url || tab.incognito || tab.pendingUrl || tab.status === "loading") {
     return false;
   }
-  // Firefox 容器里的标签页是另一份登录态，撤销时没有 cookies 权限放不回原容器，不参与
+  // Firefox 容器里的标签页是另一份登录态，网址相同也不算重复
   if (tab.cookieStoreId && tab.cookieStoreId !== "firefox-default") return false;
-  // file: 页面撤销时打不开（Firefox 禁止 tabs.create 打开，Chrome 默认不给文件访问），不参与
+  // 只管网页，file: 和浏览器自己的页面不参与
   return /^https?:/.test(tab.url);
 }
 
@@ -61,6 +61,30 @@ export function findDuplicateTabs(tabs, currentWindowId) {
   return toClose;
 }
 
+/**
+ * 新开的标签页和已有的某个标签页网址完全相同时，找出原来那个，关掉新的并切过去
+ * @param {chrome.tabs.Tab[]} tabs 所有窗口的标签页
+ * @param {chrome.tabs.Tab} opened 刚打开网页的新标签页
+ * @returns {chrome.tabs.Tab | null} 要切过去的标签页，没有就不动
+ */
+export function findOpenCopy(tabs, opened) {
+  if (!opened?.url || !/^https?:/.test(opened.url) || opened.incognito || opened.hidden) return null;
+  // 新标签页被放进分组、固定或分屏，说明是有意这样开的
+  if (opened.pinned || isSet(opened.groupId) || isSet(opened.splitViewId)) return null;
+  if (opened.cookieStoreId && opened.cookieStoreId !== "firefox-default") return null;
+  const copies = tabs.filter(
+    (tab) =>
+      tab.id !== opened.id &&
+      tab.url === opened.url &&
+      !tab.incognito &&
+      !tab.hidden &&
+      !tab.pendingUrl &&
+      (!tab.cookieStoreId || tab.cookieStoreId === "firefox-default")
+  );
+  copies.sort(preferToKeep(opened.windowId));
+  return copies[0] || null;
+}
+
 export function isDedupeEnabled() {
   return localStorage.getItem(DEDUPE_SETTING_KEY) === "true";
 }
@@ -78,12 +102,6 @@ export function requestTabsPermission() {
   return api.permissions.request(TABS_PERMISSION).catch(() => false);
 }
 
-// 在设置页或另一个面板里授权或撤销后，已经打开的面板跟着更新
-export function onTabsPermissionChanged(callback) {
-  api.permissions.onAdded?.addListener(() => callback());
-  api.permissions.onRemoved?.addListener(() => callback());
-}
-
 export function removeTabsPermission() {
   return api.permissions.remove(TABS_PERMISSION).catch(() => false);
 }
@@ -97,55 +115,31 @@ async function getCurrentWindowId() {
   }
 }
 
+// 只看普通窗口，PWA 和弹出窗口里的页面不算重复
 export async function getDuplicateTabs() {
-  const [tabs, currentWindowId] = await Promise.all([api.tabs.query({}), getCurrentWindowId()]);
+  const [tabs, currentWindowId] = await Promise.all([api.tabs.query({ windowType: "normal" }), getCurrentWindowId()]);
   return findDuplicateTabs(tabs, currentWindowId);
 }
 
 /**
- * 关闭重复标签页，返回撤销时重新打开所需的信息
- * @returns {Promise<{ url: string, windowId: number, index: number }[]>}
+ * 关闭重复标签页
+ * @returns {Promise<number>} 实际关掉的数量
  */
 export async function closeDuplicateTabs() {
   const duplicates = await getDuplicateTabs();
-  const closed = [];
-  // 逐个关闭，关之前再读一次状态：刚被切到或开始出声的跳过，某个已被别处关掉也不影响其他标签页的撤销记录
+  let closed = 0;
+  // 逐个关闭，关之前再读一次状态：刚被切到或开始出声的跳过，某个已被别处关掉也不影响其他标签页
   await Promise.all(
     duplicates.map(async (tab) => {
       try {
         const fresh = await api.tabs.get(tab.id);
         if (fresh.url !== tab.url || !isCandidate(fresh) || isProtected(fresh)) return;
         await api.tabs.remove(tab.id);
-        // 位置取查询那一刻的，并行关闭时后读到的 index 可能已经前移
-        const { url, windowId, index } = tab;
-        closed.push({ url, windowId, index });
+        closed++;
       } catch {
         // 标签页已经不在了
       }
     })
   );
-  return closed.sort((a, b) => a.windowId - b.windowId || a.index - b.index);
-}
-
-export async function restoreTabs(closed) {
-  for (const { url, windowId, index } of closed) {
-    try {
-      await api.tabs.create({ url, windowId, index, active: false });
-    } catch {
-      // 原窗口已经不在了，就开在当前窗口
-      await api.tabs.create({ url, active: false }).catch(() => {});
-    }
-  }
-}
-
-const RELEVANT_UPDATES = ["url", "status", "pinned", "audible", "groupId", "hidden", "splitViewId"];
-
-export function onTabsChanged(callback) {
-  [api.tabs.onCreated, api.tabs.onRemoved, api.tabs.onActivated, api.tabs.onAttached].forEach((event) =>
-    event?.addListener(() => callback())
-  );
-  // 标题、图标这类更新很频繁，只在影响判断的字段变化时刷新
-  api.tabs.onUpdated?.addListener((tabId, changeInfo) => {
-    if (RELEVANT_UPDATES.some((key) => key in changeInfo)) callback();
-  });
+  return closed;
 }

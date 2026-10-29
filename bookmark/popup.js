@@ -11,11 +11,6 @@ import {
   hasTabsPermission,
   requestTabsPermission,
   removeTabsPermission,
-  getDuplicateTabs,
-  closeDuplicateTabs,
-  restoreTabs,
-  onTabsChanged,
-  onTabsPermissionChanged,
 } from "./utils/tab-dedupe.js";
 
 // 设置相关常量
@@ -154,7 +149,7 @@ const SETTINGS_OVERLAY = {
           "keep-title": "保持面板",
           "keep-desc": "在后台标签页打开，让面板保持可见。",
           "dedupe-title": "合并重复标签页",
-          "dedupe-desc": "网址完全相同的标签页可在顶部一键合并，正在看的、固定的和分组里的会保留，开启时需授权读取标签页。",
+          "dedupe-desc": "打开已经开着的网页时直接切过去，已有的重复标签页也会自动关掉，只认网址完全相同的，固定和分组里的不动，开启时需授权读取标签页。",
         }
       : {
           title: "Settings",
@@ -171,7 +166,7 @@ const SETTINGS_OVERLAY = {
           "keep-desc": "Open in background tabs to keep the panel visible.",
           "dedupe-title": "Merge Duplicate Tabs",
           "dedupe-desc":
-            "Merge tabs with the exact same URL from the top of the panel. Tabs you are viewing, pinned or grouped stay open. Asks to read your tabs when turned on.",
+            "Opening a page that is already open switches to that tab instead of adding another, and existing duplicates close automatically. Only exact URL matches count, and pinned or grouped tabs are left alone. Asks to read your tabs when turned on.",
         };
     const titleEl = document.getElementById("settingsOverlayTitle");
     if (titleEl) titleEl.textContent = i18n.title;
@@ -241,12 +236,10 @@ const SETTINGS_OVERLAY = {
           requestTabsPermission().then((granted) => {
             dedupe.checked = granted;
             localStorage.setItem(DEDUPE_SETTING_KEY, granted.toString());
-            DEDUPE.refresh();
           });
         } else {
           localStorage.setItem(DEDUPE_SETTING_KEY, "false");
           removeTabsPermission();
-          DEDUPE.refresh();
         }
       });
     }
@@ -348,129 +341,6 @@ const ICON_SIDEBAR =
   '<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="2"/><path d="M10 3v10"/></svg>';
 const ICON_POPUP =
   '<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="2"/><path d="M2 6.5h12"/></svg>';
-
-// 重复标签页提示条：只在开启设置并已授权后出现，合并后可在几秒内撤销
-const DEDUPE = {
-  bar: document.getElementById("dedupe-bar"),
-  text: document.getElementById("dedupeText"),
-  action: document.getElementById("dedupeAction"),
-  closed: null,
-  undoTimer: null,
-  listening: false,
-  refreshTimer: null,
-  // 每次刷新、合并、撤销都换一代，晚到的旧刷新结果直接丢掉，不会盖掉撤销条
-  generation: 0,
-  busy: false,
-  async isActive() {
-    return isDedupeEnabled() && (await hasTabsPermission());
-  },
-  hide() {
-    if (!this.bar || this.bar.hidden) return;
-    this.bar.hidden = true;
-    alignCorner();
-  },
-  show(message, actionLabel, listTitle = "") {
-    if (!this.bar) return;
-    this.text.textContent = message;
-    this.action.textContent = actionLabel;
-    this.bar.title = listTitle;
-    if (!this.bar.hidden) return;
-    this.bar.hidden = false;
-    alignCorner();
-  },
-  async refresh() {
-    if (!this.bar || this.closed) return;
-    const generation = ++this.generation;
-    const stale = () => generation !== this.generation || this.closed;
-    const active = await this.isActive();
-    if (stale()) return;
-    if (!active) {
-      this.hide();
-      return;
-    }
-    this.listen();
-    const duplicates = await getDuplicateTabs().catch(() => []);
-    if (stale()) return;
-    if (!duplicates.length) {
-      this.hide();
-      return;
-    }
-    const count = duplicates.length;
-    this.show(
-      isZhUI ? `${count} 个重复标签页` : `${count} duplicate ${count === 1 ? "tab" : "tabs"}`,
-      isZhUI ? "合并" : "Merge",
-      duplicates.map((tab) => tab.title || tab.url).join("\n")
-    );
-  },
-  scheduleRefresh() {
-    clearTimeout(this.refreshTimer);
-    this.refreshTimer = setTimeout(() => this.refresh(), 150);
-  },
-  listen() {
-    if (this.listening) return;
-    this.listening = true;
-    onTabsChanged(() => this.scheduleRefresh());
-  },
-  async merge() {
-    this.generation++;
-    if (!(await this.isActive())) {
-      this.hide();
-      return;
-    }
-    const closed = await closeDuplicateTabs().catch((error) => {
-      console.error("Failed to close duplicate tabs:", error);
-      return [];
-    });
-    if (!closed.length) {
-      this.refresh();
-      return;
-    }
-    this.closed = closed;
-    const count = closed.length;
-    this.show(
-      isZhUI ? `已合并 ${count} 个标签页` : `Merged ${count} ${count === 1 ? "tab" : "tabs"}`,
-      isZhUI ? "撤销" : "Undo"
-    );
-    clearTimeout(this.undoTimer);
-    this.undoTimer = setTimeout(() => this.finishUndoWindow(), 5000);
-  },
-  async undo() {
-    this.generation++;
-    const closed = this.closed;
-    this.finishUndoWindow(false);
-    if (closed) await restoreTabs(closed);
-    this.refresh();
-  },
-  finishUndoWindow(refresh = true) {
-    clearTimeout(this.undoTimer);
-    this.undoTimer = null;
-    this.closed = null;
-    if (refresh) this.refresh();
-  },
-  init() {
-    if (!this.bar) return;
-    this.action.addEventListener("click", async (e) => {
-      e.preventDefault();
-      if (this.busy) return;
-      this.busy = true;
-      this.action.disabled = true;
-      try {
-        if (this.closed) await this.undo();
-        else await this.merge();
-      } finally {
-        this.busy = false;
-        this.action.disabled = false;
-      }
-    });
-    // 在设置页或另一个侧边栏里开关时，这里跟着更新；开启时设置值不变，要靠授权事件
-    window.addEventListener("storage", (e) => {
-      if (e.key === DEDUPE_SETTING_KEY) this.refresh();
-    });
-    onTabsPermissionChanged(() => this.scheduleRefresh());
-    this.refresh();
-  },
-};
-DEDUPE.init();
 
 // 模式切换按钮：在 popup 与 sidebar 之间切换，确保两者不会同时存在
 if (modeBtn) {
@@ -999,10 +869,8 @@ function alignCorner() {
   });
   corner.style.removeProperty("right");
   document.querySelectorAll("[data-corner-row]").forEach((el) => delete el.dataset.cornerRow);
-  const bar = document.getElementById("dedupe-bar");
   const input = document.getElementById("searchInput");
-  const row =
-    bar && !bar.hidden ? bar : isSearchEnabled() && input ? input : document.querySelector("#bookmarks .folderTitle");
+  const row = isSearchEnabled() && input ? input : document.querySelector("#bookmarks .folderTitle");
   if (!row) {
     corner.style.removeProperty("top");
     return;
