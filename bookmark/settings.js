@@ -7,6 +7,8 @@ const SETTINGS_KEYS = {
 };
 
 const DISPLAY_MODE_KEY = "MAPLE_DISPLAY_MODE";
+const DEDUPE_SETTING_KEY = "MAPLE_DEDUPE_TABS";
+const TABS_PERMISSION = { permissions: ["tabs"] };
 const MODE_POPUP = "popup";
 const MODE_SIDEBAR = "sidebar";
 
@@ -16,6 +18,7 @@ const searchEnabledCheckbox = document.getElementById("searchEnabled");
 const tipsEnabledCheckbox = document.getElementById("tipsEnabled");
 const openInNewTabCheckbox = document.getElementById("openInNewTab");
 const keepPanelOpenCheckbox = document.getElementById("keepPanelOpen");
+const dedupeTabsCheckbox = document.getElementById("dedupeTabs");
 const backBtn = document.getElementById("backBtn");
 
 // 国际化支持
@@ -26,27 +29,31 @@ const isZh = browserLanguage === "zh";
 const texts = {
   title: isZh ? "设置" : "Settings",
   backBtn: isZh ? "← 返回" : "← Back",
-  displayModeTitle: isZh ? "显示模式（侧边栏）" : "Display Mode (Sidebar)",
+  displayModeTitle: isZh ? "侧边栏模式" : "Sidebar Mode",
   displayModeDesc: isZh
     ? "开启后点击图标打开侧边栏，关闭后打开弹窗。两者不会同时显示。"
     : "When on, clicking the icon opens the sidebar; when off, it opens the popup. They are never shown at the same time.",
   searchFeatureTitle: isZh ? "启用搜索功能" : "Search Functionality",
   searchFeatureDesc: isZh
-    ? "开启后可以使用搜索框搜索书签，关闭后将隐藏搜索相关功能"
+    ? "开启后可以使用搜索框搜索书签，关闭后将隐藏搜索相关功能。"
     : "Enable search box to quickly find bookmarks. When disabled, all search features will be hidden.",
   tipsFeatureTitle: isZh ? "显示悬停提示" : "Hover Tooltips",
   tipsFeatureDesc: isZh
-    ? "鼠标悬停在书签上时显示完整标题，关闭后将不显示悬停提示"
+    ? "鼠标悬停在书签上时显示完整标题，关闭后将不显示悬停提示。"
     : "Display full bookmark titles when hovering. Turn off to disable all tooltip notifications.",
   openInNewTabTitle: isZh ? "新标签页打开" : "Open in New Tab",
   openInNewTabDesc: isZh
-    ? "开启后点击书签将在新标签页打开，关闭后在当前标签页打开"
+    ? "开启后点击书签将在新标签页打开，关闭后在当前标签页打开。"
     : "Open bookmarks in a new tab. Turn off to open in the current tab.",
   keepPanelOpenTitle: isZh ? "点击后保持面板" : "Keep Panel Open",
   keepPanelOpenDesc: isZh
-    ? "开启后点击书签会在后台标签页打开，并尽量保持面板不自动关闭"
+    ? "开启后点击书签会在后台标签页打开，并尽量保持面板不自动关闭。"
     : "Keep the panel open after clicking by opening bookmarks in background tabs.",
-  versionText: "Maple Bookmarks v2.0",
+  dedupeTabsTitle: isZh ? "合并重复标签页" : "Merge Duplicate Tabs",
+  dedupeTabsDesc: isZh
+    ? "网址完全相同的标签页可在面板顶部一键合并，正在看的、固定的和分组里的会保留，开启时需授权读取标签页。"
+    : "Merge tabs with the exact same URL from the top of the panel. Tabs you are viewing, pinned or grouped stay open. Asks to read your tabs when turned on.",
+  versionText: "Maple Bookmarks v2.1",
 };
 
 // 应用国际化文本
@@ -63,6 +70,8 @@ function applyI18n() {
   document.getElementById("openInNewTabDesc").textContent = texts.openInNewTabDesc;
   document.getElementById("keepPanelOpenTitle").textContent = texts.keepPanelOpenTitle;
   document.getElementById("keepPanelOpenDesc").textContent = texts.keepPanelOpenDesc;
+  document.getElementById("dedupeTabsTitle").textContent = texts.dedupeTabsTitle;
+  document.getElementById("dedupeTabsDesc").textContent = texts.dedupeTabsDesc;
   document.getElementById("versionText").textContent = texts.versionText;
 }
 
@@ -90,6 +99,17 @@ function loadSettings() {
   // 默认点击后自动关闭
   const keepPanelOpen = localStorage.getItem(SETTINGS_KEYS.KEEP_PANEL_OPEN) === "true";
   keepPanelOpenCheckbox.checked = keepPanelOpen;
+
+  // 合并重复标签页：默认关闭，以实际授权为准
+  dedupeTabsCheckbox.checked = false;
+  if (localStorage.getItem(DEDUPE_SETTING_KEY) === "true") {
+    chrome.permissions
+      .contains(TABS_PERMISSION)
+      .then((granted) => {
+        dedupeTabsCheckbox.checked = granted;
+      })
+      .catch(() => {});
+  }
 
   // 显示模式：默认 popup
   if (typeof chrome !== "undefined" && chrome.storage?.local) {
@@ -121,6 +141,23 @@ function saveDisplayMode() {
   }
 }
 
+// 授权请求必须在用户点击的同一个事件里直接发起
+function saveDedupeTabs() {
+  if (dedupeTabsCheckbox.checked) {
+    localStorage.setItem(DEDUPE_SETTING_KEY, "true");
+    chrome.permissions
+      .request(TABS_PERMISSION)
+      .catch(() => false)
+      .then((granted) => {
+        dedupeTabsCheckbox.checked = granted;
+        localStorage.setItem(DEDUPE_SETTING_KEY, granted.toString());
+      });
+  } else {
+    localStorage.setItem(DEDUPE_SETTING_KEY, "false");
+    chrome.permissions.remove(TABS_PERMISSION).catch(() => {});
+  }
+}
+
 // 返回到主页面
 function goBack() {
   window.close();
@@ -135,4 +172,5 @@ searchEnabledCheckbox.addEventListener("change", saveSettings);
 tipsEnabledCheckbox.addEventListener("change", saveSettings);
 openInNewTabCheckbox.addEventListener("change", saveSettings);
 keepPanelOpenCheckbox.addEventListener("change", saveSettings);
+dedupeTabsCheckbox.addEventListener("change", saveDedupeTabs);
 backBtn.addEventListener("click", goBack);

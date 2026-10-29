@@ -3,7 +3,19 @@ import { debounce } from "./utils/debounce.js";
 import { keyText, BestMatchTitle, LastBestMatch, BestMatch, EmptyBookmarkMessage } from "./utils/i18n.js";
 import { Notification } from "./utils/notification.js";
 import { createElement } from "./utils/element.js";
-import { getFavicon } from "./utils/favicon.js";
+import { getFavicon, markDarkFavicon } from "./utils/favicon.js";
+import {
+  DEDUPE_SETTING_KEY,
+  isDedupeEnabled,
+  hasTabsPermission,
+  requestTabsPermission,
+  removeTabsPermission,
+  getDuplicateTabs,
+  closeDuplicateTabs,
+  restoreTabs,
+  onTabsChanged,
+  onTabsPermissionChanged,
+} from "./utils/tab-dedupe.js";
 
 // 设置相关常量
 const SETTINGS_KEYS = {
@@ -130,7 +142,7 @@ const SETTINGS_OVERLAY = {
       ? {
           title: "设置",
           back: "返回",
-          "display-mode-title": "显示模式（侧边栏）",
+          "display-mode-title": "侧边栏模式",
           "display-mode-desc": "开启后点击图标打开侧边栏，关闭后打开弹窗。",
           "search-title": "搜索",
           "search-desc": "显示搜索框以快速查找书签。",
@@ -140,11 +152,13 @@ const SETTINGS_OVERLAY = {
           "newtab-desc": "在新标签页打开书签，关闭则在当前标签页。",
           "keep-title": "保持面板",
           "keep-desc": "在后台标签页打开，让面板保持可见。",
+          "dedupe-title": "合并重复标签页",
+          "dedupe-desc": "网址完全相同的标签页可在顶部一键合并，正在看的、固定的和分组里的会保留，开启时需授权读取标签页。",
         }
       : {
           title: "Settings",
           back: "Back",
-          "display-mode-title": "Display Mode (Sidebar)",
+          "display-mode-title": "Sidebar Mode",
           "display-mode-desc": "When on, clicking the icon opens the sidebar; when off, it opens the popup.",
           "search-title": "Search",
           "search-desc": "Show search box to quickly find bookmarks.",
@@ -154,6 +168,9 @@ const SETTINGS_OVERLAY = {
           "newtab-desc": "Open bookmarks in a new tab vs the current one.",
           "keep-title": "Keep Panel Open",
           "keep-desc": "Open in background tabs to keep the panel visible.",
+          "dedupe-title": "Merge Duplicate Tabs",
+          "dedupe-desc":
+            "Merge tabs with the exact same URL from the top of the panel. Tabs you are viewing, pinned or grouped stay open. Asks to read your tabs when turned on.",
         };
     const titleEl = document.getElementById("settingsOverlayTitle");
     if (titleEl) titleEl.textContent = i18n.title;
@@ -171,6 +188,7 @@ const SETTINGS_OVERLAY = {
     const tips = document.getElementById("overlayTipsEnabled");
     const newtab = document.getElementById("overlayOpenInNewTab");
     const keep = document.getElementById("overlayKeepPanelOpen");
+    const dedupe = document.getElementById("overlayDedupeTabs");
 
     if (sidebar) {
       sidebar.addEventListener("change", () => {
@@ -214,6 +232,23 @@ const SETTINGS_OVERLAY = {
         localStorage.setItem(SETTINGS_KEYS.KEEP_PANEL_OPEN, keep.checked.toString());
       });
     }
+    if (dedupe) {
+      dedupe.addEventListener("change", () => {
+        if (dedupe.checked) {
+          // 先记下意图再请求授权：授权框可能让弹窗关闭，下次打开时以实际授权为准
+          localStorage.setItem(DEDUPE_SETTING_KEY, "true");
+          requestTabsPermission().then((granted) => {
+            dedupe.checked = granted;
+            localStorage.setItem(DEDUPE_SETTING_KEY, granted.toString());
+            DEDUPE.refresh();
+          });
+        } else {
+          localStorage.setItem(DEDUPE_SETTING_KEY, "false");
+          removeTabsPermission();
+          DEDUPE.refresh();
+        }
+      });
+    }
 
     // ESC ile kapat
     document.addEventListener("keydown", (e) => {
@@ -231,7 +266,16 @@ const SETTINGS_OVERLAY = {
     const newtab = document.getElementById("overlayOpenInNewTab");
     const keep = document.getElementById("overlayKeepPanelOpen");
     const sidebar = document.getElementById("overlaySidebarMode");
+    const dedupe = document.getElementById("overlayDedupeTabs");
 
+    if (dedupe) {
+      dedupe.checked = false;
+      if (isDedupeEnabled()) {
+        hasTabsPermission().then((granted) => {
+          dedupe.checked = granted;
+        });
+      }
+    }
     if (search) search.checked = localStorage.getItem(SETTINGS_KEYS.SEARCH_ENABLED) === "true";
     if (tips) tips.checked = localStorage.getItem(SETTINGS_KEYS.TIPS_ENABLED) === "true";
     if (newtab) newtab.checked = localStorage.getItem(SETTINGS_KEYS.OPEN_IN_NEW_TAB) !== "false";
@@ -299,6 +343,130 @@ if (typeof chrome !== "undefined" && chrome.storage?.onChanged) {
   });
 }
 
+const ICON_SIDEBAR =
+  '<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="2"/><path d="M10 3v10"/></svg>';
+const ICON_POPUP =
+  '<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="2"/><path d="M2 6.5h12"/></svg>';
+
+// 重复标签页提示条：只在开启设置并已授权后出现，合并后可在几秒内撤销
+const DEDUPE = {
+  bar: document.getElementById("dedupe-bar"),
+  text: document.getElementById("dedupeText"),
+  action: document.getElementById("dedupeAction"),
+  closed: null,
+  undoTimer: null,
+  listening: false,
+  refreshTimer: null,
+  // 每次刷新、合并、撤销都换一代，晚到的旧刷新结果直接丢掉，不会盖掉撤销条
+  generation: 0,
+  busy: false,
+  async isActive() {
+    return isDedupeEnabled() && (await hasTabsPermission());
+  },
+  hide() {
+    if (this.bar) this.bar.hidden = true;
+  },
+  show(message, actionLabel, listTitle = "") {
+    if (!this.bar) return;
+    this.text.textContent = message;
+    this.action.textContent = actionLabel;
+    this.bar.title = listTitle;
+    this.bar.hidden = false;
+  },
+  async refresh() {
+    if (!this.bar || this.closed) return;
+    const generation = ++this.generation;
+    const stale = () => generation !== this.generation || this.closed;
+    const active = await this.isActive();
+    if (stale()) return;
+    if (!active) {
+      this.hide();
+      return;
+    }
+    this.listen();
+    const duplicates = await getDuplicateTabs().catch(() => []);
+    if (stale()) return;
+    if (!duplicates.length) {
+      this.hide();
+      return;
+    }
+    const count = duplicates.length;
+    this.show(
+      isZhUI ? `${count} 个重复标签页` : `${count} duplicate ${count === 1 ? "tab" : "tabs"}`,
+      isZhUI ? "合并" : "Merge",
+      duplicates.map((tab) => tab.title || tab.url).join("\n")
+    );
+  },
+  scheduleRefresh() {
+    clearTimeout(this.refreshTimer);
+    this.refreshTimer = setTimeout(() => this.refresh(), 150);
+  },
+  listen() {
+    if (this.listening) return;
+    this.listening = true;
+    onTabsChanged(() => this.scheduleRefresh());
+  },
+  async merge() {
+    this.generation++;
+    if (!(await this.isActive())) {
+      this.hide();
+      return;
+    }
+    const closed = await closeDuplicateTabs().catch((error) => {
+      console.error("Failed to close duplicate tabs:", error);
+      return [];
+    });
+    if (!closed.length) {
+      this.refresh();
+      return;
+    }
+    this.closed = closed;
+    const count = closed.length;
+    this.show(
+      isZhUI ? `已合并 ${count} 个标签页` : `Merged ${count} ${count === 1 ? "tab" : "tabs"}`,
+      isZhUI ? "撤销" : "Undo"
+    );
+    clearTimeout(this.undoTimer);
+    this.undoTimer = setTimeout(() => this.finishUndoWindow(), 5000);
+  },
+  async undo() {
+    this.generation++;
+    const closed = this.closed;
+    this.finishUndoWindow(false);
+    if (closed) await restoreTabs(closed);
+    this.refresh();
+  },
+  finishUndoWindow(refresh = true) {
+    clearTimeout(this.undoTimer);
+    this.undoTimer = null;
+    this.closed = null;
+    if (refresh) this.refresh();
+  },
+  init() {
+    if (!this.bar) return;
+    this.action.addEventListener("click", async (e) => {
+      e.preventDefault();
+      if (this.busy) return;
+      this.busy = true;
+      this.action.disabled = true;
+      try {
+        if (this.closed) await this.undo();
+        else await this.merge();
+      } finally {
+        this.busy = false;
+        this.action.disabled = false;
+      }
+    });
+    // 在设置页或另一个侧边栏里开关时，这里跟着更新；开启时设置值不变，要靠授权事件
+    window.addEventListener("storage", (e) => {
+      if (e.key === DEDUPE_SETTING_KEY) this.refresh();
+    });
+    onTabsPermissionChanged(() => this.scheduleRefresh());
+    this.refresh();
+  },
+};
+DEDUPE.init();
+
 // 模式切换按钮：在 popup 与 sidebar 之间切换，确保两者不会同时存在
 if (modeBtn) {
   const browserLang = navigator.language.startsWith("zh") ? "zh" : "en";
@@ -310,8 +478,8 @@ if (modeBtn) {
     : isZhMode
       ? "切换到侧边栏模式"
       : "Switch to sidebar";
-  // Sidebar moddayken popup-benzeri ikon (hedef = popup), popup moddayken sidebar-benzeri ikon
-  modeBtn.textContent = IS_SIDEBAR_MODE ? "🪟" : "▤";
+  // 图标画的是切换后的样子：侧边栏里显示弹窗图标，弹窗里显示侧边栏图标
+  modeBtn.innerHTML = IS_SIDEBAR_MODE ? ICON_POPUP : ICON_SIDEBAR;
 
   modeBtn.addEventListener("click", async function (e) {
     e.preventDefault();
@@ -854,6 +1022,7 @@ function showBookmarks(bookmarkNodes, parent, parentTitle = []) {
 function createBookmarkItem(bookmarkNode, parent) {
   let favicon = createElement("img", CLASS_NAMES.favicon);
   favicon.src = getFavicon(bookmarkNode.url);
+  markDarkFavicon(favicon);
 
   let bookItem = createElement("a", CLASS_NAMES.bookmark);
   bookItem.href = bookmarkNode.url;

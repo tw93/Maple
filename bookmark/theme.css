@@ -2,38 +2,34 @@
    Layout-specific rules (fixed vs responsive) live in each HTML's inline <style>. */
 
 :root {
-  --maple-bg: #faf7f3;
-  --maple-card: #ffffff;
-  --maple-card-hover: #fdf2ec;
-  --maple-card-active: #f7e2d6;
-  --maple-text: #2c2825;
-  --maple-text-secondary: #847b71;
-  --maple-text-muted: #a89d92;
-  --maple-accent: #e85d4d;
-  --maple-accent-soft: rgba(232, 93, 77, 0.08);
-  --maple-border: rgba(0, 0, 0, 0.04);
-  --maple-shadow-sm: 0 1px 2px rgba(60, 40, 30, 0.04), 0 1px 3px rgba(60, 40, 30, 0.05);
-  --maple-shadow-md: 0 4px 12px rgba(232, 93, 77, 0.1), 0 2px 4px rgba(60, 40, 30, 0.08);
-  --maple-shadow-lg: 0 8px 24px rgba(60, 40, 30, 0.12);
-  --maple-radius: 10px;
+  --maple-bg: #ffffff;
+  --maple-card: #f4f3f0;
+  --maple-card-hover: #ecebe7;
+  --maple-card-active: #e3e1dc;
+  --maple-text: #363433;
+  --maple-text-secondary: #6b6863;
+  --maple-switch-off: #d9d7d2;
+  --maple-switch-on: #44b392;
+  --maple-float-bg: rgba(30, 29, 27, 0.94);
+  --maple-float-text: #f4f3f0;
+  --maple-float-shadow: 0 8px 16px rgba(0, 0, 0, 0.18);
+  --maple-radius: 8px;
   --maple-radius-sm: 6px;
+  --maple-fast: 0.12s ease-out;
+  --maple-slow: 0.25s ease-out;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --maple-bg: #1c1a17;
-    --maple-card: #2a2622;
-    --maple-card-hover: #353029;
-    --maple-card-active: #4a3d33;
-    --maple-text: #f1ebe4;
-    --maple-text-secondary: #a89d92;
-    --maple-text-muted: #847b71;
-    --maple-accent: #f08070;
-    --maple-accent-soft: rgba(240, 128, 112, 0.12);
-    --maple-border: rgba(255, 255, 255, 0.06);
-    --maple-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-    --maple-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
-    --maple-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
+    --maple-bg: #1e1d1b;
+    --maple-card: #2a2926;
+    --maple-card-hover: #34322f;
+    --maple-card-active: #3e3c38;
+    --maple-text: #edece9;
+    --maple-text-secondary: #a9a6a0;
+    --maple-switch-off: #4a4844;
+    --maple-float-bg: rgba(244, 243, 240, 0.94);
+    --maple-float-text: #1e1d1b;
   }
 }
 
@@ -58,28 +54,25 @@ body::-webkit-scrollbar {
   cursor: pointer;
 }
 
-/* Modern floating tooltip — bottom center, fades in with subtle slide */
+/* Floating tooltip at the bottom centre, fades in place */
 #notification-container {
   position: fixed;
   bottom: 18px;
   left: 50%;
-  transform: translate(-50%, 16px);
+  transform: translateX(-50%);
   opacity: 0;
   z-index: 250;
   pointer-events: none;
   max-width: calc(100% - 28px);
-  padding: 9px 16px;
-  background: rgba(28, 24, 20, 0.94);
-  color: #f5f1ec;
-  font-size: 12.5px;
+  padding: 8px 14px;
+  background: var(--maple-float-bg);
+  color: var(--maple-float-text);
+  font-size: 12px;
   font-weight: 500;
-  line-height: 1.35;
-  letter-spacing: 0.1px;
+  line-height: 1.4;
   border-radius: 999px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28), 0 2px 6px rgba(0, 0, 0, 0.18);
-  backdrop-filter: blur(10px) saturate(1.4);
-  -webkit-backdrop-filter: blur(10px) saturate(1.4);
-  transition: opacity 0.18s ease, transform 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: var(--maple-float-shadow);
+  transition: opacity var(--maple-fast);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -87,15 +80,6 @@ body::-webkit-scrollbar {
 
 #notification-container.show {
   opacity: 1;
-  transform: translate(-50%, 0);
-}
-
-@media (prefers-color-scheme: dark) {
-  #notification-container {
-    background: rgba(245, 240, 232, 0.94);
-    color: #1c1a17;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-  }
 }
 
 .folder {
@@ -107,15 +91,13 @@ h2 {
   font-weight: 600;
   color: var(--maple-text-secondary);
   line-height: 1;
-  letter-spacing: 0.4px;
   margin-block-end: 12px;
   margin-block-start: 18px;
   user-select: none;
-  text-transform: uppercase;
-  font-size: 11px;
+  font-size: 12px;
 }
 
-/* İlk folder başlığının üstünde extra boşluk: settings/mode iconları için yer */
+/* 第一个文件夹标题上方少留一点，右上角的按钮已经占了位置 */
 #bookmarks > .folder:first-child > h2:first-child,
 #bookmarks > .folder:first-child > .folderTitle:first-child {
   margin-top: 4px;
@@ -126,18 +108,19 @@ h2 {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding-right: 24px;
   cursor: pointer;
   border-radius: var(--maple-radius-sm);
   padding: 6px 24px 6px 4px;
   margin-block-end: 8px;
   margin-block-start: 12px;
-  transition: background 0.15s ease;
+  transition:
+    background-color var(--maple-fast),
+    color var(--maple-fast);
 }
 
 .folderTitle.collapsible-folder:hover {
-  background: var(--maple-accent-soft);
-  color: var(--maple-accent);
+  background: var(--maple-card);
+  color: var(--maple-text);
 }
 
 .folderTitle .folder-arrow {
@@ -150,7 +133,6 @@ h2 {
   justify-content: center;
   width: 12px;
   height: 12px;
-  transition: transform 0.2s ease;
   flex-shrink: 0;
 }
 
@@ -159,14 +141,10 @@ h2 {
   display: block;
   width: 6px;
   height: 6px;
-  border: solid var(--maple-text-muted);
+  border: solid var(--maple-text-secondary);
   border-width: 0 1.5px 1.5px 0;
   transform: rotate(-45deg);
-  transition: transform 0.2s ease, border-color 0.2s ease;
-}
-
-.folderTitle.collapsible-folder:hover .folder-arrow::before {
-  border-color: var(--maple-accent);
+  transition: transform var(--maple-slow);
 }
 
 .folderTitle.collapsible-folder.expanded .folder-arrow::before {
@@ -204,7 +182,7 @@ body.popup-loading .settings-wrapper {
 
 .loading-title {
   width: 80px;
-  height: 11px;
+  height: 12px;
   border-radius: 6px;
   background: linear-gradient(90deg, var(--maple-card) 25%, var(--maple-card-hover) 37%, var(--maple-card) 63%);
   background-size: 400% 100%;
@@ -227,7 +205,6 @@ body.popup-loading .settings-wrapper {
   margin-bottom: 10px;
   margin-right: 10px;
   animation: mapleSkeleton 1.4s ease-in-out infinite;
-  box-shadow: var(--maple-shadow-sm);
 }
 
 @keyframes mapleSkeleton {
@@ -236,6 +213,13 @@ body.popup-loading .settings-wrapper {
   }
   100% {
     background-position: 0 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-title,
+  .loading-card {
+    animation: none;
   }
 }
 
@@ -258,7 +242,7 @@ body.popup-loading .settings-wrapper {
   height: auto;
 }
 
-/* Search artık her zaman görünür — toggle arrow ve hot-area gerekmiyor */
+/* 搜索框常驻显示，不再需要展开箭头和热区 */
 .search-action,
 #hot-area {
   display: none !important;
@@ -266,7 +250,6 @@ body.popup-loading .settings-wrapper {
 
 #best-match .bookmark.active {
   background: var(--maple-card-active);
-  box-shadow: var(--maple-shadow-md);
 }
 
 .best-match-header {
@@ -285,9 +268,9 @@ body.popup-loading .settings-wrapper {
 .best-match-clear {
   background: transparent;
   border: none;
-  color: var(--maple-text-muted);
+  color: var(--maple-text-secondary);
   cursor: pointer;
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1;
   width: 20px;
   height: 20px;
@@ -297,15 +280,15 @@ body.popup-loading .settings-wrapper {
   justify-content: center;
   padding: 0;
   flex-shrink: 0;
-  opacity: 0.55;
-  transition: all 0.18s ease;
+  transition:
+    background-color var(--maple-fast),
+    color var(--maple-fast);
 }
 
 .best-match-clear:hover,
 .best-match-clear:focus-visible {
-  background: var(--maple-accent-soft);
-  color: var(--maple-accent);
-  opacity: 1;
+  background: var(--maple-card);
+  color: var(--maple-text);
   outline: none;
 }
 
@@ -322,16 +305,11 @@ body.popup-loading .settings-wrapper {
   display: flex;
   align-items: center;
   text-decoration: none;
-  box-shadow: var(--maple-shadow-sm);
-  border: 1px solid var(--maple-border);
-  transition: all 0.18s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: background-color var(--maple-fast);
 }
 
 .childContainer > .bookmark:hover {
   background-color: var(--maple-card-hover);
-  transform: translateY(-2px);
-  box-shadow: var(--maple-shadow-md);
-  border-color: transparent;
 }
 
 .bookmark p {
@@ -351,6 +329,12 @@ body.popup-loading .settings-wrapper {
   flex-shrink: 0;
 }
 
+@media (prefers-color-scheme: dark) {
+  .favicon-dark {
+    filter: invert(1);
+  }
+}
+
 #header {
   margin-bottom: 24px;
   display: flex;
@@ -361,26 +345,24 @@ body.popup-loading .settings-wrapper {
 
 #searchInput {
   width: 100%;
-  padding: 11px 16px;
+  box-sizing: border-box;
+  padding: 0 16px;
   font-size: 15px;
-  height: 20px;
+  height: 40px;
   line-height: 20px;
   color: var(--maple-text);
   outline: none;
-  caret-color: var(--maple-accent);
-  background: transparent;
+  caret-color: var(--maple-text);
+  background: var(--maple-card);
+  border-radius: var(--maple-radius);
   text-align: center;
   border: none;
   font-weight: 500;
 }
 
 #searchInput::placeholder {
-  color: var(--maple-text-muted);
+  color: var(--maple-text-secondary);
   font-weight: 400;
-}
-
-#search-wrapper.show #searchInput {
-  border-bottom: 1px solid var(--maple-border);
 }
 
 .settings-wrapper {
@@ -391,14 +373,14 @@ body.popup-loading .settings-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
   z-index: 200;
 }
 
 .settings-btn,
 .mode-btn {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border: none;
   border-radius: var(--maple-radius-sm);
   background-color: transparent;
@@ -406,28 +388,64 @@ body.popup-loading .settings-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
   color: var(--maple-text-secondary);
-  transition: all 0.18s ease;
-  opacity: 0.7;
+  transition:
+    background-color var(--maple-fast),
+    color var(--maple-fast);
   pointer-events: auto;
   padding: 0;
 }
 
-.settings-btn {
-  font-size: 16px;
-}
-
 .settings-btn:hover,
 .mode-btn:hover,
-.settings-btn:focus,
 .settings-btn:focus-visible,
-.mode-btn:focus,
 .mode-btn:focus-visible {
-  opacity: 1;
-  background-color: var(--maple-accent-soft);
-  color: var(--maple-accent);
-  transform: scale(1.08);
+  background-color: var(--maple-card);
+  color: var(--maple-text);
+  outline: none;
+}
+
+/* ======= Duplicate tabs bar ======= */
+.dedupe-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 14px 12px 0;
+  padding: 6px 6px 6px 12px;
+  border-radius: var(--maple-radius);
+  background: var(--maple-card);
+}
+
+.dedupe-bar[hidden] {
+  display: none;
+}
+
+.dedupe-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--maple-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dedupe-action {
+  flex-shrink: 0;
+  height: 26px;
+  padding: 0 12px;
+  border: none;
+  border-radius: var(--maple-radius-sm);
+  background: var(--maple-text);
+  color: var(--maple-bg);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity var(--maple-fast);
+}
+
+.dedupe-action:hover {
+  opacity: 0.85;
 }
 
 /* ======= Settings Overlay (popup + sidebar) ======= */
@@ -441,8 +459,8 @@ body.popup-loading .settings-wrapper {
   z-index: 300;
   display: flex;
   flex-direction: column;
-  transform: translateX(100%);
-  transition: transform 0.26s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: 0;
+  transition: opacity var(--maple-slow);
   overflow: hidden;
 }
 
@@ -451,51 +469,49 @@ body.popup-loading .settings-wrapper {
 }
 
 .settings-overlay.open {
-  transform: translateX(0);
+  opacity: 1;
 }
 
 .settings-overlay-header {
   display: flex;
   align-items: center;
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--maple-border);
+  padding: 12px 14px 4px;
   background: var(--maple-bg);
   flex-shrink: 0;
 }
 
 .settings-overlay-back {
-  background: var(--maple-card);
-  border: 1px solid var(--maple-border);
+  background: transparent;
+  border: none;
   border-radius: var(--maple-radius-sm);
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   color: var(--maple-text-secondary);
-  transition: all 0.18s ease;
-  font-size: 16px;
+  transition:
+    background-color var(--maple-fast),
+    color var(--maple-fast);
+  font-size: 15px;
   padding: 0;
   flex-shrink: 0;
 }
 
 .settings-overlay-back:hover {
-  background: var(--maple-card-hover);
-  color: var(--maple-accent);
-  border-color: var(--maple-accent-soft);
+  background: var(--maple-card);
+  color: var(--maple-text);
 }
 
 .settings-overlay-title {
   flex: 1;
   text-align: center;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--maple-text);
   margin: 0;
-  margin-right: 32px;
-  text-transform: none;
-  letter-spacing: 0;
+  margin-right: 28px;
 }
 
 .settings-overlay-body {
@@ -512,12 +528,7 @@ body.popup-loading .settings-wrapper {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--maple-border);
-}
-
-.setting-row:last-child {
-  border-bottom: none;
+  padding: 12px 0;
 }
 
 .setting-info {
@@ -530,13 +541,12 @@ body.popup-loading .settings-wrapper {
   font-weight: 600;
   color: var(--maple-text);
   margin-bottom: 4px;
-  letter-spacing: 0;
 }
 
 .setting-desc {
-  font-size: 11.5px;
+  font-size: 12px;
   color: var(--maple-text-secondary);
-  line-height: 1.45;
+  line-height: 1.5;
 }
 
 .maple-switch {
@@ -557,42 +567,40 @@ body.popup-loading .settings-wrapper {
   position: absolute;
   cursor: pointer;
   inset: 0;
-  background: rgba(0, 0, 0, 0.2);
-  transition: 0.22s;
+  background: var(--maple-switch-off);
+  transition: background-color var(--maple-fast);
   border-radius: 22px;
-}
-
-@media (prefers-color-scheme: dark) {
-  .maple-switch-slider {
-    background: rgba(255, 255, 255, 0.16);
-  }
 }
 
 .maple-switch-slider:before {
   position: absolute;
   content: "";
-  height: 16px;
-  width: 16px;
-  left: 3px;
-  bottom: 3px;
+  height: 18px;
+  width: 18px;
+  left: 2px;
+  bottom: 2px;
   background: #fff;
-  transition: 0.22s;
+  transition: transform var(--maple-fast);
   border-radius: 50%;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
 .maple-switch input:checked + .maple-switch-slider {
-  background: var(--maple-accent);
+  background: var(--maple-switch-on);
 }
 
 .maple-switch input:checked + .maple-switch-slider:before {
   transform: translateX(16px);
 }
 
+.maple-switch input:focus-visible + .maple-switch-slider {
+  outline: 2px solid var(--maple-text-secondary);
+  outline-offset: 2px;
+}
+
 .settings-overlay-footer {
   padding: 12px 16px 16px;
   text-align: center;
-  font-size: 11px;
-  color: var(--maple-text-muted);
+  font-size: 12px;
+  color: var(--maple-text-secondary);
   flex-shrink: 0;
 }

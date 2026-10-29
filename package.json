@@ -8,7 +8,8 @@
     "newtab": "zip -r ./dist/NewTab.zip ./newtab",
     "theme": "zip -r ./dist/Theme.zip ./theme",
     "build": "mkdir -p ./dist && npm run lint && npm run bookmark && npm run bookmark-firefox && npm run newtab && npm run theme",
-    "lint": "eslint . --fix"
+    "lint": "eslint . --fix",
+    "test": "node --test tests/"
   },
   "keywords": [
     "bookmarks",
