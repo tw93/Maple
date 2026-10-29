@@ -961,6 +961,7 @@ function alignCorner() {
     el.style.removeProperty(el.dataset.cornerInset);
     delete el.dataset.cornerInset;
   });
+  document.querySelectorAll("[data-corner-row]").forEach((el) => delete el.dataset.cornerRow);
   const bar = document.getElementById("dedupe-bar");
   const input = document.getElementById("searchInput");
   const row =
@@ -969,6 +970,8 @@ function alignCorner() {
     corner.style.removeProperty("top");
     return;
   }
+  // 指针移到这一行时右上角按钮跟着出现
+  row.dataset.cornerRow = "";
   const cornerBox = corner.getBoundingClientRect();
   const rowBox = row.getBoundingClientRect();
   const overlap = rowBox.right - (cornerBox.left - CORNER_GAP);

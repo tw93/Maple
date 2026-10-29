@@ -128,6 +128,15 @@ h2 {
   width: 12px;
   height: 12px;
   flex-shrink: 0;
+  opacity: 0;
+  transition: opacity var(--maple-fast);
+}
+
+/* 折叠箭头只在指向标题时出现，收起的分组一直显示，好看出它是收起的 */
+.folderTitle:hover .folder-arrow,
+.folderTitle:focus-visible .folder-arrow,
+.folderTitle.collapsed .folder-arrow {
+  opacity: 1;
 }
 
 .folderTitle .folder-arrow::before {
@@ -369,6 +378,16 @@ body.popup-loading .settings-wrapper {
   justify-content: center;
   gap: 4px;
   z-index: 200;
+  opacity: 0;
+  transition: opacity var(--maple-fast);
+}
+
+/* 右上角按钮平时隐藏，指针移到第一行或按钮上才出现，第一次打开会先显示一下 */
+.settings-wrapper:hover,
+.settings-wrapper:focus-within,
+.settings-wrapper.show-once,
+body:has([data-corner-row]:hover) .settings-wrapper {
+  opacity: 1;
 }
 
 .settings-btn,
