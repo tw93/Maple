@@ -18,13 +18,15 @@ window.onload = function () {
       random: "潮流周刊",
       bing: "必应壁纸",
       pexels: "文艺复兴",
+      refresh: "换一张",
     },
     en: {
       title: "New Tab",
       blank: "Blank",
-      random: "Image",
+      random: "Weekly",
       bing: "Bing",
       pexels: "Renaissance",
+      refresh: "Next image",
     },
   };
 
@@ -38,13 +40,15 @@ window.onload = function () {
   document.querySelector('#bg-selector option[value="random"]').textContent = mapping.random;
   document.querySelector('#bg-selector option[value="bing"]').textContent = mapping.bing;
   document.querySelector('#bg-selector option[value="pexels"]').textContent = mapping.pexels;
+  document.getElementById("refresh-btn").title = mapping.refresh;
 
   // 根据浏览器类型和颜色模式设置背景色
   function setBackgroundColor() {
     if (userAgent.indexOf("Edg") > -1) {
       body.style.backgroundColor = isDarkMode ? "#2B2B2B" : "#F7F7F7";
     } else if (userAgent.indexOf("Chrome") > -1) {
-      body.style.backgroundColor = isDarkMode ? "#202124" : "#F1F3F4";
+      // 浅色和 Maple Theme 的纯白工具栏接上
+      body.style.backgroundColor = isDarkMode ? "#202124" : "#FFFFFF";
     }
   }
 
@@ -81,7 +85,7 @@ window.onload = function () {
         titlePart.className = "title-part";
         let displayTitle = "";
         if (data.num) {
-          displayTitle += `第${data.num}期 - `;
+          displayTitle += lang === "zh" ? `第 ${data.num} 期 · ` : `#${data.num} · `;
         }
         displayTitle += data.title;
         titlePart.textContent = displayTitle;
@@ -171,84 +175,100 @@ window.onload = function () {
     }
   }
 
-  // 随机设置背景图片
+  // 潮流周刊封面：每期都轮到一次才重新开始，新出的一期会直接进入候选
+  const WEEKLY_SEEN_KEY = "bgWeeklySeen";
+  const WEEKLY_NEXT_KEY = "bgWeeklyNext";
+
+  function readJSON(key, fallback) {
+    try {
+      return JSON.parse(localStorage.getItem(key)) ?? fallback;
+    } catch {
+      return fallback;
+    }
+  }
+
+  function normalizeWeekly(json) {
+    return json
+      .filter((item) => item.pic && !item.pic.toLowerCase().includes(".gif"))
+      .map((item) => {
+        if (!item.num && item.url) {
+          const match = item.url.match(/posts\/(\d+)/);
+          if (match) item.num = match[1];
+        }
+        return item;
+      });
+  }
+
+  function pickRandom(list) {
+    return list[Math.floor(Math.random() * list.length)];
+  }
+
+  function pickWeeklyItem(items) {
+    const byPic = new Map(items.map((item) => [item.pic, item]));
+    let seen = readJSON(WEEKLY_SEEN_KEY, []).filter((pic) => byPic.has(pic));
+    if (seen.length >= byPic.size) seen = [];
+    const seenSet = new Set(seen);
+    const unseen = items.filter((item) => !seenSet.has(item.pic));
+
+    const storedNext = localStorage.getItem(WEEKLY_NEXT_KEY);
+    const current =
+      storedNext && byPic.has(storedNext) && !seenSet.has(storedNext) ? byPic.get(storedNext) : pickRandom(unseen);
+    seen.push(current.pic);
+    localStorage.setItem(WEEKLY_SEEN_KEY, JSON.stringify(seen));
+
+    // 提前选好并下载下一张，刷新时能直接显示
+    const rest = unseen.filter((item) => item.pic !== current.pic);
+    const next = rest.length ? pickRandom(rest) : pickRandom(items);
+    localStorage.setItem(WEEKLY_NEXT_KEY, next.pic);
+    return { current, next };
+  }
+
+  // 图片下载完再换上，避免大图一截截刷出来
+  function preloadImage(url) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = url;
+    });
+  }
+
+  // 同一时间只认最后一次换图，慢的旧请求回来后不再覆盖
+  let weeklyRequest = 0;
+  let weeklyItems = null;
+
+  function showWeeklyItems(json, request) {
+    const items = normalizeWeekly(json);
+    if (items.length === 0) {
+      throw new Error("No non-GIF images available");
+    }
+    weeklyItems = json;
+    const { current, next } = pickWeeklyItem(items);
+    return preloadImage(current.pic).then(() => {
+      if (request !== weeklyRequest || bgSelector.value !== "random") return;
+      body.style.backgroundImage = `url(${current.pic})`;
+      convertToLinkElement(current, true);
+      localStorage.setItem("bgImageUrl", current.pic);
+      localStorage.setItem("bgImageDate", new Date().toISOString().slice(0, 10));
+      localStorage.setItem("bgImageInfo", JSON.stringify(current));
+      preloadImage(next.pic);
+    });
+  }
+
   function setRandomBackgroundImage() {
-    fetch("https://weekly.tw93.fun/posts.json")
-      .then((response) => response.json())
-      .then((json) => {
-        // 过滤掉GIF格式的图片
-        const filteredJson = json.filter((item) => {
-          if (!item.pic) return false;
-          const url = item.pic.toLowerCase();
-          return !url.endsWith(".gif") && !url.includes(".gif");
-        });
-
-        if (filteredJson.length === 0) {
-          throw new Error("No non-GIF images available");
-        }
-
-        const randomIndex = Math.floor(Math.random() * filteredJson.length);
-        const randomItem = filteredJson[randomIndex];
-
-        // 添加期数和描述信息（如果API没有提供，则模拟生成）
-        if (!randomItem.num && randomItem.url) {
-          // 从URL中提取期数，例如 "posts/30-标题" 中的 30
-          const match = randomItem.url.match(/posts\/(\d+)-/);
-          if (match) {
-            randomItem.num = match[1];
-          }
-        }
-
-        // 为潮流周刊添加简单描述
-        if (!randomItem.description) {
-          randomItem.description = "探索有趣的技术与生活方式";
-        }
-
-        body.style.backgroundImage = `url(${randomItem.pic})`;
-        convertToLinkElement(randomItem, true);
-        localStorage.setItem("bgImageUrl", randomItem.pic);
-        localStorage.setItem("bgImageDate", new Date().toISOString().slice(0, 10));
-        localStorage.setItem("bgImageInfo", JSON.stringify(randomItem));
-      })
+    const request = ++weeklyRequest;
+    // 列表在这个页面里只取一次，换图时直接用
+    const list = weeklyItems
+      ? Promise.resolve(weeklyItems)
+      : fetch("https://weekly.tw93.fun/posts.json").then((response) => response.json());
+    list
+      .then((json) => showWeeklyItems(json, request))
       .catch((error) => {
         console.error("Error:", error);
-        // Fallback to local bg.json if remote fails
+        // 线上列表取不到时用随包的列表
         fetch(chrome.runtime.getURL("/bg.json"))
           .then((response) => response.json())
-          .then((json) => {
-            // 过滤掉GIF格式的图片
-            const filteredJson = json.filter((item) => {
-              if (!item.pic) return false;
-              const url = item.pic.toLowerCase();
-              return !url.endsWith(".gif") && !url.includes(".gif");
-            });
-
-            if (filteredJson.length === 0) {
-              console.error("No non-GIF images available in local bg.json");
-              return;
-            }
-
-            const randomIndex = Math.floor(Math.random() * filteredJson.length);
-            const randomItem = filteredJson[randomIndex];
-
-            // 添加期数和描述信息
-            if (!randomItem.num && randomItem.url) {
-              const match = randomItem.url.match(/posts\/(\d+)-/);
-              if (match) {
-                randomItem.num = match[1];
-              }
-            }
-
-            if (!randomItem.description) {
-              randomItem.description = "探索有趣的技术与生活方式";
-            }
-
-            body.style.backgroundImage = `url(${randomItem.pic})`;
-            convertToLinkElement(randomItem, true);
-            localStorage.setItem("bgImageUrl", randomItem.pic);
-            localStorage.setItem("bgImageDate", new Date().toISOString().slice(0, 10));
-            localStorage.setItem("bgImageInfo", JSON.stringify(randomItem));
-          })
+          .then((json) => showWeeklyItems(json, request))
           .catch((fallbackError) => {
             console.error("Fallback Error:", fallbackError);
           });

@@ -38,7 +38,10 @@
         appearance: none;
         min-width: 80px;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition:
+          opacity 0.12s ease-out,
+          background-color 0.12s ease-out,
+          border-color 0.12s ease-out;
         opacity: 0.7;
       }
 
@@ -74,14 +77,14 @@
         gap: 12px;
         visibility: hidden;
         opacity: 0;
-        transition: all 0.3s ease-in-out;
-        transform: translateY(10px);
+        transition:
+          opacity 0.25s ease-out,
+          visibility 0.25s ease-out;
       }
 
       #bottom-ui-container.visible {
         visibility: visible;
         opacity: 1;
-        transform: translateY(0);
       }
 
       .selector-container {
@@ -100,9 +103,8 @@
         font-size: 14px;
         color: #fff;
         text-shadow:
-          0 0 6px rgba(0, 0, 0, 0.7),
-          0 0 12px rgba(0, 0, 0, 0.5),
-          1px 1px 2px rgba(0, 0, 0, 0.6);
+          0 1px 2px rgba(0, 0, 0, 0.6),
+          0 0 8px rgba(0, 0, 0, 0.35);
         line-height: 1.4;
         max-width: 600px;
       }
@@ -143,9 +145,9 @@
         border-radius: 50%;
         cursor: pointer;
         color: #fff;
-        font-size: 16px;
-        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-        transition: all 0.3s ease;
+        transition:
+          opacity 0.12s ease-out,
+          background-color 0.12s ease-out;
         flex-shrink: 0;
         opacity: 0.6;
         padding: 0;
@@ -157,11 +159,9 @@
       }
 
       .refresh-btn:hover {
-        transform: rotate(180deg);
         opacity: 1;
         background: rgba(255, 255, 255, 0.2);
         border-color: rgba(255, 255, 255, 0.2);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
       }
 
       .refresh-btn.show {
@@ -219,7 +219,9 @@
             <option value="blank">空白页面</option>
           </select>
         </div>
-        <button class="refresh-btn" id="refresh-btn" title="刷新内容">⟲</button>
+        <button class="refresh-btn" id="refresh-btn" type="button" title="换一张">
+          <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 8a5 5 0 1 1-1.6-3.7"/><path d="M13 2.5v2.8h-2.8"/></svg>
+        </button>
       </div>
       <a id="bg-description">
         <div class="bg-content"></div>
