@@ -364,14 +364,18 @@ const DEDUPE = {
     return isDedupeEnabled() && (await hasTabsPermission());
   },
   hide() {
-    if (this.bar) this.bar.hidden = true;
+    if (!this.bar || this.bar.hidden) return;
+    this.bar.hidden = true;
+    alignCorner();
   },
   show(message, actionLabel, listTitle = "") {
     if (!this.bar) return;
     this.text.textContent = message;
     this.action.textContent = actionLabel;
     this.bar.title = listTitle;
+    if (!this.bar.hidden) return;
     this.bar.hidden = false;
+    alignCorner();
   },
   async refresh() {
     if (!this.bar || this.closed) return;
@@ -945,7 +949,39 @@ function renderBookmarkTree(bookmarkTreeNodes) {
   updateSearchFeatureVisibility();
   applySearchLayout(container, bookmarksContainer);
   finishPopupLayout(container, bookmarksContainer);
+  alignCorner();
 }
+
+// 右上角的两个按钮和最上面一行内容并排，这一行让出按钮的宽度，顶部不再单独空出一行
+const CORNER_GAP = 8;
+function alignCorner() {
+  const corner = document.querySelector(".settings-wrapper");
+  if (!corner) return;
+  document.querySelectorAll("[data-corner-inset]").forEach((el) => {
+    el.style.removeProperty(el.dataset.cornerInset);
+    delete el.dataset.cornerInset;
+  });
+  const bar = document.getElementById("dedupe-bar");
+  const input = document.getElementById("searchInput");
+  const row =
+    bar && !bar.hidden ? bar : isSearchEnabled() && input ? input : document.querySelector("#bookmarks .folderTitle");
+  if (!row) {
+    corner.style.removeProperty("top");
+    return;
+  }
+  const cornerBox = corner.getBoundingClientRect();
+  const rowBox = row.getBoundingClientRect();
+  const overlap = rowBox.right - (cornerBox.left - CORNER_GAP);
+  if (overlap > 0) {
+    const prop = row === input ? "width" : "margin-right";
+    const margin = parseFloat(getComputedStyle(row).marginRight) || 0;
+    row.style.setProperty(prop, row === input ? `${rowBox.width - overlap}px` : `${margin + overlap}px`);
+    row.dataset.cornerInset = prop;
+  }
+  const top = rowBox.top + document.body.scrollTop + (rowBox.height - cornerBox.height) / 2;
+  corner.style.top = `${Math.round(top)}px`;
+}
+window.addEventListener("resize", alignCorner);
 
 async function fetchBookmarkTree() {
   if (typeof browser !== "undefined") {

@@ -97,12 +97,6 @@ h2 {
   font-size: 12px;
 }
 
-/* 第一个文件夹标题上方少留一点，右上角的按钮已经占了位置 */
-#bookmarks > .folder:first-child > h2:first-child,
-#bookmarks > .folder:first-child > .folderTitle:first-child {
-  margin-top: 4px;
-}
-
 .folderTitle.collapsible-folder {
   position: relative;
   display: flex;
@@ -339,7 +333,7 @@ body.popup-loading .settings-wrapper {
   margin-bottom: 24px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   background-color: transparent;
 }
 
