@@ -47,8 +47,8 @@ window.onload = function () {
     if (userAgent.indexOf("Edg") > -1) {
       body.style.backgroundColor = isDarkMode ? "#2B2B2B" : "#F7F7F7";
     } else if (userAgent.indexOf("Chrome") > -1) {
-      // 浅色和 Maple Theme 的纯白工具栏接上
-      body.style.backgroundColor = isDarkMode ? "#202124" : "#FFFFFF";
+      // 和 Chrome 默认新标签页的底色一致（Chrome 156 的 --color-new-tab-page-background）
+      body.style.backgroundColor = isDarkMode ? "#363840" : "#FFFFFF";
     }
   }
 
