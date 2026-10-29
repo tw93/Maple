@@ -4,6 +4,7 @@ import { keyText, BestMatchTitle, LastBestMatch, BestMatch, EmptyBookmarkMessage
 import { Notification } from "./utils/notification.js";
 import { createElement } from "./utils/element.js";
 import { getFavicon, markDarkFavicon } from "./utils/favicon.js";
+import { parseShortcut, matchesShortcut } from "./utils/shortcut.js";
 import {
   DEDUPE_SETTING_KEY,
   isDedupeEnabled,
@@ -856,7 +857,40 @@ document.addEventListener("click", function (e) {
   }
 });
 
+// 再按一次打开面板的快捷键时收起面板，读的是用户当前设置的快捷键
+let actionShortcut = null;
+chrome.commands
+  ?.getAll?.()
+  .then((commands) => {
+    const command = commands.find((c) => c.name === "_execute_action" || c.name === "_execute_browser_action");
+    const platform = navigator.userAgentData?.platform || navigator.platform || "";
+    actionShortcut = parseShortcut(command?.shortcut, /mac/i.test(platform));
+  })
+  .catch(() => {});
+
+async function closePanel() {
+  if (IS_SIDEBAR_MODE) {
+    try {
+      const sidebarApi = globalThis.browser?.sidebarAction;
+      if (sidebarApi?.close) return await sidebarApi.close();
+      if (chrome.sidePanel?.close) {
+        const win = await chrome.windows.getCurrent();
+        return await chrome.sidePanel.close({ windowId: win.id });
+      }
+    } catch (e) {
+      console.warn("Failed to close side panel:", e);
+    }
+  }
+  window.close();
+}
+
 window.addEventListener("keydown", function (event) {
+  if (matchesShortcut(actionShortcut, event)) {
+    event.preventDefault();
+    closePanel();
+    return;
+  }
+
   if (event.key === "Escape") {
     event.preventDefault();
     // 只在搜索功能开启时才处理清空搜索
