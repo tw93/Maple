@@ -103,25 +103,19 @@ h2 {
   align-items: center;
   gap: 6px;
   cursor: pointer;
-  border-radius: var(--maple-radius-sm);
-  padding: 6px 24px 6px 4px;
+  /* 面板右侧没有内边距，右边多留 14px，长标题的箭头才不会超出卡片 */
+  padding: 6px 18px 6px 4px;
   margin-block-end: 8px;
   margin-block-start: 12px;
-  transition:
-    background-color var(--maple-fast),
-    color var(--maple-fast);
+  transition: color var(--maple-fast);
 }
 
 .folderTitle.collapsible-folder:hover {
-  background: var(--maple-card);
   color: var(--maple-text);
 }
 
+/* 箭头紧跟在标题后面，不铺整行底色 */
 .folderTitle .folder-arrow {
-  position: absolute;
-  top: 50%;
-  right: 8px;
-  transform: translateY(-50%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -155,7 +149,7 @@ h2 {
 }
 
 .folderTitle .folder-label {
-  flex: 1;
+  flex: 0 1 auto;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
