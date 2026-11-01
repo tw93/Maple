@@ -437,7 +437,6 @@ window.onload = function () {
 
           // 不再使用滤镜，使用原图
           body.style.backgroundImage = `url(${imageUrl})`;
-          body.style.filter = "contrast(1.1)"; // 只是稍微增强对比度
 
           localStorage.setItem("bgPexelsUrl", imageUrl);
           localStorage.setItem("bgPexelsDate", new Date().toISOString().slice(0, 10));
@@ -511,7 +510,6 @@ window.onload = function () {
           convertToLinkElement(Info, true);
 
           body.style.backgroundImage = `url(${imageUrl})`;
-          body.style.filter = "contrast(1.1)"; // 只增强对比度，不强制灰度
 
           localStorage.setItem("bgPexelsUrl", imageUrl);
           localStorage.setItem("bgPexelsDate", new Date().toISOString().slice(0, 10));
@@ -529,7 +527,6 @@ window.onload = function () {
         };
         convertToLinkElement(Info, true);
         body.style.backgroundImage = "linear-gradient(45deg, #1a1a1a 0%, #4a4a4a 50%, #7a7a7a 100%)";
-        body.style.filter = "contrast(1.1)";
 
         localStorage.setItem("bgPexelsUrl", "");
         localStorage.setItem("bgPexelsDate", new Date().toISOString().slice(0, 10));
