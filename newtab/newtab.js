@@ -335,7 +335,8 @@ window.onload = function () {
       pic: "",
     };
     convertToLinkElement(Info, false);
-    body.style.backgroundImage = "#4a4a4a";
+    body.style.backgroundImage = "none";
+    body.style.backgroundColor = "#4a4a4a";
     body.style.filter = "";
 
     localStorage.setItem("bgBingUrl", "");
