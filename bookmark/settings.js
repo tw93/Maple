@@ -28,7 +28,7 @@ const isZh = browserLanguage === "zh";
 // 设置页面文本
 const texts = {
   title: isZh ? "设置" : "Settings",
-  backBtn: isZh ? "← 返回" : "← Back",
+  backBtn: isZh ? "返回" : "Back",
   displayModeTitle: isZh ? "侧边栏模式" : "Sidebar Mode",
   displayModeDesc: isZh
     ? "开启后点击图标打开侧边栏，关闭后打开弹窗。两者不会同时显示。"
