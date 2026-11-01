@@ -18,6 +18,6 @@ const BestMatchTitle = isZh ? "按 Enter 打开选中项" : "Press Enter to open
 const LastBestMatch = isZh ? "上次最佳匹配" : "Recent Matches";
 const BestMatch = isZh ? "最佳匹配" : "Best Matches";
 
-const EmptyBookmarkMessage = isZh ? "🍁 没有找到书签" : "🍁 No bookmarks found in your browser";
+const EmptyBookmarkMessage = isZh ? "没有找到书签" : "No bookmarks found in your browser";
 
 export { keyText, BestMatchTitle, LastBestMatch, BestMatch, EmptyBookmarkMessage };
