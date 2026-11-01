@@ -181,10 +181,8 @@ body.popup-loading .settings-wrapper {
   width: 80px;
   height: 12px;
   border-radius: 6px;
-  background: linear-gradient(90deg, var(--maple-card) 25%, var(--maple-card-hover) 37%, var(--maple-card) 63%);
-  background-size: 400% 100%;
+  background: var(--maple-card);
   margin: 14px 0 12px 4px;
-  animation: mapleSkeleton 1.4s ease-in-out infinite;
 }
 
 .loading-grid {
@@ -197,27 +195,9 @@ body.popup-loading .settings-wrapper {
   height: 44px;
   box-sizing: border-box;
   border-radius: var(--maple-radius);
-  background: linear-gradient(90deg, var(--maple-card) 25%, var(--maple-card-hover) 37%, var(--maple-card) 63%);
-  background-size: 400% 100%;
+  background: var(--maple-card);
   margin-bottom: 10px;
   margin-right: 10px;
-  animation: mapleSkeleton 1.4s ease-in-out infinite;
-}
-
-@keyframes mapleSkeleton {
-  0% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0 50%;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .loading-title,
-  .loading-card {
-    animation: none;
-  }
 }
 
 .childContainer {
