@@ -4,7 +4,7 @@
     <img src="https://raw.githubusercontent.com/tw93/static/master/pic/logo_600.png" width="138"/>
 <h1 align="center">枫叶书签</h1>
 <div align="center">
-    <a href="https://twitter.com/HiTw93" target="_blank">
+    <a href="https://x.com/HiTw93" target="_blank">
     <img alt="twitter" src="https://img.shields.io/badge/follow-Tw93-red?style=flat-square&logo=Twitter"></a>
     <a href="https://t.me/+9f9gf4ZrFSQ2OWVl" target="_blank">
     <img alt="telegram" src="https://img.shields.io/badge/chat-telegram-blueviolet?style=flat-square&logo=Telegram"></a>
@@ -78,4 +78,4 @@
 
 1. 我有两只猫，假如让你生活更美好，可以给猫 <a href="https://cats.tw93.fun?name=Maple" target="_blank">喂罐头 🥩</a>。
 2. 如果你喜欢枫叶书签，可以在 Github Star 它，更欢迎推荐给你志同道合的朋友。
-3. 可以关注我的 [Twitter](https://twitter.com/HiTw93) 获取到版本更新消息，也欢迎加入 [Telegram](https://t.me/+9f9gf4ZrFSQ2OWVl) 聊天群。
+3. 可以关注我的 [Twitter](https://x.com/HiTw93) 获取到版本更新消息，也欢迎加入 [Telegram](https://t.me/+9f9gf4ZrFSQ2OWVl) 聊天群。

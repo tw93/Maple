@@ -3,7 +3,7 @@
     <img src="https://raw.githubusercontent.com/tw93/static/master/pic/logo_600.png" width="138"/>
 <h1 align="center">Maple Bookmarks</h1>
 <div align="center">
-    <a href="https://twitter.com/HiTw93" target="_blank">
+    <a href="https://x.com/HiTw93" target="_blank">
     <img alt="twitter" src="https://img.shields.io/badge/follow-Tw93-red?style=flat-square&logo=Twitter"></a>
     <a href="https://t.me/+9f9gf4ZrFSQ2OWVl" target="_blank">
     <img alt="telegram" src="https://img.shields.io/badge/chat-telegram-blueviolet?style=flat-square&logo=Telegram"></a>
@@ -73,7 +73,7 @@ Since the default new theme of Chrome is not very appealing to me, I prefer a si
 
 ## Support
 
-- If Maple helped you, [share it](https://twitter.com/intent/tweet?url=https://github.com/tw93/Maple&text=Maple%20Bookmarks%20-%20Hide%20the%20bookmark%20bar%2C%20surf%20the%20web%20smoothly.) with friends or give it a star.
+- If Maple helped you, [share it](https://x.com/intent/tweet?url=https://github.com/tw93/Maple&text=Maple%20Bookmarks%20-%20Hide%20the%20bookmark%20bar%2C%20surf%20the%20web%20smoothly.) with friends or give it a star.
 - Got ideas or bugs? Open an issue or PR, feel free to contribute your best AI model.
 - I have two cats, TangYuan and Coke. If you think Maple delights your life, you can feed them <a href="https://cats.tw93.fun?name=Maple" target="_blank">canned food 🥩</a>.
 
