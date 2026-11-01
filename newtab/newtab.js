@@ -329,7 +329,7 @@ window.onload = function () {
       pic: "",
     };
     convertToLinkElement(Info, false);
-    body.style.backgroundImage = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+    body.style.backgroundImage = "#4a4a4a";
     body.style.filter = "";
 
     localStorage.setItem("bgBingUrl", "");
