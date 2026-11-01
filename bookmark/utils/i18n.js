@@ -15,7 +15,7 @@ const keyText = isZh
 
 const BestMatchTitle = isZh ? "按 Enter 打开选中项" : "Press Enter to open selected item";
 
-const LastBestMatch = isZh ? "上次最佳匹配" : "Recent Matches";
+const LastBestMatch = isZh ? "最近匹配" : "Recent Matches";
 const BestMatch = isZh ? "最佳匹配" : "Best Matches";
 
 const EmptyBookmarkMessage = isZh ? "没有找到书签" : "No bookmarks found in your browser";

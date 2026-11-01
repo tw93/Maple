@@ -19,14 +19,20 @@ window.onload = function () {
       bing: "必应壁纸",
       pexels: "文艺复兴",
       refresh: "换一张",
+      bingTitle: "必应日常壁纸",
+      pexelsTitle: "文艺复兴艺术",
+      pexelsBy: (name) => `文艺复兴艺术，摄影 ${name}`,
     },
     en: {
       title: "New Tab",
       blank: "Blank",
       random: "Weekly",
-      bing: "Bing",
+      bing: "Bing Wallpaper",
       pexels: "Renaissance",
       refresh: "Next image",
+      bingTitle: "Bing Daily Wallpaper",
+      pexelsTitle: "Renaissance Art",
+      pexelsBy: (name) => `Renaissance Art by ${name}`,
     },
   };
 
@@ -323,7 +329,7 @@ window.onload = function () {
     const date = today.getFullYear() + "/" + month + "/" + day;
 
     const Info = {
-      title: "必应日常壁纸",
+      title: mapping.bingTitle,
       url: "https://cn.bing.com",
       date: date,
       pic: "",
@@ -422,7 +428,7 @@ window.onload = function () {
           const imageUrl = randomPhoto.src.original || randomPhoto.src.large2x || randomPhoto.src.large;
 
           const Info = {
-            title: randomPhoto.alt || `文艺复兴艺术 by ${randomPhoto.photographer}`,
+            title: randomPhoto.alt || mapping.pexelsBy(randomPhoto.photographer),
             url: randomPhoto.url || "#",
             date: date,
             pic: imageUrl,
@@ -497,7 +503,7 @@ window.onload = function () {
           const imageUrl = randomPhoto.src.original || randomPhoto.src.large2x || randomPhoto.src.large;
 
           const Info = {
-            title: randomPhoto.alt || `文艺复兴艺术 by ${randomPhoto.photographer}`,
+            title: randomPhoto.alt || mapping.pexelsBy(randomPhoto.photographer),
             url: randomPhoto.url || "#",
             date: date,
             pic: imageUrl,
@@ -516,7 +522,7 @@ window.onload = function () {
         console.error("Pexels Fallback Error:", error);
         // 最后的最后，使用一个静态的样式
         const Info = {
-          title: "文艺复兴艺术",
+          title: mapping.pexelsTitle,
           url: "#",
           date: date,
           pic: "",
