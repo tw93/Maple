@@ -35,16 +35,16 @@ const texts = {
     : "When on, clicking the icon opens the sidebar; when off, it opens the popup. They are never shown at the same time.",
   searchFeatureTitle: isZh ? "启用搜索功能" : "Search Functionality",
   searchFeatureDesc: isZh
-    ? "开启后可以使用搜索框搜索书签，关闭后将隐藏搜索相关功能。"
-    : "Enable search box to quickly find bookmarks. When disabled, all search features will be hidden.",
+    ? "开启后可以使用搜索框搜索书签。"
+    : "Enable search box to quickly find bookmarks.",
   tipsFeatureTitle: isZh ? "显示悬停提示" : "Hover Tooltips",
   tipsFeatureDesc: isZh
-    ? "鼠标悬停在书签上时显示完整标题，关闭后将不显示悬停提示。"
-    : "Display full bookmark titles when hovering. Turn off to disable all tooltip notifications.",
+    ? "鼠标悬停在书签上时显示完整标题。"
+    : "Display full bookmark titles when hovering.",
   openInNewTabTitle: isZh ? "新标签页打开" : "Open in New Tab",
   openInNewTabDesc: isZh
-    ? "开启后点击书签将在新标签页打开，关闭后在当前标签页打开。"
-    : "Open bookmarks in a new tab. Turn off to open in the current tab.",
+    ? "开启后点击书签将在新标签页打开。"
+    : "Open bookmarks in a new tab.",
   keepPanelOpenTitle: isZh ? "点击后保持面板" : "Keep Panel Open",
   keepPanelOpenDesc: isZh
     ? "开启后点击书签会在后台标签页打开，并尽量保持面板不自动关闭。"
