@@ -4,8 +4,8 @@
 /dist/
 /theme/*.pak
 
-# AI Assistant files
-AGENTS.md
-CLAUDE.md
+# Local AI assistant files
+AGENTS.override.md
+CLAUDE.local.md
 journal/
 .claude/settings.local.json
